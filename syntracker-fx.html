@@ -246,19 +246,40 @@
     }
 
     .user-av {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #ffcd1b, #a67726); color: #000; font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 14px;
-      flex-shrink: 0;
-      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
-    }
+       width: 36px;
+       height: 36px;
+       border-radius: 10px;
+       background: linear-gradient(135deg, #ffcd1b, #a67726); color: #000; font-weight: 700;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       color: #fff;
+       font-weight: 700;
+       font-size: 14px;
+       flex-shrink: 0;
+       box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+       position: relative;
+       cursor: pointer;
+       overflow: hidden;
+       transition: all 0.3s ease;
+     }
+     .user-av::after {
+       content: '📷';
+       position: absolute;
+       top: 0; left: 0; right: 0; bottom: 0;
+       background: rgba(0, 0, 0, 0.65);
+       color: #fff;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-size: 13px;
+       opacity: 0;
+       transition: opacity 0.2s ease;
+       border-radius: inherit;
+     }
+     .user-av:hover::after {
+       opacity: 1;
+     }
 
     .user-info {
       flex: 1;
@@ -2678,8 +2699,9 @@
       <div class="acct-dropdown-menu" id="acct-dropdown-menu"></div>
     </div>
     <div class="sidebar-footer">
+      <input type="file" id="user-avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleAvatarChange(this)">
       <div class="user-card">
-        <div class="user-av">S</div>
+        <div class="user-av" onclick="document.getElementById('user-avatar-input').click()" title="Cambiar foto de perfil">S</div>
         <div class="user-info">
           <div class="user-name">Sarah Posada</div>
           <div class="user-email">—</div>
@@ -3638,7 +3660,58 @@
       async function remove(table, id) {
         const r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, { method: 'DELETE', headers: h() }); return r.ok;
       }
-      return { signUp, signIn, signOut, getUser, query, insert, update, remove };
+      async function uploadFile(bucket, path, file) {
+        const headers = {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + (token || SUPABASE_KEY),
+          'Content-Type': file.type
+        };
+        const r = await fetch(SUPABASE_URL + '/storage/v1/object/' + bucket + '/' + path, {
+          method: 'POST',
+          headers: headers,
+          body: file
+        });
+        if (!r.ok) {
+          let errMsg = 'Error desconocido';
+          try {
+            const e = await r.json();
+            errMsg = e.message || e.error || JSON.stringify(e);
+          } catch (jsonErr) {
+            try {
+              errMsg = await r.text();
+            } catch (txtErr) {
+              errMsg = r.statusText || String(r.status);
+            }
+          }
+          throw new Error(errMsg);
+        }
+        return SUPABASE_URL + '/storage/v1/object/public/' + bucket + '/' + path;
+      }
+      async function updateUser(data) {
+        const r = await fetch(SUPABASE_URL + '/auth/v1/user', {
+          method: 'PUT',
+          headers: h(),
+          body: JSON.stringify(data)
+        });
+        if (!r.ok) {
+          let errMsg = 'Error al actualizar usuario';
+          try {
+            const e = await r.json();
+            errMsg = e.message || e.error || JSON.stringify(e);
+          } catch (jsonErr) {
+            try {
+              errMsg = await r.text();
+            } catch (txtErr) {
+              errMsg = r.statusText || String(r.status);
+            }
+          }
+          throw new Error(errMsg);
+        }
+        const d = await r.json();
+        user = d.user || d;
+        return d;
+      }
+      return { signUp, signIn, signOut, getUser, query, insert, update, remove, uploadFile, updateUser };
     })();
 
     // ── Auth UI ──
@@ -3736,6 +3809,69 @@
       };
     }
 
+    function renderUserAvatar(user, name) {
+      const avs = document.querySelectorAll('.user-av');
+      if (!avs.length) return;
+      let avatarUrl = user.user_metadata && user.user_metadata.avatar_url;
+      avs.forEach(av => {
+        if (avatarUrl) {
+          av.innerHTML = `<img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" />`;
+          av.style.border = '2px solid #ffcd1b';
+          av.style.background = 'none';
+          av.style.borderRadius = '50%';
+        } else {
+          av.textContent = name ? name[0].toUpperCase() : '?';
+          av.style.border = 'none';
+          av.style.background = 'linear-gradient(135deg, #ffcd1b, #a67726)';
+          av.style.borderRadius = '10px';
+        }
+      });
+    }
+
+    async function handleAvatarChange(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      if (file.size > 2 * 1024 * 1024) {
+        alert("La imagen excede el límite de 2MB.");
+        input.value = "";
+        return;
+      }
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Formato no soportado. Usa JPEG, PNG o WebP.");
+        input.value = "";
+        return;
+      }
+      const user = sb.getUser();
+      if (!user) return;
+      showLoading(true);
+      try {
+        const ext = file.name.split('.').pop() || 'png';
+        const fileName = `${user.id}_${Date.now()}.${ext}`;
+        const publicUrl = await sb.uploadFile('Avatars', fileName, file);
+        await sb.updateUser({ data: { avatar_url: publicUrl } });
+        try {
+          await sb.update('profiles', user.id, { avatar_url: publicUrl });
+        } catch (dbErr) {
+          try {
+            await sb.update('users', user.id, { avatar_url: publicUrl });
+          } catch (dbErr2) {}
+        }
+        let name = (user.user_metadata && user.user_metadata.full_name) || user.email;
+        if (name.toLowerCase().includes('sara') || name.toLowerCase().includes('juliana')) {
+          name = 'Sarah Posada';
+        }
+        renderUserAvatar(sb.getUser(), name);
+        alert("Foto de perfil actualizada con éxito.");
+      } catch (err) {
+        console.error("Error al actualizar la foto de perfil:", err);
+        alert("Error al actualizar la foto de perfil: " + err.message);
+      } finally {
+        showLoading(false);
+        input.value = "";
+      }
+    }
+
     async function initApp() {
       const user = sb.getUser(); if (!user) return;
       document.getElementById('auth-screen').style.display = 'none';
@@ -3744,9 +3880,29 @@
         name = 'Sarah Posada';
       }
       const av = document.querySelector('.user-av'), nm = document.querySelector('.user-name'), em = document.querySelector('.user-email');
-      if (av) av.textContent = name[0].toUpperCase();
       if (nm) nm.textContent = name;
       if (em) em.textContent = user.email;
+
+      let avatarUrl = user.user_metadata && user.user_metadata.avatar_url;
+      try {
+        const profileData = await sb.query('profiles', { filter: 'id=eq.' + user.id });
+        if (profileData && profileData.length > 0 && profileData[0].avatar_url) {
+          avatarUrl = profileData[0].avatar_url;
+        }
+      } catch (e) {
+        try {
+          const userData = await sb.query('users', { filter: 'id=eq.' + user.id });
+          if (userData && userData.length > 0 && userData[0].avatar_url) {
+            avatarUrl = userData[0].avatar_url;
+          }
+        } catch (e2) {}
+      }
+      if (avatarUrl) {
+        if (!user.user_metadata) user.user_metadata = {};
+        user.user_metadata.avatar_url = avatarUrl;
+      }
+      renderUserAvatar(user, name);
+
       document.getElementById('date-pill').textContent = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
       showLoading(true);
       await loadAccounts(); await loadTrades(); await loadConfirmations();
@@ -5592,8 +5748,8 @@
           side: 'Long',
           pnl: 0,
           rr: 0,
-          session: 'N/A',
-          setup: 'N/A',
+          session: 'Otra',
+          setup: '',
           date: dateVal,
           photo: null,
           notes: reason
@@ -5646,6 +5802,7 @@
         // By asset
         var assetMap = {};
         trades.forEach(function (t) { 
+          if (t.asset === 'INACCIÓN') return;
           if (!assetMap[t.asset]) assetMap[t.asset] = { pnl: 0, count: 0, wins: 0, losses: 0, bes: 0 }; 
           assetMap[t.asset].pnl += t.pnl; 
           assetMap[t.asset].count++; 
@@ -5671,7 +5828,13 @@
 
         // By session
         var sesMap = {};
-        trades.forEach(function (t) { if (!sesMap[t.session]) sesMap[t.session] = { pnl: 0, count: 0, wins: 0 }; sesMap[t.session].pnl += t.pnl; sesMap[t.session].count++; if (t.pnl > 0) sesMap[t.session].wins++; });
+        trades.forEach(function (t) { 
+          if (t.asset === 'INACCIÓN') return;
+          if (!sesMap[t.session]) sesMap[t.session] = { pnl: 0, count: 0, wins: 0 }; 
+          sesMap[t.session].pnl += t.pnl; 
+          sesMap[t.session].count++; 
+          if (t.pnl > 0) sesMap[t.session].wins++; 
+        });
         var sesCard = document.getElementById('st-by-session');
         if (sesCard) { 
           var sorted2 = Object.entries(sesMap).sort(function (a, b) { return b[1].pnl - a[1].pnl; }); 
@@ -5684,7 +5847,14 @@
 
         // By setup
         var setupMap = {};
-        trades.forEach(function (t) { var k = t.setup || '—'; if (!setupMap[k]) setupMap[k] = { pnl: 0, count: 0, wins: 0 }; setupMap[k].pnl += t.pnl; setupMap[k].count++; if (t.pnl > 0) setupMap[k].wins++; });
+        trades.forEach(function (t) { 
+          if (t.asset === 'INACCIÓN') return;
+          var k = t.setup || '—'; 
+          if (!setupMap[k]) setupMap[k] = { pnl: 0, count: 0, wins: 0 }; 
+          setupMap[k].pnl += t.pnl; 
+          setupMap[k].count++; 
+          if (t.pnl > 0) setupMap[k].wins++; 
+        });
         var setupCard = document.getElementById('st-by-setup');
         if (setupCard) { 
           var sorted3 = Object.entries(setupMap).sort(function (a, b) { return b[1].pnl - a[1].pnl; }); 
@@ -5698,6 +5868,7 @@
         // By day
         var dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'], dayMap = {};
         trades.forEach(function (t) { 
+          if (t.asset === 'INACCIÓN') return;
           var dow = new Date(t.date + 'T00:00:00').getDay(), k = dayNames[dow]; 
           if (!dayMap[k]) dayMap[k] = { pnl: 0, count: 0, wins: 0 }; 
           dayMap[k].pnl += t.pnl; 
@@ -5743,6 +5914,7 @@
           // Breakdown by emotion
           var emotionMap = {};
           trades.forEach(function(t){
+            if (t.asset === 'INACCIÓN') return;
             if(t.emotion) {
               if(!emotionMap[t.emotion]) emotionMap[t.emotion] = {count:0, pnl:0};
               emotionMap[t.emotion].count++;
@@ -6125,8 +6297,8 @@
           '</div></div>' +
           '</div>';
       }
-      function getBestAsset(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (!m[t.asset]) m[t.asset] = 0; m[t.asset] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] + ' ($' + best[1].toFixed(0) + ')' : '—'; }
-      function getBestSession(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (!m[t.session]) m[t.session] = 0; m[t.session] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] : '—'; }
+      function getBestAsset(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (t.asset === 'INACCIÓN') return; if (!m[t.asset]) m[t.asset] = 0; m[t.asset] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] + ' ($' + best[1].toFixed(0) + ')' : '—'; }
+      function getBestSession(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (t.asset === 'INACCIÓN') return; if (!m[t.session]) m[t.session] = 0; m[t.session] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] : '—'; }
 
       // ── Init ──
       document.getElementById('auth-screen').style.display = 'flex';
