@@ -244,10 +244,17 @@
       gap: 12px;
       background: rgba(0,0,0,0.2);
     }
-
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
     .user-av {
        width: 40px;
        height: 40px;
+       min-width: 40px;
+       min-height: 40px;
        border-radius: 10px;
        background: linear-gradient(135deg, #ffcd1b, #a67726); color: #000; font-weight: 700;
        display: flex;
@@ -269,6 +276,9 @@
        object-fit: cover;
        border-radius: 50%;
        display: block;
+       transform: translateZ(0);
+       backface-visibility: hidden;
+       image-rendering: -webkit-optimize-contrast;
      }
      .user-av::after {
        content: '📷';
