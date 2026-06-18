@@ -1,0 +1,12 @@
+{
+  "name": "syntracker-fx",
+  "version": "1.0.0",
+  "description": "Premium Trading Journal designed under GoldFX Discipline Score rules with JS Obfuscation",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.1"
+  }
+}

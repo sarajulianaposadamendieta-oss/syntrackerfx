@@ -244,56 +244,58 @@
       gap: 12px;
       background: rgba(0,0,0,0.2);
     }
+
     .user-card {
       display: flex;
       align-items: center;
       gap: 12px;
       width: 100%;
     }
+
     .user-av {
-       width: 40px;
-       height: 40px;
-       min-width: 40px;
-       min-height: 40px;
-       border-radius: 10px;
-       background: linear-gradient(135deg, #ffcd1b, #a67726); color: #000; font-weight: 700;
-       display: flex;
-       align-items: center;
-       justify-content: center;
-       color: #fff;
-       font-weight: 700;
-       font-size: 15px;
-       flex-shrink: 0;
-       box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
-       position: relative;
-       cursor: pointer;
-       overflow: hidden;
-       transition: box-shadow 0.3s ease;
-     }
-     .user-av img {
-       width: 100%;
-       height: 100%;
-       object-fit: cover;
-       border-radius: 50%;
-       display: block;
-     }
-     .user-av::after {
-       content: '📷';
-       position: absolute;
-       top: 0; left: 0; right: 0; bottom: 0;
-       background: rgba(0, 0, 0, 0.65);
-       color: #fff;
-       display: flex;
-       align-items: center;
-       justify-content: center;
-       font-size: 13px;
-       opacity: 0;
-       transition: opacity 0.2s ease;
-       border-radius: inherit;
-     }
-     .user-av:hover::after {
-       opacity: 1;
-     }
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ffcd1b, #a67726); color: #000; font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      transition: box-shadow 0.3s ease;
+    }
+    .user-av img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    .user-av::after {
+      content: '📷';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      border-radius: inherit;
+    }
+    .user-av:hover::after {
+      opacity: 1;
+    }
 
     .user-info {
       flex: 1;
@@ -1157,7 +1159,7 @@
 
     .ac-sub {
       font-size: 11.5px;
-      color: var(--text-secondary);
+      color: var(--green);
       font-weight: 500;
       margin-top: 2px;
     }
@@ -2148,7 +2150,7 @@
       width: fit-content;
       padding: 6px 14px;
       background: rgba(255,205,27,0.1);
-      color: var(--yellow);
+      color: var(--green);
       border-radius: 100px;
       font-size: 11px;
       font-weight: 700;
@@ -2713,22 +2715,22 @@
       <div class="acct-dropdown-menu" id="acct-dropdown-menu"></div>
     </div>
     <div class="sidebar-footer">
-       <input type="file" id="user-avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleAvatarChange(this)">
-       <div class="user-card">
-         <div class="user-av" onclick="document.getElementById('user-avatar-input').click()" title="Cambiar foto de perfil">S</div>
-         <div class="user-info">
-           <div class="user-name">Sarah Posada</div>
-           <div class="user-email">—</div>
-         </div>
-       </div>
-     </div>
+      <input type="file" id="user-avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleAvatarChange(this)">
+      <div class="user-card">
+        <div class="user-av" onclick="document.getElementById('user-avatar-input').click()" title="Cambiar foto de perfil">S</div>
+        <div class="user-info">
+          <div class="user-name">Sarah Posada</div>
+          <div class="user-email">—</div>
+        </div>
+      </div>
+    </div>
   </aside>
 
   <!-- MAIN -->
   <div class="main">
     <!-- TOPBAR -->
     <div class="topbar">
-      <div class="nav-icon" style="color:var(--yellow); margin-right: 8px;">
+      <div class="nav-icon" style="color:var(--green); margin-right: 8px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       </div>
       <div class="tb-title" id="tb-title">Dashboard</div>
@@ -3064,8 +3066,6 @@
       </div>
       <div id="comparar-content"></div>
     </div>
-
-
 
     <div class="page" id="page-cuentas">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
@@ -3953,7 +3953,6 @@
     }
 
 
-
     function renderConfGrid(containerId, selectedArr) {
       const container = document.getElementById(containerId);
       if (!container) return;
@@ -4308,13 +4307,9 @@
       document.getElementById('page-' + id).classList.add('active');
       el.classList.add('active');
       document.getElementById('tb-title').textContent = pageNames[id] || id;
-      if (id === 'dashboard') renderDashboard();
-      if (id === 'tradelog') renderTrades();
-      if (id === 'calendario') renderCalendar();
       if (id === 'analisis') renderAnalisis();
       if (id === 'estadisticas') renderStats();
       if (id === 'comparar') renderComparar();
-      if (id === 'cuentas') renderAccounts();
     }
     function setView(v, btn) { document.querySelectorAll('.tog-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); }
 
@@ -4807,7 +4802,7 @@
       // Make panel visible if hidden
       if (!_panelVisible) toggleDetailPanel();
     }
-            function computeStats(tradeList) {
+      function computeStats(tradeList) {
         // Excluir registros de INACCIÓN de todas las estadísticas
         tradeList = tradeList.filter(function(t){ return t.asset !== 'INACCIÓN'; });
         const total = tradeList.length;
@@ -4832,65 +4827,23 @@
         const bestTrade = total ? Math.max.apply(null, tradeList.map(function (t) { return t.pnl; })) : 0;
         const worstTrade = total ? Math.min.apply(null, tradeList.map(function (t) { return t.pnl; })) : 0;
         const avgWinRR = wins.length ? wins.reduce(function (s, t) { return s + t.rr; }, 0) / wins.length : 0;
-
-        // Sort trades chronologically to ensure accurate sequence metrics (drawdown, streaks)
-        const sortedTrades = [...tradeList].sort(function(a, b) {
-          return new Date(a.date + 'T' + (a.entryTime && a.entryTime !== '—' ? a.entryTime : '00:00:00')) - new Date(b.date + 'T' + (b.entryTime && b.entryTime !== '—' ? b.entryTime : '00:00:00'));
-        });
-
-        // Equity-based Drawdown calculation
-        var uniqueAccounts = {};
-        tradeList.forEach(function(t) { if (t.account) uniqueAccounts[t.account] = true; });
-        var acctNames = Object.keys(uniqueAccounts);
-        var initialBalance = 0;
-        if (acctNames.length === 0) {
-          initialBalance = (typeof accounts !== 'undefined' && accounts.length) ? accounts.reduce(function (sum, a) { return sum + a.initialBalance; }, 0) : 10000;
-        } else {
-          acctNames.forEach(function(name) {
-            var a = (typeof accounts !== 'undefined') ? accounts.find(function(acc) { return acc.name === name; }) : null;
-            if (a) initialBalance += a.initialBalance;
-          });
-        }
-        if (initialBalance <= 0) initialBalance = 10000;
-
-        let peak = initialBalance, runBal = initialBalance, maxDD = 0;
-        sortedTrades.forEach(function (t) { 
-          runBal += t.pnl; 
-          if (runBal > peak) peak = runBal; 
-          var dd = (peak - runBal) / peak * 100; 
-          if (dd > maxDD) maxDD = dd; 
-        });
-
-        // Win/Loss Streaks (excluding Break Evens)
-        let curStreak = 0, curType = null, curWin = 0, curLoss = 0;
-        sortedTrades.forEach(function (t) {
-          if (t.pnl > -0.01 && t.pnl < 0.01) return; // Skip BE
-          var type = t.pnl >= 0.01 ? 'w' : 'l';
-          if (type === curType) { 
-            curStreak++; 
-          } else { 
-            curStreak = 1; 
-            curType = type; 
-          }
+        let peak = 0, runPnl = 0, maxDD = 0;
+        tradeList.forEach(function (t) { runPnl += t.pnl; if (runPnl > peak) peak = runPnl; var dd = peak > 0 ? (peak - runPnl) / peak * 100 : 0; if (dd > maxDD) maxDD = dd; });
+        // Streak
+        let curStreak = 0, curType = null, bestWin = 0, worstLoss = 0, curWin = 0, curLoss = 0;
+        tradeList.forEach(function (t) {
+          var type = t.pnl > 0 ? 'w' : 'l';
+          if (type === curType) { curStreak++; } else { curStreak = 1; curType = type; }
           if (type === 'w' && curStreak > curWin) curWin = curStreak;
           if (type === 'l' && curStreak > curLoss) curLoss = curStreak;
         });
-
         var liveStreak = 0, liveType = null;
-        for (var i = sortedTrades.length - 1; i >= 0; i--) {
-          var pnlVal = sortedTrades[i].pnl;
-          if (pnlVal > -0.01 && pnlVal < 0.01) continue; // Skip BE
-          var tp = pnlVal >= 0.01 ? 'w' : 'l';
-          if (liveType === null) { 
-            liveType = tp; 
-            liveStreak = 1; 
-          }
-          else if (tp === liveType) { 
-            liveStreak++; 
-          }
+        for (var i = tradeList.length - 1; i >= 0; i--) {
+          var tp = tradeList[i].pnl > 0 ? 'w' : 'l';
+          if (i === tradeList.length - 1) { liveType = tp; liveStreak = 1; }
+          else if (tp === liveType) { liveStreak++; }
           else break;
         }
-
         // BE Days
         var daysMap = {};
         tradeList.forEach(function(t){
@@ -4908,7 +4861,7 @@
           else if(t.plan === 'Medio') planStats.Medio++;
           
           if(t.plan_why) {
-            var k = String(t.plan_why).trim();
+            var k = t.plan_why.trim();
             planWhys[k] = (planWhys[k]||0)+1;
           }
         });
@@ -4933,22 +4886,14 @@
       }
 
       function generateInsights(trades) {
-        // Respect the selected timeframe/month trades
-        const validTrades = (trades || []).filter(function (t) { return t.asset !== 'INACCIÓN'; });
-        
-        if (validTrades.length === 0) {
-          return '<div class="stats-card" style="margin-bottom:18px;">' +
-            '<div class="stats-card-title" style="margin-bottom:14px;">🧠 Cerebro GoldFX (Hallazgos)</div>' +
-            '<div style="color:var(--text-muted); font-size:12.5px; text-align:center; padding:24px 0;">No hay suficientes datos de operaciones en este período para generar hallazgos.</div>' +
-            '</div>';
-        }
+        const validTrades = trades.filter(function (t) { return t.asset !== 'INACCIÓN'; });
         const insights = [];
 
         // 1. Mejor Sesión por P&L
         const sessionPnl = {};
         validTrades.forEach(function (t) {
           if (!t.session) return;
-          sessionPnl[t.session] = (sessionPnl[t.session] || 0) + parseFloat(t.pnl);
+          sessionPnl[t.session] = (sessionPnl[t.session] || 0) + t.pnl;
         });
         let bestSession = null;
         let maxSessionPnl = -Infinity;
@@ -4968,11 +4913,10 @@
         const entryWins = {};
         let totalPositivePnl = 0;
         validTrades.forEach(function (t) {
-          var pnlVal = parseFloat(t.pnl);
-          if (pnlVal > 0) {
-            totalPositivePnl += pnlVal;
+          if (t.pnl > 0) {
+            totalPositivePnl += t.pnl;
             if (t.entry_type) {
-              entryWins[t.entry_type] = (entryWins[t.entry_type] || 0) + pnlVal;
+              entryWins[t.entry_type] = (entryWins[t.entry_type] || 0) + t.pnl;
             }
           }
         });
@@ -4996,15 +4940,15 @@
           return t.discipline_score != null && t.discipline_score !== "" && parseFloat(t.discipline_score) < 70;
         });
         if (lowDiscTrades.length > 0) {
-          const discWins = lowDiscTrades.filter(function (t) { return parseFloat(t.pnl) > 0; }).length;
+          const discWins = lowDiscTrades.filter(function (t) { return t.pnl > 0; }).length;
           const discWr = (discWins / lowDiscTrades.length) * 100;
           insights.push("⚠️ Tus operaciones con disciplina menor a 70% tienen un WR de " + discWr.toFixed(0) + "%.");
         } else {
           insights.push("🟢 Mantienes una excelente disciplina: no hay trades con puntuación menor a 70%.");
         }
 
-        // 4. Emoción dominante en pérdidas (requires at least 1 loss)
-        const losingTrades = validTrades.filter(function (t) { return parseFloat(t.pnl) <= -0.01; });
+        // 4. Emoción dominante en pérdidas
+        const losingTrades = validTrades.filter(function (t) { return t.pnl < 0; });
         if (losingTrades.length > 0) {
           const emoCounts = {};
           losingTrades.forEach(function (t) {
@@ -5039,9 +4983,7 @@
         }
 
         // Build premium HTML block
-        let html = '<div class="stats-card" style="margin-bottom:18px;">' +
-          '<div class="stats-card-title" style="margin-bottom:14px;">🧠 Cerebro GoldFX (Hallazgos)</div>' +
-          '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">';
+        let html = '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">';
         insights.forEach(function(ins) {
           const isAlert = ins.startsWith('⚠️');
           const borderColor = isAlert ? 'rgba(239, 68, 68, 0.3)' : 'var(--border-bronze)';
@@ -5052,51 +4994,15 @@
               '<span style="font-size:13px; font-weight:600; color:' + textColor + '; line-height:1.4;">' + ins + '</span>' +
             '</div>';
         });
-        html += '</div></div>';
+        html += '</div>';
         return html;
-      }
-
-
-
-      let activeAnDiscTimeframe = 'all';
-
-      window.changeAnDiscTimeframe = function(tf, event) {
-        if(event) {
-          var parent = event.currentTarget.parentElement;
-          parent.querySelectorAll('.tog-btn').forEach(function(b) { b.classList.remove('active'); });
-          event.currentTarget.classList.add('active');
-        }
-        activeAnDiscTimeframe = tf;
-        renderAnalisis();
       }
 
       function getDisciplineBreakdown(trades) {
         var validTrades = trades.filter(function (t) { return t.asset !== 'INACCIÓN'; });
         
-        // Filter based on selected timeframe
-        if (activeAnDiscTimeframe === '7d' || activeAnDiscTimeframe === '30d') {
-          var cutoff = new Date();
-          var days = activeAnDiscTimeframe === '7d' ? 7 : 30;
-          cutoff.setDate(cutoff.getDate() - days);
-          validTrades = validTrades.filter(function(t) {
-            return new Date(t.date + 'T00:00:00') >= cutoff;
-          });
-        }
-
-        var html = 
-          '<div class="stats-card" style="margin-bottom:18px;">' +
-            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">' +
-              '<div class="stats-card-title" style="margin:0;font-size:16px;">Desglose de Disciplina</div>' +
-              '<div class="toggle-group" style="padding:2px; display:flex; gap:2px;">' +
-                '<button class="tog-btn' + (activeAnDiscTimeframe === '7d' ? ' active' : '') + '" onclick="changeAnDiscTimeframe(\'7d\', event)">7 días</button>' +
-                '<button class="tog-btn' + (activeAnDiscTimeframe === '30d' ? ' active' : '') + '" onclick="changeAnDiscTimeframe(\'30d\', event)">30 días</button>' +
-                '<button class="tog-btn' + (activeAnDiscTimeframe === 'all' ? ' active' : '') + '" onclick="changeAnDiscTimeframe(\'all\', event)">Histórico</button>' +
-              '</div>' +
-            '</div>';
-
         if (validTrades.length === 0) {
-          html += '<div style="color:var(--text-muted); font-size:12.5px; text-align:center; padding:24px 0;">No hay suficientes datos de operaciones para el rango seleccionado.</div></div>';
-          return html;
+          return '<div style="color:var(--text-muted); font-size:12.5px; text-align:center; padding:12px 0;">No hay suficientes datos de operaciones para el rango seleccionado.</div>';
         }
 
         var totalConsist = 0;
@@ -5153,66 +5059,44 @@
         var emocional = Math.round(totalEmo / count);
         var goldfx = Math.round(totalGold / count);
 
-        function getDisciplineColor(score) {
-          if (score >= 85) return 'var(--green)';
-          if (score >= 70) return 'var(--yellow)';
-          return 'var(--red)';
-        }
-
-        function getDisciplineEmoji(score) {
+        function getEmoji(score) {
           if (score >= 85) return '🟢';
           if (score >= 70) return '🟡';
           return '🔴';
         }
 
-        html +=
-          '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; align-items:stretch;">' +
-            '<div style="display:flex; flex-direction:column; gap:10px; justify-content:center;">' +
+        return 
+          '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; align-items:center;">' +
+            '<div style="display:flex; flex-direction:column; gap:10px;">' +
               '<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);">' +
                 '<span style="font-size:13px; font-weight:600; color:var(--text-secondary);">Consistencia</span>' +
-                '<span style="font-size:14px; font-weight:700; color:\' + getDisciplineColor(consistencia) + \';">' + getDisciplineEmoji(consistencia) + ' ' + consistencia + '%</span>' +
+                '<span style="font-size:14px; font-weight:700; color:#fff;">' + getEmoji(consistencia) + ' ' + consistencia + '%</span>' +
               '</div>' +
               '<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);">' +
                 '<span style="font-size:13px; font-weight:600; color:var(--text-secondary);">Gestión de Riesgo</span>' +
-                '<span style="font-size:14px; font-weight:700; color:\' + getDisciplineColor(riesgo) + \';">' + getDisciplineEmoji(riesgo) + ' ' + riesgo + '%</span>' +
+                '<span style="font-size:14px; font-weight:700; color:#fff;">' + getEmoji(riesgo) + ' ' + riesgo + '%</span>' +
               '</div>' +
               '<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);">' +
                 '<span style="font-size:13px; font-weight:600; color:var(--text-secondary);">Control Emocional</span>' +
-                '<span style="font-size:14px; font-weight:700; color:\' + getDisciplineColor(emocional) + \';">' + getDisciplineEmoji(emocional) + ' ' + emocional + '%</span>' +
+                '<span style="font-size:14px; font-weight:700; color:#fff;">' + getEmoji(emocional) + ' ' + emocional + '%</span>' +
               '</div>' +
             '</div>' +
-            '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; background:rgba(255, 205, 27, 0.02); border:1px dashed var(--border-bronze); border-radius:14px; min-height:110px;">' +
+            '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; background:rgba(255, 205, 27, 0.02); border:1px dashed var(--border-bronze); border-radius:14px; height:100%; min-height:110px;">' +
               '<div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Discipline Score Promedio</div>' +
               '<div style="font-size:32px; font-weight:800; color:var(--yellow); font-family:var(--mono);">🏆 ' + goldfx + '<span style="font-size:16px; font-weight:500; color:var(--text-muted);">/100</span></div>' +
             '</div>' +
-          '</div>' +
-        '</div>';
-        return html;
+          '</div>';
       }
 
-      function openDayDetail(date) {
-        var dayTrades = trades.filter(function(t) { return t.date === date && t.asset !== 'INACCIÓN'; });
-        if (dayTrades.length === 0) return;
-        
-        var tradeLogBtn = document.querySelector(".nav-item[onclick*='tradelog']");
-        if (tradeLogBtn) {
-          goTo('tradelog', tradeLogBtn);
-          setTimeout(function() {
-            showTradePanel(dayTrades[0].id);
-          }, 100);
-        } else {
-          openTradeDetail(dayTrades[0].id);
+      let activeDiscTimeframe = 'all';
+      window.changeDiscTimeframe = function(tf, event) {
+        if(event) {
+          var parent = event.currentTarget.parentElement;
+          parent.querySelectorAll('.tog-btn').forEach(function(b) { b.classList.remove('active'); });
+          event.currentTarget.classList.add('active');
         }
-      }
-
-      function renderAll() {
-        if (typeof renderDashboard === 'function') renderDashboard();
-        if (typeof renderTrades === 'function') renderTrades();
-        if (typeof renderCalendar === 'function') renderCalendar();
-        if (typeof renderStats === 'function') renderStats();
-        if (typeof renderAnalisis === 'function') renderAnalisis();
-        if (typeof renderComparar === 'function') renderComparar();
-        if (typeof renderAccounts === 'function') renderAccounts();
+        activeDiscTimeframe = tf;
+        updateDisciplineCard();
       }
 
       window.updateDisciplineCard = function() {
@@ -5232,14 +5116,13 @@
             return new Date(t.date + 'T00:00:00') >= cutoff;
           });
         }
-        var container = document.getElementById('discipline-breakdown-container');
+        var container = document.getElementById('discipline-breakdown-content');
         if (container) {
           container.innerHTML = getDisciplineBreakdown(filtered);
         }
       }
 
       function renderDashboard() {
-
         const trades = getFilteredTrades();
         const page = document.getElementById('page-dashboard');
         if (!trades.length) {
@@ -5633,7 +5516,7 @@
           var discHtml = discVal !== null ? '<span style="font-weight:700;color:' + discCol + ';font-family:var(--mono)">🎯 ' + Math.round(discVal) + '%</span>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
           
           var photoHtml = t.photo ? '<img class="trade-thumb" src="' + t.photo + '" alt="" data-photo="1" onclick="openLightboxFromImg(this)">' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
-          var notesHtml = t.notes ? '<button class="ta n" title="Ver notas" onclick="openNotesModal(\'' + t.notes.replace(/'/g, "\\'").replace(/\\n/g, ' ') + '\')">📝</button>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
+          var notesHtml = t.notes ? '<button class="ta n" title="Ver notas" onclick="openNotesModal(\'' + t.notes.replace(/'/g, "\\'").replace(/\n/g, ' ') + '\')">📝</button>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
           var safeId = t.id;
           return '<tr style="cursor:pointer;" id="tr-' + safeId + '" onclick="showTradePanel(\'' + safeId + '\')">' +
             '<td style="font-family:var(--mono);font-size:12px;color:var(--text-muted)">' + t.date + '</td>' +
@@ -5723,9 +5606,7 @@
           if(allDates[sortedDates[si]].hasJournal) streakJournal++; else break;
         }
         // Risk streak counts consecutive trades (not days) - Excluir inacción
-        var allTradesSorted = trades.filter(function(t) { return t.asset !== 'INACCIÓN'; }).sort(function(a,b){
-          return new Date(b.date + 'T' + (b.entryTime && b.entryTime !== '—' ? b.entryTime : '00:00:00')) - new Date(a.date + 'T' + (a.entryTime && a.entryTime !== '—' ? a.entryTime : '00:00:00'));
-        });
+        var allTradesSorted = trades.filter(function(t) { return t.asset !== 'INACCIÓN'; }).sort(function(a,b){ return a.date < b.date ? 1 : -1; });
         for(var si=0; si<allTradesSorted.length; si++){
           var ta = allTradesSorted[si];
           if(ta.audit && !ta.audit['aud-risk-sobreapal'] && !ta.audit['aud-risk-moversl'] && !ta.audit['aud-risk-aumentar']) streakRisk++; else break;
@@ -5900,7 +5781,7 @@
         closeModal('inaction-modal'); renderAll();
       }
       // ── STATS ──
-            function renderStats() {
+      function renderStats() {
         var trades;
         if (stMode === 'global') {
           updateStMonthTitle();
@@ -5910,7 +5791,6 @@
           trades = getStFilteredTrades();
         }
         const s = computeStats(trades);
-        
         // Update header summary pills
         var hPnl = document.getElementById('st-hdr-pnl');
         var hWr = document.getElementById('st-hdr-wr');
@@ -5918,7 +5798,6 @@
         if (hPnl) { hPnl.textContent = (s.netPnl >= 0 ? '+' : '') + '$' + s.netPnl.toFixed(2); hPnl.style.color = s.netPnl >= 0 ? 'var(--green)' : 'var(--red)'; }
         if (hWr) { hWr.textContent = s.winRate.toFixed(1) + '%'; hWr.style.color = s.winRate >= 50 ? 'var(--green)' : 'var(--red)'; }
         if (hCnt) hCnt.textContent = s.total;
-        
         function sv(id, html) { var el = document.getElementById(id); if (el) el.innerHTML = html; }
         sv('st-total', s.total);
         sv('st-wins', '<span class="badge-0 g">' + s.wins + '</span>');
@@ -6021,7 +5900,6 @@
             return '<div class="stat-row"><span class="stat-row-label">' + e[0] + ' <span style="color:var(--text-muted);font-size:11px">' + wr + '% WR (' + e[1].count + ')</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + '</span></div>'; 
           }).join('') : '<div class="chart-placeholder">Sin datos</div>'); 
         }
-
         // By Entry Type
         var entryTypeCard = document.getElementById('st-by-entry-type');
         if (entryTypeCard) {
@@ -6036,118 +5914,292 @@
           }).join('') : '<div class="chart-placeholder">Sin datos</div>');
         }
 
-        // Monthly Performance table in st-by-plan card
+        // Discipline Score Average
         var planCard = document.getElementById('st-by-plan');
         if (planCard) {
-          var totalInitBal = accounts.reduce(function(sum,a){ return sum + a.initialBalance; }, 0) || 1;
-          var monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-          var yearMap = {};
-          var yearDiscMap = {};
-          
-          var allTradesForSt = getFilteredTrades();
-          allTradesForSt.forEach(function(t){
-            if (t.asset === 'INACCIÓN') return;
-            var yr = t.date.slice(0,4), mo = parseInt(t.date.slice(5,7),10)-1;
-            if (!yearMap[yr]) yearMap[yr] = {};
-            if (!yearMap[yr][mo]) yearMap[yr][mo] = 0;
-            yearMap[yr][mo] += t.pnl;
+          var scored = trades.filter(function(t){ return t.discipline_score != null; });
+          var avgDisc = scored.length ? scored.reduce(function(s,t){ return s + t.discipline_score; }, 0) / scored.length : 0;
+          var avgColor = avgDisc >= 80 ? '#ffcd1b' : (avgDisc >= 50 ? 'var(--text-primary)' : '#ef4444');
+          var html = '<div class="stats-card-title">🎯 Disciplina & Psicología</div>';
+          html += '<div style="text-align:center;padding:20px 0;">';
+          html += '<div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Promedio de Disciplina</div>';
+          html += '<div style="font-size:48px;font-weight:900;color:' + avgColor + ';font-family:var(--mono);line-height:1;">' + (scored.length ? avgDisc.toFixed(1) + '%' : '—') + '</div>';
+          html += '<div style="font-size:11px;color:var(--text-muted);margin-top:8px;">' + scored.length + ' de ' + trades.length + ' trades evaluados</div>';
+          html += '</div>';
 
+          // Breakdown by emotion
+          var emotionMap = {};
+          trades.forEach(function(t){
+            if (t.asset === 'INACCIÓN') return;
+            if(t.emotion) {
+              if(!emotionMap[t.emotion]) emotionMap[t.emotion] = {count:0, pnl:0};
+              emotionMap[t.emotion].count++;
+              emotionMap[t.emotion].pnl += t.pnl;
+            }
+          });
+          var emotions = Object.entries(emotionMap).sort(function(a,b){ return b[1].count - a[1].count; });
+          if(emotions.length) {
+            var emoIcons = { 'Confianza':'😌', 'Miedo':'😰', 'Impaciencia':'😤', 'Frustración':'😡', 'Neutral':'🤔' };
+            html += '<div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;border-top:1px solid var(--border);padding-top:12px;">Emociones Registradas</div>';
+            html += emotions.map(function(e){
+              var pColor = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)';
+              return '<div class="stat-row"><span class="stat-row-label">' + (emoIcons[e[0]]||'') + ' ' + e[0] + ' (' + e[1].count + ')</span><span class="stat-row-val" style="color:' + pColor + ';font-weight:700">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + '</span></div>';
+            }).join('');
+          }
+          planCard.innerHTML = html;
+        }
+      }
+
+      // ── ACCOUNTS ──
+      function renderAccounts() {
+        const grid = document.getElementById('accounts-grid'); if (!grid) return;
+        grid.innerHTML = accounts.map(function (acct) {
+          var at = trades.filter(function (t) { return t.account === acct.name; }), as = computeStats(at);
+          var bal = acct.initialBalance + as.netPnl, pc2 = as.netPnl >= 0 ? 'var(--green)' : 'var(--red)';
+          var sbEl = document.getElementById('sb-bal-' + acct.name.replace(/\s/g, '_'));
+          if (sbEl) sbEl.textContent = '$' + bal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          var safeId = acct.id;
+          return '<div class="ac-card">' +
+            '<div class="ac-hdr">' +
+            '<div class="ac-ico ' + acct.iconClass + '">' + acct.icon + '</div>' +
+            '<div class="ac-ttl"><div class="ac-name">' + acct.name + '</div><div class="ac-sub">' + acct.type + ' · ' + acct.broker + '</div></div>' +
+            '<div class="ac-actions">' +
+            '<button class="ta e" title="Editar" data-id="' + safeId + '" onclick="openEditAccount(this.dataset.id)">✏️</button>' +
+            '<button class="ta d" title="Eliminar" data-id="' + safeId + '" onclick="openDeleteAccount(this.dataset.id)">🗑️</button>' +
+            '</div>' +
+            '</div>' +
+            '<div class="ac-stats">' +
+            '<div class="ac-stat"><div class="ac-stat-l">Saldo Inicial</div><div class="ac-stat-v">$' + acct.initialBalance.toLocaleString() + '</div></div>' +
+            '<div class="ac-stat"><div class="ac-stat-l">Balance Actual</div><div class="ac-stat-v" style="color:' + pc2 + '">$' + bal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</div></div>' +
+            '<div class="ac-stat"><div class="ac-stat-l">Net P&L</div><div class="ac-stat-v ' + (as.netPnl >= 0 ? 'green' : 'red') + '">' + (as.netPnl >= 0 ? '+' : '') + '$' + as.netPnl.toFixed(2) + '</div></div>' +
+            '<div class="ac-stat"><div class="ac-stat-l">Win Rate</div><div class="ac-stat-v ' + (as.winRate >= 50 ? 'green' : 'red') + '">' + as.winRate.toFixed(1) + '%</div></div>' +
+            '<div class="ac-stat full"><div class="ac-stat-l">Trades</div><div class="ac-stat-v">' + as.total + '</div></div>' +
+            '</div></div>';
+        }).join('');
+      }
+
+      // ── ANÁLISIS (Heatmap + Streak) ──
+      function renderAnalisis() {
+        updateAnMonthTitle();
+        const el = document.getElementById('analisis-content'); if (!el) return;
+        var trades;
+        if (anMode === 'global') {
+          trades = getFilteredTrades();
+        } else {
+          trades = getAnFilteredTrades();
+        }
+        // Update header summary
+        var aHPnl = document.getElementById('an-hdr-pnl');
+        var aHCnt = document.getElementById('an-hdr-count');
+        var tmpS = computeStats(trades);
+        if (aHPnl) { aHPnl.textContent = (tmpS.netPnl >= 0 ? '+' : '') + '$' + tmpS.netPnl.toFixed(2); aHPnl.style.color = tmpS.netPnl >= 0 ? 'var(--green)' : 'var(--red)'; }
+        if (aHCnt) aHCnt.textContent = tmpS.total;
+        if (!trades.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔥</div><div class="empty-title">Sin trades en este mes</div></div>'; return; }
+        const s = computeStats(trades);
+        const liveColor = s.liveType === 'w' ? 'g' : 'r';
+        const liveLabel = s.liveType === 'w' ? 'Racha ganadora activa' : 'Racha perdedora activa';
+
+        // Heatmap data: hour × day
+        const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        const hmap = {}; // hmap[dow][hour] = {pnl, count}
+        trades.forEach(function (t) {
+          if (!t.entryTime || t.entryTime === '—') return;
+          var dow = new Date(t.date + 'T00:00:00').getDay();
+          var hr = parseInt(t.entryTime.split(':')[0], 10); if (isNaN(hr)) return;
+          if (!hmap[dow]) hmap[dow] = {};
+          if (!hmap[dow][hr]) hmap[dow][hr] = { pnl: 0, count: 0 };
+          hmap[dow][hr].pnl += t.pnl; hmap[dow][hr].count++;
+        });
+        // Find max abs for color scale
+        var maxAbs = 0;
+        Object.values(hmap).forEach(function (dayData) { Object.values(dayData).forEach(function (cell) { if (Math.abs(cell.pnl) > maxAbs) maxAbs = Math.abs(cell.pnl); }); });
+        if (maxAbs === 0) maxAbs = 1;
+
+        // Build heatmap HTML
+        var headerRow = '<div></div>';
+        for (var h = 0; h < 24; h++) headerRow += '<div class="hm-hour">' + h + 'h</div>';
+        var rows = days.map(function (dayName, dow) {
+          var row = '<div class="hm-label">' + dayName + '</div>';
+          for (var h = 0; h < 24; h++) {
+            var cell = hmap[dow] && hmap[dow][h];
+            if (cell && cell.count > 0) {
+              var intensity = Math.min(0.9, 0.2 + Math.abs(cell.pnl) / maxAbs * 0.7);
+              var bg = cell.pnl >= 0 ? 'rgba(255,205,27,' + intensity + ')' : 'rgba(239,68,68,' + intensity + ')';
+              var tip = (cell.pnl >= 0 ? '+' : '') + '$' + cell.pnl.toFixed(0) + ' (' + cell.count + ')';
+              row += '<div class="hm-cell" style="background:' + bg + '" title="' + dayName + ' ' + h + 'h: ' + tip + '"></div>';
+            } else {
+              row += '<div class="hm-cell" style="background:var(--bg-card-inner)"></div>';
+            }
+          }
+          return row;
+        }).join('');
+
+        // ── Monthly Performance Table data ──
+        var allTradesForAn = getFilteredTrades();
+        var totalInitBal = accounts.reduce(function(sum,a){ return sum + a.initialBalance; }, 0) || 1;
+        var monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        var yearMap = {};
+        var yearDiscMap = {};
+        allTradesForAn.forEach(function(t){
+          var yr = t.date.slice(0,4), mo = parseInt(t.date.slice(5,7),10)-1;
+          if (!yearMap[yr]) yearMap[yr] = {};
+          if (!yearMap[yr][mo]) yearMap[yr][mo] = 0;
+          yearMap[yr][mo] += t.pnl;
+
+          if (t.asset !== 'INACCIÓN') {
             if (!yearDiscMap[yr]) yearDiscMap[yr] = {};
             if (!yearDiscMap[yr][mo]) yearDiscMap[yr][mo] = [];
             if (t.discipline_score != null && t.discipline_score !== "") {
               yearDiscMap[yr][mo].push(parseFloat(t.discipline_score));
             }
-          });
-          
-          var years = Object.keys(yearMap).sort();
-          var monthPerfRows = years.map(function(yr){
-            var ytd = 0;
-            var cells = monthNames.map(function(mn, mi){
-              var pnl = yearMap[yr][mi];
-              if (pnl === undefined) return '<td style="color:var(--text-muted);text-align:center;">—</td>';
-              ytd += pnl;
-              var pct = (pnl / totalInitBal * 100);
-              var col = pct >= 0 ? 'var(--green)' : 'var(--red)';
-              
-              var scores = (yearDiscMap[yr] && yearDiscMap[yr][mi]) ? yearDiscMap[yr][mi] : [];
-              var avgDisc = scores.length ? Math.round(scores.reduce(function(a,b){return a+b;},0)/scores.length) : null;
-              var discHtml = avgDisc !== null ? '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;font-weight:500;">🎯 ' + avgDisc + '%</div>' : '';
+          }
+        });
+        var years = Object.keys(yearMap).sort();
+        var monthPerfRows = years.map(function(yr){
+          var ytd = 0;
+          var cells = monthNames.map(function(mn, mi){
+            var pnl = yearMap[yr][mi];
+            if (pnl === undefined) return '<td style="color:var(--text-muted);text-align:center;">—</td>';
+            ytd += pnl;
+            var pct = (pnl / totalInitBal * 100);
+            var col = pct >= 0 ? 'var(--green)' : 'var(--red)';
+            
+            var scores = (yearDiscMap[yr] && yearDiscMap[yr][mi]) ? yearDiscMap[yr][mi] : [];
+            var avgDisc = scores.length ? Math.round(scores.reduce(function(a,b){return a+b;},0)/scores.length) : null;
+            var discHtml = avgDisc !== null ? '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;font-weight:500;">🎯 ' + avgDisc + '%</div>' : '';
 
-              return '<td style="text-align:center;padding:10px 6px;vertical-align:middle;">' +
-                       '<div style="font-family:var(--mono);font-size:13px;font-weight:700;color:'+col+'">' + (pct>=0?'+':'') + pct.toFixed(2) + '%</div>' +
-                       discHtml +
-                     '</td>';
-            }).join('');
-            var ytdPct = (ytd / totalInitBal * 100);
-            var ytdCol = ytdPct >= 0 ? 'var(--green)' : 'var(--red)';
-            var ytdCell = '<td style="text-align:center;font-family:var(--mono);font-size:13px;font-weight:800;color:'+ytdCol+';padding:10px 8px;border-left:1px solid var(--border);">' + (ytdPct>=0?'+':'') + ytdPct.toFixed(2) + '%</td>';
-            return '<tr><td style="font-weight:800;font-size:14px;color:var(--text-primary);padding:10px 12px;white-space:nowrap;">'+yr+'</td>' + cells + ytdCell + '</tr>';
+            return '<td style="text-align:center;padding:10px 6px;vertical-align:middle;">' +
+                     '<div style="font-family:var(--mono);font-size:13px;font-weight:700;color:'+col+'">' + (pct>=0?'+':'') + pct.toFixed(2) + '%</div>' +
+                     discHtml +
+                   '</td>';
           }).join('');
+          var ytdPct = (ytd / totalInitBal * 100);
+          var ytdCol = ytdPct >= 0 ? 'var(--green)' : 'var(--red)';
+          var ytdCell = '<td style="text-align:center;font-family:var(--mono);font-size:13px;font-weight:800;color:'+ytdCol+';padding:10px 8px;border-left:1px solid var(--border);">' + (ytdPct>=0?'+':'') + ytdPct.toFixed(2) + '%</td>';
+          return '<tr><td style="font-weight:800;font-size:14px;color:var(--text-primary);padding:10px 12px;white-space:nowrap;">'+yr+'</td>' + cells + ytdCell + '</tr>';
+        }).join('');
 
-          var html = '<div class="stats-card-title" style="margin-bottom:14px;">Evolución Mensual (Rendimiento)</div>' +
-            '<div style="overflow-x:auto;">' +
-            '<table style="width:100%;border-collapse:collapse;min-width:700px;">' +
-            '<thead><tr>' +
-            '<th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border);">Año</th>' +
-            monthNames.map(function(m){ return '<th style="text-align:center;padding:8px 6px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border);">'+m+'</th>'; }).join('') +
-            '<th style="text-align:center;padding:8px 8px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--green);text-transform:uppercase;border-bottom:1px solid var(--border);border-left:1px solid var(--border);">YTD</th>' +
-            '</tr></thead>' +
-            '<tbody>' + (monthPerfRows || '<tr><td colspan="14" style="text-align:center;padding:20px;color:var(--text-muted);">Sin datos</td></tr>') + '</tbody>' +
-            '</table></div>';
-          
-          planCard.innerHTML = html;
-        }
+        // ── Frequency data ──
+        var dowCount = [0,0,0,0,0,0,0]; // Sun–Sat
+        var weekCount = {}; // ISO week → count
+        var monCount = [0,0,0,0,0,0,0,0,0,0,0,0]; // Jan–Dec
+        allTradesForAn.forEach(function(t){
+          var d = new Date(t.date+'T00:00:00');
+          dowCount[d.getDay()]++;
+          monCount[d.getMonth()]++;
+          // ISO week
+          var tmp = new Date(d); tmp.setHours(0,0,0,0);
+          tmp.setDate(tmp.getDate()+4-(tmp.getDay()||7));
+          var yw = tmp.getFullYear()*100 + Math.ceil(((tmp-new Date(tmp.getFullYear(),0,1))/86400000+1)/7);
+          weekCount[yw] = (weekCount[yw]||0)+1;
+        });
+        var weekVals = Object.values(weekCount);
+        var totalTrades = allTradesForAn.length;
+        var avgDay  = totalTrades > 0 ? (totalTrades / Math.max(Object.keys(yearMap).length * 365, 1) * 7).toFixed(1) : '0';
+        var avgWeek = weekVals.length > 0 ? (weekVals.reduce(function(a,b){return a+b;},0)/weekVals.length).toFixed(1) : '0';
+        var avgMon  = totalTrades > 0 ? (totalTrades / Math.max(years.length * 12, 1)).toFixed(1) : '0';
+
+        el.innerHTML =
+          // Bloque 1: Cerebro GoldFX (Hallazgos)
+          '<div class="stats-card" style="background:#0a0a0a; border:1px solid var(--border-bronze); border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">' +
+            '<div style="margin-bottom:16px; font-size:15px; font-weight:700; color:var(--yellow); display:flex; align-items:center; gap:8px; text-transform:uppercase; letter-spacing:1px;">' +
+              '🧠 Cerebro GoldFX: Hallazgos' +
+            '</div>' +
+            '<div>' + generateInsights(trades) + '</div>' +
+          '</div>' +
+
+          // Bloque 2: Desglose de Disciplina
+          '<div class="stats-card" style="background:#0a0a0a; border:1px solid var(--border-bronze); border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">' +
+              '<div style="font-size:15px; font-weight:700; color:var(--yellow); display:flex; align-items:center; gap:8px; text-transform:uppercase; letter-spacing:1px;">' +
+                '🎯 Análisis de Disciplina' +
+              '</div>' +
+              '<div class="toggle-group" id="disc-tf-group">' +
+                '<button class="tog-btn active" onclick="changeDiscTimeframe(\'all\', event)">Histórico</button>' +
+                '<button class="tog-btn" onclick="changeDiscTimeframe(\'30d\', event)">30 Días</button>' +
+                '<button class="tog-btn" onclick="changeDiscTimeframe(\'7d\', event)">7 Días</button>' +
+                '<button class="tog-btn" onclick="changeDiscTimeframe(\'last\', event)">Último Trade</button>' +
+              '</div>' +
+            '</div>' +
+            '<div id="discipline-breakdown-content"></div>' +
+          '</div>' +
+
+          // Streaks
+          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:18px;">' +
+          '<div class="stats-card" style="text-align:center;padding:18px;">' +
+          '<div class="streak-num ' + liveColor + '">' + s.liveStreak + '</div>' +
+          '<div class="streak-lbl" style="margin-top:6px">' + liveLabel + '</div>' +
+          '</div>' +
+          '<div class="stats-card" style="text-align:center;padding:18px;">' +
+          '<div class="streak-num g">' + s.bestWinStreak + '</div>' +
+          '<div class="streak-lbl" style="margin-top:6px">Mejor racha ganadora</div>' +
+          '</div>' +
+          '<div class="stats-card" style="text-align:center;padding:18px;">' +
+          '<div class="streak-num r">' + s.worstLossStreak + '</div>' +
+          '<div class="streak-lbl" style="margin-top:6px">Peor racha perdedora</div>' +
+          '</div>' +
+          '<div class="stats-card" style="text-align:center;padding:18px;">' +
+          '<div class="streak-num y">' + s.total + '</div>' +
+          '<div class="streak-lbl" style="margin-top:6px">Total trades</div>' +
+          '</div>' +
+          '</div>' +
+          // Heatmap
+          '<div class="stats-card" style="margin-bottom:18px;">' +
+          '<div class="stats-card-title">Heatmap: P&L por Hora y Día</div>' +
+          '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">Basado en hora de entrada · Verde = ganancia · Rojo = pérdida · Más intenso = mayor monto</div>' +
+          '<div class="heatmap-wrap"><div class="heatmap-grid">' + headerRow + rows + '</div></div>' +
+          '</div>' +
+          // Monthly Performance
+          '<div class="stats-card" style="margin-bottom:18px;overflow-x:auto;">' +
+          '<div class="stats-card-title" style="margin-bottom:14px;">Rendimiento mensual</div>' +
+          '<table style="width:100%;border-collapse:collapse;min-width:700px;">' +
+          '<thead><tr>' +
+          '<th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border);">Año</th>' +
+          monthNames.map(function(m){ return '<th style="text-align:center;padding:8px 6px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border);">'+m+'</th>'; }).join('') +
+          '<th style="text-align:center;padding:8px 8px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--green);text-transform:uppercase;border-bottom:1px solid var(--border);border-left:1px solid var(--border);">YTD</th>' +
+          '</tr></thead>' +
+          '<tbody>' + (monthPerfRows || '<tr><td colspan="14" style="text-align:center;padding:20px;color:var(--text-muted);">Sin datos</td></tr>') + '</tbody>' +
+          '</table></div>' +
+          // Trade Frequency
+          '<div style="margin-bottom:8px;">' +
+          '<div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:14px;">Frecuencia de trades</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">' +
+          // By day of week
+          '<div class="stats-card">' +
+          '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por día de semana</div>' +
+          '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgDay + ' trades/día</div>' +
+          '<canvas id="freq-dow-canvas" height="130" style="width:100%;display:block;"></canvas>' +
+          '</div>' +
+          // By week
+          '<div class="stats-card">' +
+          '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por semana</div>' +
+          '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgWeek + ' trades/semana</div>' +
+          '<canvas id="freq-week-canvas" height="130" style="width:100%;display:block;"></canvas>' +
+          '</div>' +
+          // By month
+          '<div class="stats-card">' +
+          '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por mes</div>' +
+          '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgMon + ' trades/mes</div>' +
+          '<canvas id="freq-mon-canvas" height="130" style="width:100%;display:block;"></canvas>' +
+          '</div>' +
+          '</div></div>';
+
+        // Draw frequency bar charts
+        requestAnimationFrame(function(){
+          var dowLabels = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+          var dowData   = [dowCount[1],dowCount[2],dowCount[3],dowCount[4],dowCount[5],dowCount[6],dowCount[0]];
+          drawFreqBars('freq-dow-canvas', dowLabels, dowData);
+
+          var wkSorted = Object.keys(weekCount).sort();
+          var wkLabels = wkSorted.map(function(k){ return String(parseInt(String(k).slice(-2),10)); });
+          var wkData   = wkSorted.map(function(k){ return weekCount[k]; });
+          drawFreqBars('freq-week-canvas', wkLabels, wkData);
+
+          drawFreqBars('freq-mon-canvas', ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'], monCount);
+        });
       }
 
-function renderAccounts() {
-        const grid = document.getElementById('accounts-grid'); if (!grid) return;
-        try {
-          grid.innerHTML = accounts.map(function (acct) {
-            try {
-              var at = trades.filter(function (t) { return t.account === acct.name; }), as = computeStats(at);
-              var bal = (parseFloat(acct.initialBalance) || 0) + (as.netPnl || 0);
-              var pc2 = (as.netPnl || 0) >= 0 ? 'var(--green)' : 'var(--red)';
-              
-              var nameForId = (acct.name || '').replace(/\s/g, '_');
-              var sbEl = document.getElementById('sb-bal-' + nameForId);
-              if (sbEl) {
-                sbEl.textContent = '$' + bal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-              }
-              
-              var safeId = acct.id || '';
-              var initBalVal = parseFloat(acct.initialBalance) || 0;
-              var winRateVal = parseFloat(as.winRate) || 0;
-              var netPnlVal = parseFloat(as.netPnl) || 0;
-              
-              return '<div class="ac-card">' +
-                '<div class="ac-hdr">' +
-                '<div class="ac-ico ' + (acct.iconClass || '') + '">' + (acct.icon || '💼') + '</div>' +
-                '<div class="ac-ttl"><div class="ac-name">' + (acct.name || 'Sin nombre') + '</div><div class="ac-sub">' + (acct.type || '') + ' · ' + (acct.broker || '') + '</div></div>' +
-                '<div class="ac-actions">' +
-                '<button class="ta e" title="Editar" data-id="' + safeId + '" onclick="openEditAccount(this.dataset.id)">✏️</button>' +
-                '<button class="ta d" title="Eliminar" data-id="' + safeId + '" onclick="openDeleteAccount(this.dataset.id)">🗑️</button>' +
-                '</div>' +
-                '</div>' +
-                '<div class="ac-stats">' +
-                '<div class="ac-stat"><div class="ac-stat-l">Saldo Inicial</div><div class="ac-stat-v">$' + initBalVal.toLocaleString() + '</div></div>' +
-                '<div class="ac-stat"><div class="ac-stat-l">Balance Actual</div><div class="ac-stat-v" style="color:' + pc2 + '">$' + bal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</div></div>' +
-                '<div class="ac-stat"><div class="ac-stat-l">Net P&L</div><div class="ac-stat-v ' + (netPnlVal >= 0 ? 'green' : 'red') + '">' + (netPnlVal >= 0 ? '+' : '') + '$' + netPnlVal.toFixed(2) + '</div></div>' +
-                '<div class="ac-stat"><div class="ac-stat-l">Win Rate</div><div class="ac-stat-v ' + (winRateVal >= 50 ? 'green' : 'red') + '">' + winRateVal.toFixed(1) + '%</div></div>' +
-                '<div class="ac-stat full"><div class="ac-stat-l">Trades</div><div class="ac-stat-v">' + (as.total || 0) + '</div></div>' +
-                '</div></div>';
-            } catch (innerErr) {
-              console.error("Error rendering card for account:", acct, innerErr);
-              return '<div class="ac-card"><div style="padding:15px;color:var(--red);font-size:12px;">Error al renderizar: ' + innerErr.message + '</div></div>';
-            }
-          }).join('');
-        } catch (err) {
-          console.error("Error in renderAccounts:", err);
-          grid.innerHTML = '<div style="color:var(--red);padding:20px;font-weight:600;">Error al cargar las cuentas: ' + err.message + '</div>';
-        }
-      }
-
-      // ── ANÁLISIS (Heatmap + Streak) ──
-                  function drawFreqBars(canvasId, labels, data) {
+      function drawFreqBars(canvasId, labels, data) {
         var canvas = document.getElementById(canvasId); if (!canvas) return;
         var dpr = window.devicePixelRatio || 1;
         var W = canvas.offsetWidth, H = 130;
@@ -6205,176 +6257,7 @@ function renderAccounts() {
         });
       }
 
-function renderAnalisis() {
-        updateAnMonthTitle();
-        const el = document.getElementById('analisis-content'); if (!el) return;
-        var trades;
-        if (anMode === 'global') {
-          trades = getFilteredTrades();
-        } else {
-          trades = getAnFilteredTrades();
-        }
-        
-        // Update header summary
-        var aHPnl = document.getElementById('an-hdr-pnl');
-        var aHCnt = document.getElementById('an-hdr-count');
-        var tmpS = computeStats(trades);
-        if (aHPnl) { aHPnl.textContent = (tmpS.netPnl >= 0 ? '+' : '') + '$' + tmpS.netPnl.toFixed(2); aHPnl.style.color = tmpS.netPnl >= 0 ? 'var(--green)' : 'var(--red)'; }
-        if (aHCnt) aHCnt.textContent = tmpS.total;
-        
-        var operativeTrades = trades.filter(function (t) { return t.asset !== 'INACCIÓN'; });
-        if (!operativeTrades.length) { 
-          el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔥</div><div class="empty-title">Sin trades en este mes</div></div>'; 
-          return; 
-        }
-        
-        const s = computeStats(trades);
-        const liveColor = s.liveType === 'w' ? 'g' : 'r';
-        const liveLabel = s.liveType === 'w' ? 'Racha ganadora activa' : 'Racha perdedora activa';
-
-        // Heatmap data: hour × day
-        const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-        const hmap = {}; // hmap[dow][hour] = {pnl, count}
-        trades.forEach(function (t) {
-          if (t.asset === 'INACCIÓN') return;
-          if (!t.entryTime || t.entryTime === '—') return;
-          var dow = new Date(t.date + 'T00:00:00').getDay();
-          var hr = parseInt(t.entryTime.split(':')[0], 10); if (isNaN(hr)) return;
-          if (!hmap[dow]) hmap[dow] = {};
-          if (!hmap[dow][hr]) hmap[dow][hr] = { pnl: 0, count: 0 };
-          hmap[dow][hr].pnl += t.pnl; hmap[dow][hr].count++;
-        });
-        
-        var maxAbs = 0;
-        Object.values(hmap).forEach(function (dayData) { Object.values(dayData).forEach(function (cell) { if (Math.abs(cell.pnl) > maxAbs) maxAbs = Math.abs(cell.pnl); }); });
-        if (maxAbs === 0) maxAbs = 1;
-
-        // Build heatmap HTML
-        var headerRow = '<div></div>';
-        for (var h = 0; h < 24; h++) headerRow += '<div class="hm-hour">' + h + 'h</div>';
-        var rows = days.map(function (dayName, dow) {
-          var row = '<div class="hm-label">' + dayName + '</div>';
-          for (var h = 0; h < 24; h++) {
-            var cell = hmap[dow] && hmap[dow][h];
-            if (cell && cell.count > 0) {
-              var intensity = Math.min(0.9, 0.2 + Math.abs(cell.pnl) / maxAbs * 0.7);
-              var bg = cell.pnl >= 0 ? 'rgba(255,205,27,' + intensity + ')' : 'rgba(239,68,68,' + intensity + ')';
-              var tip = (cell.pnl >= 0 ? '+' : '') + '$' + cell.pnl.toFixed(0) + ' (' + cell.count + ')';
-              row += '<div class="hm-cell" style="background:' + bg + '" title="' + dayName + ' ' + h + 'h: ' + tip + '"></div>';
-            } else {
-              row += '<div class="hm-cell" style="background:var(--bg-card-inner)"></div>';
-            }
-          }
-          return row;
-        }).join('');
-
-        // Trade frequency metrics
-        var allTradesForAn = getFilteredTrades();
-        var dowCount = [0,0,0,0,0,0,0]; // Sun–Sat
-        var weekCount = {}; // ISO week → count
-        var monCount = [0,0,0,0,0,0,0,0,0,0,0,0]; // Jan–Dec
-        var yearMap = {};
-        var yearsSet = {};
-        allTradesForAn.forEach(function(t){
-          if (t.asset === 'INACCIÓN') return;
-          var d = new Date(t.date+'T00:00:00');
-          dowCount[d.getDay()]++;
-          monCount[d.getMonth()]++;
-          
-          var yr = t.date.slice(0,4);
-          yearsSet[yr] = true;
-          if (!yearMap[yr]) yearMap[yr] = {};
-          yearMap[yr][d.getMonth()] = true;
-          
-          // ISO week
-          var tmp = new Date(d); tmp.setHours(0,0,0,0);
-          tmp.setDate(tmp.getDate()+4-(tmp.getDay()||7));
-          var yw = tmp.getFullYear()*100 + Math.ceil(((tmp-new Date(tmp.getFullYear(),0,1))/86400000+1)/7);
-          weekCount[yw] = (weekCount[yw]||0)+1;
-        });
-        
-        var weekVals = Object.values(weekCount);
-        var totalTrades = allTradesForAn.filter(t => t.asset !== 'INACCIÓN').length;
-        var numYears = Math.max(Object.keys(yearsSet).length, 1);
-        var avgDay  = totalTrades > 0 ? (totalTrades / (numYears * 365) * 7).toFixed(1) : '0';
-        var avgWeek = weekVals.length > 0 ? (weekVals.reduce(function(a,b){return a+b;},0)/weekVals.length).toFixed(1) : '0';
-        var avgMon  = totalTrades > 0 ? (totalTrades / (numYears * 12)).toFixed(1) : '0';
-
-        el.innerHTML =
-          // Bloque 1: Cerebro GoldFX (Hallazgos)
-          generateInsights(trades) +
-          
-          // Bloque 2: Desglose de Disciplina
-          getDisciplineBreakdown(trades) +
-          
-          // Streaks (Rachas)
-          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:18px;">' +
-            '<div class="stats-card" style="text-align:center;padding:18px;">' +
-              '<div class="streak-num ' + liveColor + '">' + s.liveStreak + '</div>' +
-              '<div class="streak-lbl" style="margin-top:6px">' + liveLabel + '</div>' +
-            '</div>' +
-            '<div class="stats-card" style="text-align:center;padding:18px;">' +
-              '<div class="streak-num g">' + s.bestWinStreak + '</div>' +
-              '<div class="streak-lbl" style="margin-top:6px">Mejor racha ganadora</div>' +
-            '</div>' +
-            '<div class="stats-card" style="text-align:center;padding:18px;">' +
-              '<div class="streak-num r">' + s.worstLossStreak + '</div>' +
-              '<div class="streak-lbl" style="margin-top:6px">Peor racha perdedora</div>' +
-            '</div>' +
-            '<div class="stats-card" style="text-align:center;padding:18px;">' +
-              '<div class="streak-num y">' + s.total + '</div>' +
-              '<div class="streak-lbl" style="margin-top:6px">Total trades</div>' +
-            '</div>' +
-          '</div>' +
-          
-          // Heatmap
-          '<div class="stats-card" style="margin-bottom:18px;">' +
-            '<div class="stats-card-title">Heatmap: P&L por Hora y Día</div>' +
-            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">Basado en hora de entrada · Verde = ganancia · Rojo = pérdida · Más intenso = mayor monto</div>' +
-            '<div class="heatmap-wrap"><div class="heatmap-grid">' + headerRow + rows + '</div></div>' +
-          '</div>' +
-          
-          // Trade Frequency
-          '<div style="margin-bottom:8px;">' +
-            '<div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:14px;">Frecuencia de trades</div>' +
-            '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">' +
-              // By day of week
-              '<div class="stats-card">' +
-                '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por día de semana</div>' +
-                '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgDay + ' trades/día</div>' +
-                '<canvas id="freq-dow-canvas" height="130" style="width:100%;display:block;"></canvas>' +
-              '</div>' +
-              // By week
-              '<div class="stats-card">' +
-                '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por semana</div>' +
-                '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgWeek + ' trades/semana</div>' +
-                '<canvas id="freq-week-canvas" height="130" style="width:100%;display:block;"></canvas>' +
-              '</div>' +
-              // By month
-              '<div class="stats-card">' +
-                '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por mes</div>' +
-                '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgMon + ' trades/mes</div>' +
-                '<canvas id="freq-mon-canvas" height="130" style="width:100%;display:block;"></canvas>' +
-              '</div>' +
-            '</div>' +
-          '</div>';
-
-        // Draw frequency bar charts
-        requestAnimationFrame(function(){
-          var dowLabels = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-          var dowData   = [dowCount[1],dowCount[2],dowCount[3],dowCount[4],dowCount[5],dowCount[6],dowCount[0]];
-          drawFreqBars('freq-dow-canvas', dowLabels, dowData);
-
-          var wkSorted = Object.keys(weekCount).sort();
-          var wkLabels = wkSorted.map(function(k){ return String(parseInt(String(k).slice(-2),10)); });
-          var wkData   = wkSorted.map(function(k){ return weekCount[k]; });
-          drawFreqBars('freq-week-canvas', wkLabels, wkData);
-
-          drawFreqBars('freq-mon-canvas', ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'], monCount);
-        });
-      }
-
-function _renderAnalisis_orig() {
+      function _renderAnalisis_orig() {
       }
 
       // ── COMPARAR MESES ──
