@@ -59,7 +59,15 @@ async function run() {
   console.log('Obfuscating app.js...');
   const appJsSrcPath = path.join(SRC_DIR, 'app.js');
   if (fs.existsSync(appJsSrcPath)) {
-    const appJsContent = fs.readFileSync(appJsSrcPath, 'utf8');
+    let appJsContent = fs.readFileSync(appJsSrcPath, 'utf8');
+
+    // Replace Supabase credentials with environment variables if available
+    const supabaseUrl = process.env.SUPABASE_URL || 'https://xtynjkstprkkbontplow.supabase.co';
+    const supabaseKey = process.env.SUPABASE_KEY || 'sb_publishable_aoQyXV5JAq7Pvkh4cTIxow_df9AyT_D';
+
+    appJsContent = appJsContent.replace('https://xtynjkstprkkbontplow.supabase.co', supabaseUrl);
+    appJsContent = appJsContent.replace('sb_publishable_aoQyXV5JAq7Pvkh4cTIxow_df9AyT_D', supabaseKey);
+
     const obfuscatedResult = JavaScriptObfuscator.obfuscate(appJsContent, obfuscationOptions);
     fs.writeFileSync(path.join(DIST_DIR, 'app.js'), obfuscatedResult.getObfuscatedCode(), 'utf8');
     console.log('Successfully obfuscated app.js!');
@@ -80,8 +88,16 @@ async function run() {
     const endIndex = desktopContent.indexOf(endMarker, startIndex);
 
     if (startIndex !== -1 && endIndex !== -1) {
-      const inlineJs = desktopContent.substring(startIndex + startMarker.length, endIndex);
+      let inlineJs = desktopContent.substring(startIndex + startMarker.length, endIndex);
       console.log('Obfuscating inline JS for desktop version...');
+
+      // Replace Supabase credentials with environment variables if available
+      const supabaseUrl = process.env.SUPABASE_URL || 'https://xtynjkstprkkbontplow.supabase.co';
+      const supabaseKey = process.env.SUPABASE_KEY || 'sb_publishable_aoQyXV5JAq7Pvkh4cTIxow_df9AyT_D';
+
+      inlineJs = inlineJs.replace('https://xtynjkstprkkbontplow.supabase.co', supabaseUrl);
+      inlineJs = inlineJs.replace('sb_publishable_aoQyXV5JAq7Pvkh4cTIxow_df9AyT_D', supabaseKey);
+
       const obfuscatedInlineJs = JavaScriptObfuscator.obfuscate(inlineJs, obfuscationOptions);
       
       const newDesktopContent = desktopContent.substring(0, startIndex) + 
