@@ -360,24 +360,9 @@
       const modal = document.getElementById('be-calc-modal');
       if (modal) modal.classList.add('open');
     }
-    function applyBePure() {
-      const pnlInput = document.getElementById(activeBePrefix + '-pnl');
-      const rrInput = document.getElementById(activeBePrefix + '-rr');
-      if (pnlInput) pnlInput.value = '0.00';
-      if (rrInput) rrInput.value = '0.00';
-      
-      const resSelId = activeBePrefix + '-result-sel';
-      const resHiddenId = activeBePrefix + '-result';
-      selectSetupBtnByVal(resSelId, resHiddenId, 'BE');
-      
-      closeModal('be-calc-modal');
-    }
-    function applyBePartial() {
-      const pnlPlan = parseFloat(document.getElementById('be-calc-pnl').value) || 0;
-      const rrPlan = parseFloat(document.getElementById('be-calc-rr').value) || 0;
-      
-      const pnlVal = pnlPlan * 0.6;
-      const rrVal = rrPlan * 0.6;
+    function applyBe() {
+      const pnlVal = parseFloat(document.getElementById('be-calc-pnl').value) || 0;
+      const rrVal = parseFloat(document.getElementById('be-calc-rr').value) || 0;
       
       const pnlInput = document.getElementById(activeBePrefix + '-pnl');
       const rrInput = document.getElementById(activeBePrefix + '-rr');
@@ -391,8 +376,8 @@
       closeModal('be-calc-modal');
     }
     window.setBE = setBE;
-    window.applyBePure = applyBePure;
-    window.applyBePartial = applyBePartial;
+    window.applyBe = applyBe;
+
 
 
     // ══════════════════════════════════════════════════════════
