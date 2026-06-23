@@ -354,20 +354,17 @@
     function setBE(prefix) {
       activeBePrefix = prefix;
       const bePnl = document.getElementById('be-calc-pnl');
-      const beRr = document.getElementById('be-calc-rr');
       if (bePnl) bePnl.value = '';
-      if (beRr) beRr.value = '';
       const modal = document.getElementById('be-calc-modal');
       if (modal) modal.classList.add('open');
     }
     function applyBe() {
       const pnlVal = parseFloat(document.getElementById('be-calc-pnl').value) || 0;
-      const rrVal = parseFloat(document.getElementById('be-calc-rr').value) || 0;
       
       const pnlInput = document.getElementById(activeBePrefix + '-pnl');
       const rrInput = document.getElementById(activeBePrefix + '-rr');
       if (pnlInput) pnlInput.value = pnlVal.toFixed(2);
-      if (rrInput) rrInput.value = rrVal.toFixed(2);
+      if (rrInput) rrInput.value = '0.00';
       
       const resSelId = activeBePrefix + '-result-sel';
       const resHiddenId = activeBePrefix + '-result';
@@ -377,6 +374,7 @@
     }
     window.setBE = setBE;
     window.applyBe = applyBe;
+
 
 
 
