@@ -350,10 +350,50 @@
       if (wrap) wrap.style.display = (val === 'No' || val === 'Medio') ? 'block' : 'none';
     }
 
+    let activeBePrefix = 'tm';
     function setBE(prefix) {
-      document.getElementById(prefix + '-pnl').value = 0;
-      document.getElementById(prefix + '-rr').value = 0;
+      activeBePrefix = prefix;
+      const bePnl = document.getElementById('be-calc-pnl');
+      const beRr = document.getElementById('be-calc-rr');
+      if (bePnl) bePnl.value = '';
+      if (beRr) beRr.value = '';
+      const modal = document.getElementById('be-calc-modal');
+      if (modal) modal.classList.add('open');
     }
+    function applyBePure() {
+      const pnlInput = document.getElementById(activeBePrefix + '-pnl');
+      const rrInput = document.getElementById(activeBePrefix + '-rr');
+      if (pnlInput) pnlInput.value = '0.00';
+      if (rrInput) rrInput.value = '0.00';
+      
+      const resSelId = activeBePrefix + '-result-sel';
+      const resHiddenId = activeBePrefix + '-result';
+      selectSetupBtnByVal(resSelId, resHiddenId, 'BE');
+      
+      closeModal('be-calc-modal');
+    }
+    function applyBePartial() {
+      const pnlPlan = parseFloat(document.getElementById('be-calc-pnl').value) || 0;
+      const rrPlan = parseFloat(document.getElementById('be-calc-rr').value) || 0;
+      
+      const pnlVal = pnlPlan * 0.6;
+      const rrVal = rrPlan * 0.6;
+      
+      const pnlInput = document.getElementById(activeBePrefix + '-pnl');
+      const rrInput = document.getElementById(activeBePrefix + '-rr');
+      if (pnlInput) pnlInput.value = pnlVal.toFixed(2);
+      if (rrInput) rrInput.value = rrVal.toFixed(2);
+      
+      const resSelId = activeBePrefix + '-result-sel';
+      const resHiddenId = activeBePrefix + '-result';
+      selectSetupBtnByVal(resSelId, resHiddenId, 'BE');
+      
+      closeModal('be-calc-modal');
+    }
+    window.setBE = setBE;
+    window.applyBePure = applyBePure;
+    window.applyBePartial = applyBePartial;
+
 
     // ══════════════════════════════════════════════════════════
     // GOLDFX DISCIPLINE SCORE ENGINE
@@ -549,13 +589,23 @@
       var resultType = document.getElementById('edit-result')      ? document.getElementById('edit-result').value      : '';
       var emotion    = document.getElementById('edit-emotion')      ? document.getElementById('edit-emotion').value      : '';
 
+      // Preservar datos de auditoría existentes
+      var existingAudit = {};
+      var existingScore = null;
+      const tExist = trades.find(function (x) { return x.id === id; });
+      if (tExist) {
+        existingAudit = tExist.audit || {};
+        existingScore = tExist.discipline_score != null ? tExist.discipline_score : null;
+      }
+
       // Serializar en metaBlock
       var metaBlock = '\n[GOLDFX_META]' + JSON.stringify({
         entry_type: entryType || null, market_cond: marketCond || null,
         result_type: resultType || null, emotion: emotion || null,
-        audit: {}, discipline_score: null
+        audit: existingAudit, discipline_score: existingScore
       });
       var notesWithMeta = (finalNotes || '') + metaBlock;
+
 
       const data = {
         account: document.getElementById('edit-account').value,
@@ -940,12 +990,7 @@
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     function closeOnBg(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
     function selectNews(btn) { document.querySelectorAll('.news-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); document.getElementById('news-val').value = btn.dataset.val; }
-    function setBE(prefix) {
-      const pnlInput = document.getElementById(prefix + '-pnl');
-      const rrInput = document.getElementById(prefix + '-rr');
-      if (pnlInput) pnlInput.value = 0;
-      if (rrInput) rrInput.value = 0;
-    }
+
 
     // ── Photo ──
     let currentPhotoData = null;
@@ -1174,10 +1219,22 @@
         // Excluir registros de INACCIÓN de todas las estadísticas
         tradeList = tradeList.filter(function(t){ return t.asset !== 'INACCIÓN'; });
         const total = tradeList.length;
-        // Consider BE anything between -0.01 and 0.01 to avoid tiny commission/floating point issues
-        const wins = tradeList.filter(function (t) { return t.pnl >= 0.01; });
-        const losses = tradeList.filter(function (t) { return t.pnl <= -0.01; });
-        const bes = tradeList.filter(function (t) { return t.pnl > -0.01 && t.pnl < 0.01; });
+        // Consider BE based on result_type, falling back to pnl threshold
+        const wins = tradeList.filter(function (t) {
+          if (t.result_type === 'TP') return true;
+          if (t.result_type === 'BE' || t.result_type === 'SL') return false;
+          return t.pnl >= 0.01;
+        });
+        const losses = tradeList.filter(function (t) {
+          if (t.result_type === 'SL') return true;
+          if (t.result_type === 'BE' || t.result_type === 'TP') return false;
+          return t.pnl <= -0.01;
+        });
+        const bes = tradeList.filter(function (t) {
+          if (t.result_type === 'BE') return true;
+          if (t.result_type === 'TP' || t.result_type === 'SL') return false;
+          return t.pnl > -0.01 && t.pnl < 0.01;
+        });
         
         const netPnl = tradeList.reduce(function (s, t) { return s + t.pnl; }, 0);
         
@@ -1227,8 +1284,10 @@
         // Win/Loss Streaks (excluding Break Evens)
         let curStreak = 0, curType = null, curWin = 0, curLoss = 0;
         sortedTrades.forEach(function (t) {
-          if (t.pnl > -0.01 && t.pnl < 0.01) return; // Skip BE
-          var type = t.pnl >= 0.01 ? 'w' : 'l';
+          var isBE = t.result_type === 'BE' || (t.result_type !== 'TP' && t.result_type !== 'SL' && t.pnl > -0.01 && t.pnl < 0.01);
+          if (isBE) return; // Skip BE
+          var isWin = t.result_type === 'TP' || (t.result_type !== 'SL' && t.pnl >= 0.01);
+          var type = isWin ? 'w' : 'l';
           if (type === curType) { 
             curStreak++; 
           } else { 
@@ -1241,9 +1300,11 @@
 
         var liveStreak = 0, liveType = null;
         for (var i = sortedTrades.length - 1; i >= 0; i--) {
-          var pnlVal = sortedTrades[i].pnl;
-          if (pnlVal > -0.01 && pnlVal < 0.01) continue; // Skip BE
-          var tp = pnlVal >= 0.01 ? 'w' : 'l';
+          var t = sortedTrades[i];
+          var isBE = t.result_type === 'BE' || (t.result_type !== 'TP' && t.result_type !== 'SL' && t.pnl > -0.01 && t.pnl < 0.01);
+          if (isBE) continue; // Skip BE
+          var isWin = t.result_type === 'TP' || (t.result_type !== 'SL' && t.pnl >= 0.01);
+          var tp = isWin ? 'w' : 'l';
           if (liveType === null) { 
             liveType = tp; 
             liveStreak = 1; 
@@ -1281,10 +1342,13 @@
         tradeList.forEach(function(t){
           var et = t.entry_type || null;
           if(!et) return;
-          if(!byEntryType[et]) byEntryType[et] = { pnl: 0, count: 0, wins: 0 };
+          if(!byEntryType[et]) byEntryType[et] = { pnl: 0, count: 0, wins: 0, bes: 0 };
           byEntryType[et].pnl += t.pnl;
           byEntryType[et].count++;
-          if(t.pnl > 0) byEntryType[et].wins++;
+          var isWin = t.result_type === 'TP' || (t.result_type !== 'SL' && t.result_type !== 'BE' && t.pnl >= 0.01);
+          var isBE = t.result_type === 'BE' || (t.result_type !== 'TP' && t.result_type !== 'SL' && t.pnl > -0.01 && t.pnl < 0.01);
+          if(isWin) byEntryType[et].wins++;
+          if(isBE) byEntryType[et].bes++;
         });
 
         return {
@@ -1359,7 +1423,9 @@
           return t.discipline_score != null && t.discipline_score !== "" && parseFloat(t.discipline_score) < 70;
         });
         if (lowDiscTrades.length > 0) {
-          const discWins = lowDiscTrades.filter(function (t) { return parseFloat(t.pnl) > 0; }).length;
+          const discWins = lowDiscTrades.filter(function (t) {
+            return t.result_type === 'TP' || (t.result_type !== 'SL' && t.result_type !== 'BE' && parseFloat(t.pnl) >= 0.01);
+          }).length;
           const discWr = (discWins / lowDiscTrades.length) * 100;
           insights.push("⚠️ Tus operaciones con disciplina menor a 70% tienen un WR de " + discWr.toFixed(0) + "%.");
         } else {
@@ -2307,9 +2373,12 @@
           if (!assetMap[t.asset]) assetMap[t.asset] = { pnl: 0, count: 0, wins: 0, losses: 0, bes: 0 }; 
           assetMap[t.asset].pnl += t.pnl; 
           assetMap[t.asset].count++; 
-          if (t.pnl > 0) assetMap[t.asset].wins++; 
-          else if (t.pnl < 0) assetMap[t.asset].losses++;
-          else assetMap[t.asset].bes++;
+          var isWin = t.result_type === 'TP' || (t.result_type !== 'SL' && t.result_type !== 'BE' && t.pnl >= 0.01);
+          var isLoss = t.result_type === 'SL' || (t.result_type !== 'TP' && t.result_type !== 'BE' && t.pnl <= -0.01);
+          var isBE = t.result_type === 'BE' || (t.result_type !== 'TP' && t.result_type !== 'SL' && t.pnl > -0.01 && t.pnl < 0.01);
+          if (isWin) assetMap[t.asset].wins++; 
+          else if (isLoss) assetMap[t.asset].losses++;
+          else if (isBE) assetMap[t.asset].bes++;
         });
         
         var assetCard = document.getElementById('st-by-asset');
@@ -2331,17 +2400,20 @@
         var sesMap = {};
         trades.forEach(function (t) { 
           if (t.asset === 'INACCIÓN') return;
-          if (!sesMap[t.session]) sesMap[t.session] = { pnl: 0, count: 0, wins: 0 }; 
+          if (!sesMap[t.session]) sesMap[t.session] = { pnl: 0, count: 0, wins: 0, bes: 0 }; 
           sesMap[t.session].pnl += t.pnl; 
           sesMap[t.session].count++; 
-          if (t.pnl > 0) sesMap[t.session].wins++; 
+          var isWin = t.result_type === 'TP' || (t.result_type !== 'SL' && t.result_type !== 'BE' && t.pnl >= 0.01);
+          var isBE = t.result_type === 'BE' || (t.result_type !== 'TP' && t.result_type !== 'SL' && t.pnl > -0.01 && t.pnl < 0.01);
+          if (isWin) sesMap[t.session].wins++; 
+          if (isBE) sesMap[t.session].bes++;
         });
         var sesCard = document.getElementById('st-by-session');
         if (sesCard) { 
           var sorted2 = Object.entries(sesMap).sort(function (a, b) { return b[1].pnl - a[1].pnl; }); 
           sesCard.innerHTML = '<div class="stats-card-title">Por Sesión</div>' + (sorted2.length ? sorted2.map(function (e) { 
             var c = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)'; 
-            var wr = (e[1].wins / e[1].count * 100).toFixed(0); 
+            var wr = (e[1].wins / (e[1].count - (e[1].bes || 0) || 1) * 100).toFixed(0); 
             return '<div class="stat-row"><span class="stat-row-label">' + e[0] + ' <span style="color:var(--text-muted);font-size:11px">' + wr + '% WR</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + '</span></div>'; 
           }).join('') : '<div class="chart-placeholder">Sin datos</div>'); 
         }
@@ -2351,17 +2423,20 @@
         trades.forEach(function (t) { 
           if (t.asset === 'INACCIÓN') return;
           var k = t.setup || '—'; 
-          if (!setupMap[k]) setupMap[k] = { pnl: 0, count: 0, wins: 0 }; 
+          if (!setupMap[k]) setupMap[k] = { pnl: 0, count: 0, wins: 0, bes: 0 }; 
           setupMap[k].pnl += t.pnl; 
           setupMap[k].count++; 
-          if (t.pnl > 0) setupMap[k].wins++; 
+          var isWin = t.result_type === 'TP' || (t.result_type !== 'SL' && t.result_type !== 'BE' && t.pnl >= 0.01);
+          var isBE = t.result_type === 'BE' || (t.result_type !== 'TP' && t.result_type !== 'SL' && t.pnl > -0.01 && t.pnl < 0.01);
+          if (isWin) setupMap[k].wins++; 
+          if (isBE) setupMap[k].bes++;
         });
         var setupCard = document.getElementById('st-by-setup');
         if (setupCard) { 
           var sorted3 = Object.entries(setupMap).sort(function (a, b) { return b[1].pnl - a[1].pnl; }); 
           setupCard.innerHTML = '<div class="stats-card-title">P&L por Setup</div>' + (sorted3.length && trades.length ? sorted3.map(function (e) { 
             var c = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)'; 
-            var wr = (e[1].wins / e[1].count * 100).toFixed(0);
+            var wr = (e[1].wins / (e[1].count - (e[1].bes || 0) || 1) * 100).toFixed(0);
             return '<div class="stat-row"><span class="stat-row-label" style="font-family:var(--mono);font-size:12px">' + e[0] + ' <span style="color:var(--text-muted);font-size:10px">' + wr + '% WR</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + ' <span style="color:var(--text-muted);font-weight:400">(' + e[1].count + ')</span></span></div>'; 
           }).join('') : '<div class="chart-placeholder">Sin datos</div>'); 
         }
@@ -2371,17 +2446,20 @@
         trades.forEach(function (t) { 
           if (t.asset === 'INACCIÓN') return;
           var dow = new Date(t.date + 'T00:00:00').getDay(), k = dayNames[dow]; 
-          if (!dayMap[k]) dayMap[k] = { pnl: 0, count: 0, wins: 0 }; 
+          if (!dayMap[k]) dayMap[k] = { pnl: 0, count: 0, wins: 0, bes: 0 }; 
           dayMap[k].pnl += t.pnl; 
           dayMap[k].count++; 
-          if (t.pnl > 0) dayMap[k].wins++;
+          var isWin = t.result_type === 'TP' || (t.result_type !== 'SL' && t.result_type !== 'BE' && t.pnl >= 0.01);
+          var isBE = t.result_type === 'BE' || (t.result_type !== 'TP' && t.result_type !== 'SL' && t.pnl > -0.01 && t.pnl < 0.01);
+          if (isWin) dayMap[k].wins++;
+          if (isBE) dayMap[k].bes++;
         });
         var dayCard = document.getElementById('st-by-day');
         if (dayCard) { 
           var sorted4 = Object.entries(dayMap).sort(function (a, b) { return b[1].pnl - a[1].pnl; }); 
           dayCard.innerHTML = '<div class="stats-card-title">P&L por Día</div>' + (sorted4.length && trades.length ? sorted4.map(function (e) { 
             var c = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)'; 
-            var wr = (e[1].wins / e[1].count * 100).toFixed(0);
+            var wr = (e[1].wins / (e[1].count - (e[1].bes || 0) || 1) * 100).toFixed(0);
             return '<div class="stat-row"><span class="stat-row-label">' + e[0] + ' <span style="color:var(--text-muted);font-size:11px">' + wr + '% WR (' + e[1].count + ')</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + '</span></div>'; 
           }).join('') : '<div class="chart-placeholder">Sin datos</div>'); 
         }
@@ -2394,7 +2472,7 @@
           var etIcons = { 'Tradicional':'📌', 'Secuencial':'🔄', 'Transicional':'🔀', 'Reacción':'⚡' };
           entryTypeCard.innerHTML = '<div class="stats-card-title">🎯 Por Tipo de Entrada</div>' + (etSorted.length ? etSorted.map(function(e){
             var c = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)';
-            var wr = e[1].count ? (e[1].wins / e[1].count * 100).toFixed(0) : '0';
+            var wr = e[1].count ? (e[1].wins / (e[1].count - (e[1].bes || 0) || 1) * 100).toFixed(0) : '0';
             var icon = etIcons[e[0]] || '📌';
             return '<div class="stat-row"><span class="stat-row-label">' + icon + ' ' + e[0] + ' <span style="color:var(--text-muted);font-size:10px">' + wr + '% WR</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + ' <span style="color:var(--text-muted);font-weight:400">(' + e[1].count + ')</span></span></div>';
           }).join('') : '<div class="chart-placeholder">Sin datos</div>');
