@@ -362,16 +362,17 @@
       var score = 0;
 
       // ── Categoría 1: Cumplimiento del Setup (Máx 40 pts) ──
-      var cat1 = [
-        'aud-setup-condicion',  // +8
-        'aud-setup-expansion',  // +8
-        'aud-setup-contraccion',// +8
-        'aud-setup-validacion', // +8
-        'aud-setup-gatillo'     // +8
-      ];
-      cat1.forEach(function(id) {
+      var cat1 = {
+        'aud-setup-condicion':   6,
+        'aud-setup-expansion':   6,
+        'aud-setup-contraccion': 6,
+        'aud-setup-validacion':  6,
+        'aud-setup-nivel':       6,
+        'aud-setup-gatillo':     10
+      };
+      Object.keys(cat1).forEach(function(id) {
         var el = document.getElementById(id);
-        if (el && el.checked) score += 8;
+        if (el && el.checked) score += cat1[id];
       });
 
       // ── Categoría 2: Gestión de Riesgo (Máx 30 pts) ──
@@ -430,7 +431,7 @@
       // ── Recoger datos de Auditoría ──
       var auditFields = [
         'aud-setup-condicion','aud-setup-expansion','aud-setup-contraccion',
-        'aud-setup-validacion','aud-setup-gatillo','aud-setup-sinconfirm',
+        'aud-setup-validacion','aud-setup-nivel','aud-setup-gatillo','aud-setup-sinconfirm',
         'aud-risk-unaop','aud-risk-nosobreoperar','aud-risk-rrmin',
         'aud-risk-sobreapal','aud-risk-moversl','aud-risk-aumentar',
         'aud-exec-params','aud-exec-noperseguir','aud-exec-notarde',
@@ -1471,11 +1472,12 @@
           
           // 1. Consistencia (Setup + Ejecución) - Máx 60 pts
           var consistScore = 0;
-          if (audit['aud-setup-condicion']) consistScore += 8;
-          if (audit['aud-setup-expansion']) consistScore += 8;
-          if (audit['aud-setup-contraccion']) consistScore += 8;
-          if (audit['aud-setup-validacion']) consistScore += 8;
-          if (audit['aud-setup-gatillo']) consistScore += 8;
+          if (audit['aud-setup-condicion']) consistScore += 6;
+          if (audit['aud-setup-expansion']) consistScore += 6;
+          if (audit['aud-setup-contraccion']) consistScore += 6;
+          if (audit['aud-setup-validacion']) consistScore += 6;
+          if (audit['aud-setup-nivel']) consistScore += 6;
+          if (audit['aud-setup-gatillo']) consistScore += 10;
           if (audit['aud-exec-params']) consistScore += 10;
           if (audit['aud-exec-noperseguir']) consistScore += 5;
           if (audit['aud-exec-notarde']) consistScore += 5;
