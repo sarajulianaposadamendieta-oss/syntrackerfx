@@ -3806,7 +3806,7 @@
       showLoading(true);
       try {
         await sb.signUp(email, pass, name);
-        showAuthSuccess('Cuenta creada. Revisa tu email para confirmar y luego inicia sesion.');
+        showAuthSuccess('¡Cuenta creada con éxito! Ya puedes iniciar sesión.');
         switchAuthTab('login'); document.getElementById('login-email').value = email;
       } catch (e) { showAuthError(e.message); } finally { showLoading(false); }
     }
