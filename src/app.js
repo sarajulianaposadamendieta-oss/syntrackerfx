@@ -2938,6 +2938,13 @@ function _renderAnalisis_orig() {
             const myPartIndex = tournamentParticipants.findIndex(p => p.user_id === user.id);
             const myPart = tournamentParticipants[myPartIndex];
 
+            // Sincronizar foto/avatar del usuario en la tabla pública de participantes para que todos los demás la vean
+            const currentAvatar = (user.user_metadata && user.user_metadata.avatar_url) || '';
+            if (myPart && currentAvatar && myPart.avatar_url !== currentAvatar) {
+              myPart.avatar_url = currentAvatar;
+              sb.update('tournament_participants', myPart.id, { avatar_url: currentAvatar }).catch(e => console.log('Avatar auto-sync err:', e));
+            }
+
             btnContainer.innerHTML = `
               <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); padding:8px 14px; border-radius:8px; color:var(--green); font-size:12px; font-weight:700;">
                 <span>✅ Inscrito (Cuenta MT5: #${myPart ? myPart.mt5_login : '—'})</span>
