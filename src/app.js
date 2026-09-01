@@ -235,6 +235,14 @@
             await sb.update('users', user.id, { avatar_url: publicUrl });
           } catch (dbErr2) {}
         }
+        try {
+          const myParts = await sb.query('tournament_participants', { filter: 'user_id=eq.' + user.id });
+          if (Array.isArray(myParts)) {
+            for (const pt of myParts) {
+              await sb.update('tournament_participants', pt.id, { avatar_url: publicUrl });
+            }
+          }
+        } catch (tpErr) {}
         let name = (user.user_metadata && user.user_metadata.full_name) || user.email;
         if (name.toLowerCase().includes('sara') || name.toLowerCase().includes('juliana')) {
           name = 'Sarah Posada';
@@ -2868,8 +2876,18 @@ function _renderAnalisis_orig() {
         if (!avatarUrl && user && p && p.user_id === user.id) {
           avatarUrl = user.user_metadata && user.user_metadata.avatar_url;
         }
+        if (!avatarUrl) {
+          const avImg = document.querySelector('.user-av img');
+          if (avImg && avImg.src) {
+            const myName = ((user && user.user_metadata && user.user_metadata.full_name) || (user && user.email) || '').toLowerCase();
+            const pName = (p && p.user_name ? p.user_name : '').toLowerCase();
+            if (pName && myName && (pName === myName || (pName.includes('sara') && myName.includes('sara')))) {
+              avatarUrl = avImg.src;
+            }
+          }
+        }
         if (avatarUrl) {
-          return `<img src="${avatarUrl}" alt="${p.user_name || 'User'}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; border:1.5px solid var(--yellow); box-shadow:0 0 10px rgba(255,205,27,0.3);" />`;
+          return `<img src="${avatarUrl}" alt="${p && p.user_name ? p.user_name : 'User'}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; border:1.5px solid var(--yellow); box-shadow:0 0 10px rgba(255,205,27,0.3); display:inline-block;" />`;
         }
         const initial = p && p.user_name ? p.user_name.charAt(0).toUpperCase() : 'U';
         return `<div style="width:${size}px; height:${size}px; border-radius:50%; background:linear-gradient(135deg, rgba(255,205,27,0.25), rgba(0,0,0,0.6)); border:1.5px solid var(--yellow); display:flex; align-items:center; justify-content:center; font-size:${Math.round(size*0.45)}px; font-weight:800; color:var(--yellow);">${initial}</div>`;
@@ -2888,7 +2906,7 @@ function _renderAnalisis_orig() {
           } else {
             activeTournament = {
               id: 'default-active-id',
-              name: '🏆 TORNEO GOLDFX',
+              name: '🏆 TORNEO GOLD FX',
               start_date: new Date().toISOString(),
               end_date: new Date(Date.now() + 60*24*60*60*1000).toISOString()
             };
@@ -2939,7 +2957,11 @@ function _renderAnalisis_orig() {
             const myPart = tournamentParticipants[myPartIndex];
 
             // Sincronizar foto/avatar del usuario en la tabla pública de participantes para que todos los demás la vean
-            const currentAvatar = (user.user_metadata && user.user_metadata.avatar_url) || '';
+            let currentAvatar = (user.user_metadata && user.user_metadata.avatar_url) || '';
+            if (!currentAvatar) {
+              const avImg = document.querySelector('.user-av img');
+              if (avImg && avImg.src) currentAvatar = avImg.src;
+            }
             if (myPart && currentAvatar && myPart.avatar_url !== currentAvatar) {
               myPart.avatar_url = currentAvatar;
               sb.update('tournament_participants', myPart.id, { avatar_url: currentAvatar }).catch(e => console.log('Avatar auto-sync err:', e));
