@@ -2885,12 +2885,12 @@ function _renderAnalisis_orig() {
           const endStr = new Date(activeTournament.end_date).toLocaleDateString('es-CO');
           document.getElementById('tournament-dates').textContent = `Periodo: ${startStr} — ${endStr}`;
 
-          // 2. Cargar participantes
+          // 2. Cargar participantes ordenados por Rendimiento Acumulado %
           if (activeTournament.id && activeTournament.id !== 'default-active-id') {
             const participantsData = await sb.query('tournament_participants', {
               select: '*',
               filter: `tournament_id=eq.${activeTournament.id}`,
-              order: 'current_score.desc'
+              order: 'return_pct.desc'
             });
             tournamentParticipants = Array.isArray(participantsData) ? participantsData : [];
           } else {
@@ -2899,16 +2899,67 @@ function _renderAnalisis_orig() {
 
           // 3. Verificar si el usuario actual ya está inscrito
           const btnContainer = document.getElementById('tournament-join-btn-container');
+          const userDashboard = document.getElementById('tournament-user-dashboard');
           const isJoined = user && tournamentParticipants.some(p => p.user_id === user.id);
 
           if (isJoined) {
-            const myPart = tournamentParticipants.find(p => p.user_id === user.id);
+            const myPartIndex = tournamentParticipants.findIndex(p => p.user_id === user.id);
+            const myPart = tournamentParticipants[myPartIndex];
+
             btnContainer.innerHTML = `
               <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); padding:8px 14px; border-radius:8px; color:var(--green); font-size:12px; font-weight:700;">
-                <span>✅ Inscrito (Cuenta MT5: ${myPart ? myPart.mt5_login : '—'})</span>
+                <span>✅ Inscrito (Cuenta MT5: #${myPart ? myPart.mt5_login : '—'})</span>
               </div>
             `;
+
+            // Renderizar Dashboard Personal del Usuario
+            if (userDashboard && myPart) {
+              userDashboard.style.display = 'block';
+
+              const isDisqualified = myPart.status === 'Descalificado' || parseFloat(myPart.dd_max_pct || 0) >= 5.0;
+              document.getElementById('user-status-badge').innerHTML = isDisqualified
+                ? `<span class="badge-status rejected" style="font-size:11px; padding:4px 10px;">🛑 DESCALIFICADO (DD Máx >= 5.0%)</span>`
+                : `<span class="badge-status completed" style="font-size:11px; padding:4px 10px;">🟢 ACTIVO EN COMPETENCIA</span>`;
+
+              const pnlAcum = parseFloat(myPart.return_pct || 0);
+              const pnlDaily = parseFloat(myPart.pnl_daily_pct || 0);
+              const pnlWeekly = parseFloat(myPart.pnl_weekly_pct || 0);
+              const ddDaily = parseFloat(myPart.dd_daily_pct || 0);
+              const ddMax = parseFloat(myPart.dd_max_pct || 0);
+
+              const elAcum = document.getElementById('u-pnl-acum');
+              elAcum.textContent = (pnlAcum >= 0 ? '+' : '') + pnlAcum.toFixed(2) + '%';
+              elAcum.style.color = pnlAcum >= 0 ? 'var(--green)' : 'var(--red)';
+
+              document.getElementById('u-pnl-daily').textContent = (pnlDaily >= 0 ? '+' : '') + pnlDaily.toFixed(2) + '%';
+              document.getElementById('u-pnl-weekly').textContent = (pnlWeekly >= 0 ? '+' : '') + pnlWeekly.toFixed(2) + '%';
+
+              document.getElementById('u-dd-max').textContent = ddMax.toFixed(2) + '%';
+              document.getElementById('u-dd-daily').textContent = ddDaily.toFixed(2) + '%';
+
+              const ddMargin = Math.max(0, 5.0 - ddMax);
+              const elMargin = document.getElementById('u-dd-margin');
+              elMargin.textContent = ddMargin.toFixed(2) + '%';
+              elMargin.style.color = ddMargin < 1.0 ? 'var(--red)' : 'var(--green)';
+
+              document.getElementById('u-win-rate').textContent = parseFloat(myPart.win_rate || 0).toFixed(1) + '%';
+              document.getElementById('u-trades-count').textContent = myPart.trades_count || 0;
+              document.getElementById('u-w-count').textContent = myPart.win_count || 0;
+              document.getElementById('u-l-count').textContent = myPart.loss_count || 0;
+              document.getElementById('u-be-count').textContent = myPart.be_count || 0;
+
+              document.getElementById('u-rank-pos').textContent = `#${myPartIndex + 1} de ${tournamentParticipants.length}`;
+
+              if (myPartIndex > 0) {
+                const abovePart = tournamentParticipants[myPartIndex - 1];
+                const gap = (parseFloat(abovePart.return_pct || 0) - pnlAcum).toFixed(2);
+                document.getElementById('u-rank-gap').textContent = `Distancia a puesto #${myPartIndex}: +${gap}%`;
+              } else {
+                document.getElementById('u-rank-gap').textContent = `🏆 ¡Vas liderando la tabla de posiciones!`;
+              }
+            }
           } else {
+            if (userDashboard) userDashboard.style.display = 'none';
             btnContainer.innerHTML = `
               <button class="btn-green" onclick="openTournamentJoinModal()" style="font-size:13px; padding:10px 18px;">
                 🏆 Conectar Cuenta MT5 e Inscribirme
@@ -2916,11 +2967,70 @@ function _renderAnalisis_orig() {
             `;
           }
 
-          // 4. Renderizar Leaderboard
+          // 4. Renderizar Podio Top 3 Destacado
+          const podiumContainer = document.getElementById('tournament-podium-container');
+          if (podiumContainer) {
+            const top3 = tournamentParticipants.slice(0, 3);
+            if (top3.length === 0) {
+              podiumContainer.style.display = 'none';
+            } else {
+              podiumContainer.style.display = 'grid';
+              podiumContainer.innerHTML = [0, 1, 2].map(function(idx) {
+                const p = top3[idx];
+                if (!p) {
+                  return `
+                    <div style="background:rgba(0,0,0,0.2); border:1px dashed var(--border); border-radius:10px; padding:16px; text-align:center; color:var(--text-muted); font-size:12px;">
+                      Puesto Vacante
+                    </div>
+                  `;
+                }
+
+                let crown = '🥇';
+                let borderColor = 'var(--yellow)';
+                let bgGradient = 'linear-gradient(135deg, rgba(255,205,27,0.1), rgba(0,0,0,0.4))';
+                if (idx === 1) {
+                  crown = '🥈';
+                  borderColor = '#c0c0c0';
+                  bgGradient = 'linear-gradient(135deg, rgba(192,192,192,0.1), rgba(0,0,0,0.4))';
+                } else if (idx === 2) {
+                  crown = '🥉';
+                  borderColor = '#cd7f32';
+                  bgGradient = 'linear-gradient(135deg, rgba(205,127,50,0.1), rgba(0,0,0,0.4))';
+                }
+
+                const retVal = parseFloat(p.return_pct || 0);
+                const retStr = (retVal >= 0 ? '+' : '') + retVal.toFixed(2) + '%';
+                const isDisq = p.status === 'Descalificado' || parseFloat(p.dd_max_pct || 0) >= 5.0;
+
+                return `
+                  <div style="background:${bgGradient}; border:1px solid ${borderColor}; border-radius:10px; padding:16px; position:relative; overflow:hidden;">
+                    <div style="font-size:24px; position:absolute; top:10px; right:12px;">${crown}</div>
+                    <div style="font-size:11px; font-weight:700; color:${borderColor}; text-transform:uppercase; letter-spacing:1px;">Puesto #${idx + 1}</div>
+                    <div style="font-size:15px; font-weight:800; color:#fff; margin-top:2px;">${p.user_name || 'Participante'}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">MT5 #${p.mt5_login}</div>
+
+                    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:flex-end;">
+                      <div>
+                        <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Acumulado</div>
+                        <div style="font-size:16px; font-weight:800; font-family:var(--mono); color:${retVal >= 0 ? 'var(--green)' : 'var(--red)'};">${retStr}</div>
+                      </div>
+                      <div style="text-align:right;">
+                        <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">DD Máx</div>
+                        <div style="font-size:12px; font-weight:700; font-family:var(--mono); color:var(--red);">${parseFloat(p.dd_max_pct || 0).toFixed(2)}%</div>
+                      </div>
+                    </div>
+                    ${isDisq ? '<div style="margin-top:6px; font-size:10px; color:var(--red); font-weight:700;">🛑 DESCALIFICADO</div>' : ''}
+                  </div>
+                `;
+              }).join('');
+            }
+          }
+
+          // 5. Renderizar Tabla General de Clasificación
           if (tournamentParticipants.length === 0) {
             tbody.innerHTML = `
               <tr>
-                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                <td colspan="11" style="text-align: center; color: var(--text-muted); padding: 30px;">
                   Aún no hay participantes inscritos en este torneo. ¡Sé el primero en conectar tu cuenta MT5!
                 </td>
               </tr>
@@ -2933,37 +3043,44 @@ function _renderAnalisis_orig() {
               else if (index === 2) rankBadge = '🥉 3º';
 
               const retVal = parseFloat(p.return_pct || 0);
-              const retColor = retVal >= 0 ? 'var(--green)' : 'var(--red)';
               const retStr = (retVal >= 0 ? '+' : '') + retVal.toFixed(2) + '%';
+              const retColor = retVal >= 0 ? 'var(--green)' : 'var(--red)';
 
-              const discVal = parseFloat(p.discipline_score || 100);
+              const dailyVal = parseFloat(p.pnl_daily_pct || 0);
+              const weeklyVal = parseFloat(p.pnl_weekly_pct || 0);
+              const monthlyVal = parseFloat(p.pnl_monthly_pct || 0);
+
+              const ddDaily = parseFloat(p.dd_daily_pct || 0);
+              const ddMax = parseFloat(p.dd_max_pct || 0);
+
+              const isDisq = p.status === 'Descalificado' || ddMax >= 5.0;
 
               let badgesHtml = '—';
               if (Array.isArray(p.badges) && p.badges.length > 0) {
                 badgesHtml = p.badges.map(b => `<span title="${b.label || ''}">${b.icon || '🏅'}</span>`).join(' ');
               } else {
-                badgesHtml = discVal >= 90 ? '🛡️ 🎯' : '🛡️';
+                badgesHtml = isDisq ? '🛑' : (ddDaily < 1.1 ? '🛡️ 1️⃣' : '🛡️');
               }
 
               return `
-                <tr style="${user && p.user_id === user.id ? 'background:rgba(255,205,27,0.05);' : ''}">
-                  <td style="text-align:center; font-weight:700; font-size:14px; font-family:var(--mono); color:var(--yellow);">${rankBadge}</td>
+                <tr style="${user && p.user_id === user.id ? 'background:rgba(255,205,27,0.06);' : ''} ${isDisq ? 'opacity:0.75;' : ''}">
+                  <td style="text-align:center; font-weight:700; font-size:13px; font-family:var(--mono); color:var(--yellow);">${rankBadge}</td>
                   <td>
                     <div style="font-weight:700;">${p.user_name || 'Participante'}</div>
-                    <div style="font-size:11px; color:var(--text-muted);">${p.user_email || ''}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">#${p.mt5_login} (${p.mt5_server})</div>
                   </td>
-                  <td style="font-family:var(--mono); font-size:12px;">
-                    <div>${p.mt5_server}</div>
-                    <div style="color:var(--text-muted); font-size:11px;">#${p.mt5_login}</div>
-                  </td>
-                  <td style="text-align:center; font-weight:800; font-family:var(--mono); font-size:15px; color:var(--yellow);">${parseFloat(p.current_score || 0).toFixed(1)} pts</td>
-                  <td style="text-align:center; font-weight:700; font-family:var(--mono); color:${retColor};">${retStr}</td>
                   <td style="text-align:center;">
-                    <div style="font-size:11px; font-weight:700; font-family:var(--mono); color:var(--yellow); margin-bottom:2px;">${discVal.toFixed(0)}/100</div>
-                    <div style="width:70px; height:4px; background:var(--border); border-radius:2px; margin:0 auto; overflow:hidden;">
-                      <div style="width:${Math.min(100, Math.max(0, discVal))}%; height:100%; background:var(--yellow);"></div>
-                    </div>
+                    <span class="badge-status ${isDisq ? 'rejected' : 'completed'}" style="font-size:10px; padding:3px 8px;">
+                      ${isDisq ? 'Descalificado' : 'Activo'}
+                    </span>
                   </td>
+                  <td style="text-align:center; font-weight:800; font-family:var(--mono); font-size:14px; color:${retColor};">${retStr}</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${dailyVal >= 0 ? 'var(--green)' : 'var(--red)'};">${(dailyVal >= 0 ? '+' : '') + dailyVal.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${weeklyVal >= 0 ? 'var(--green)' : 'var(--red)'};">${(weeklyVal >= 0 ? '+' : '') + weeklyVal.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${monthlyVal >= 0 ? 'var(--green)' : 'var(--red)'};">${(monthlyVal >= 0 ? '+' : '') + monthlyVal.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${ddDaily > 1.1 ? 'var(--red)' : 'var(--text-primary)'};">${ddDaily.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; font-weight:bold; color:var(--red);">${ddMax.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px;">${p.trades_count || 0}</td>
                   <td style="text-align:center; font-size:14px;">${badgesHtml}</td>
                 </tr>
               `;
@@ -2974,7 +3091,7 @@ function _renderAnalisis_orig() {
           console.error('Error al cargar datos del torneo:', e);
           tbody.innerHTML = `
             <tr>
-              <td colspan="7" style="text-align: center; color: var(--red); padding: 20px;">
+              <td colspan="11" style="text-align: center; color: var(--red); padding: 20px;">
                 Error al conectar con la base de datos del torneo: ${e.message}
               </td>
             </tr>
