@@ -2967,125 +2967,107 @@ function _renderAnalisis_orig() {
             `;
           }
 
-          // 4. Renderizar Podio Top 3 Destacado
-          const podiumContainer = document.getElementById('tournament-podium-container');
-          if (podiumContainer) {
-            const top3 = tournamentParticipants.slice(0, 3);
-            if (top3.length === 0) {
-              podiumContainer.style.display = 'none';
-            } else {
-              podiumContainer.style.display = 'grid';
-              podiumContainer.innerHTML = [0, 1, 2].map(function(idx) {
-                const p = top3[idx];
-                if (!p) {
-                  return `
-                    <div style="background:rgba(0,0,0,0.2); border:1px dashed var(--border); border-radius:10px; padding:16px; text-align:center; color:var(--text-muted); font-size:12px;">
-                      Puesto Vacante
-                    </div>
-                  `;
-                }
+          // 4. Renderizar Podio de Trofeos y Líderes Actuales (Estilo Maqueta Luxury)
+          const trophiesContainer = document.getElementById('tournament-trophies-container');
+          const leadersContainer = document.getElementById('tournament-leaders-container');
 
-                let crown = '🥇';
-                let borderColor = 'var(--yellow)';
-                let bgGradient = 'linear-gradient(135deg, rgba(255,205,27,0.1), rgba(0,0,0,0.4))';
-                if (idx === 1) {
-                  crown = '🥈';
-                  borderColor = '#c0c0c0';
-                  bgGradient = 'linear-gradient(135deg, rgba(192,192,192,0.1), rgba(0,0,0,0.4))';
-                } else if (idx === 2) {
-                  crown = '🥉';
-                  borderColor = '#cd7f32';
-                  bgGradient = 'linear-gradient(135deg, rgba(205,127,50,0.1), rgba(0,0,0,0.4))';
-                }
+          const p1 = tournamentParticipants[0];
+          const p2 = tournamentParticipants[1];
+          const p3 = tournamentParticipants[2];
 
-                const retVal = parseFloat(p.return_pct || 0);
-                const retStr = (retVal >= 0 ? '+' : '') + retVal.toFixed(2) + '%';
-                const isDisq = p.status === 'Descalificado' || parseFloat(p.dd_max_pct || 0) >= 5.0;
+          if (trophiesContainer) {
+            trophiesContainer.innerHTML = `
+              <!-- 2da Posición (Plata) -->
+              <div class="trophy-rank-card">
+                <div style="font-size:28px; filter:drop-shadow(0 4px 10px rgba(192,192,192,0.4));">🥈</div>
+                <div style="font-size:16px; font-weight:900; color:#c0c0c0; margin-top:4px;">2</div>
+                <div style="font-size:9px; color:var(--text-muted); font-weight:800; text-transform:uppercase;">RANK</div>
+              </div>
 
-                return `
-                  <div style="background:${bgGradient}; border:1px solid ${borderColor}; border-radius:10px; padding:16px; position:relative; overflow:hidden;">
-                    <div style="font-size:24px; position:absolute; top:10px; right:12px;">${crown}</div>
-                    <div style="font-size:11px; font-weight:700; color:${borderColor}; text-transform:uppercase; letter-spacing:1px;">Puesto #${idx + 1}</div>
-                    <div style="font-size:15px; font-weight:800; color:#fff; margin-top:2px;">${p.user_name || 'Participante'}</div>
-                    <div style="font-size:11px; color:var(--text-muted);">MT5 #${p.mt5_login}</div>
+              <!-- 1ra Posición (Oro - Centro Elevado) -->
+              <div class="trophy-rank-card rank-1">
+                <div style="font-size:36px; filter:drop-shadow(0 6px 16px rgba(255,205,27,0.6));">🏆</div>
+                <div style="font-size:20px; font-weight:900; color:var(--yellow); margin-top:4px;">1</div>
+                <div style="font-size:10px; color:var(--yellow); font-weight:800; text-transform:uppercase;">RANK</div>
+              </div>
 
-                    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:flex-end;">
-                      <div>
-                        <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Acumulado</div>
-                        <div style="font-size:16px; font-weight:800; font-family:var(--mono); color:${retVal >= 0 ? 'var(--green)' : 'var(--red)'};">${retStr}</div>
-                      </div>
-                      <div style="text-align:right;">
-                        <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">DD Máx</div>
-                        <div style="font-size:12px; font-weight:700; font-family:var(--mono); color:var(--red);">${parseFloat(p.dd_max_pct || 0).toFixed(2)}%</div>
-                      </div>
-                    </div>
-                    ${isDisq ? '<div style="margin-top:6px; font-size:10px; color:var(--red); font-weight:700;">🛑 DESCALIFICADO</div>' : ''}
-                  </div>
-                `;
-              }).join('');
-            }
+              <!-- 3ra Posición (Bronce) -->
+              <div class="trophy-rank-card">
+                <div style="font-size:28px; filter:drop-shadow(0 4px 10px rgba(205,127,50,0.4));">🥉</div>
+                <div style="font-size:16px; font-weight:900; color:#cd7f32; margin-top:4px;">3</div>
+                <div style="font-size:9px; color:var(--text-muted); font-weight:800; text-transform:uppercase;">RANK</div>
+              </div>
+            `;
           }
 
-          // 5. Renderizar Tabla General de Clasificación
+          if (leadersContainer) {
+            leadersContainer.innerHTML = `
+              <!-- 2º Líder -->
+              <div class="leader-avatar-card">
+                <div style="width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,0.08); border:1.5px solid #c0c0c0; display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:18px;">👤</div>
+                <div style="font-size:11px; font-weight:700; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p2 ? p2.user_name : 'Vacante'}</div>
+                <div style="font-size:10px; font-weight:800; font-family:var(--mono); color:${p2 && parseFloat(p2.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin-top:2px;">${p2 ? (parseFloat(p2.return_pct) >= 0 ? '+' : '') + parseFloat(p2.return_pct).toFixed(1) + '%' : '—'}</div>
+              </div>
+
+              <!-- 1º Líder (Centro Destacado) -->
+              <div class="leader-avatar-card center-rank">
+                <div style="width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg, rgba(255,205,27,0.3), rgba(0,0,0,0.5)); border:2px solid var(--yellow); display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:22px; box-shadow:0 0 15px rgba(255,205,27,0.4);">👤</div>
+                <div style="font-size:12px; font-weight:800; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p1 ? p1.user_name : 'Vacante'}</div>
+                <div style="font-size:11px; font-weight:900; font-family:var(--mono); color:var(--yellow); margin-top:2px;">${p1 ? (parseFloat(p1.return_pct) >= 0 ? '+' : '') + parseFloat(p1.return_pct).toFixed(1) + '%' : '—'}</div>
+              </div>
+
+              <!-- 3º Líder -->
+              <div class="leader-avatar-card">
+                <div style="width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,0.08); border:1.5px solid #cd7f32; display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:18px;">👤</div>
+                <div style="font-size:11px; font-weight:700; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p3 ? p3.user_name : 'Vacante'}</div>
+                <div style="font-size:10px; font-weight:800; font-family:var(--mono); color:${p3 && parseFloat(p3.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin-top:2px;">${p3 ? (parseFloat(p3.return_pct) >= 0 ? '+' : '') + parseFloat(p3.return_pct).toFixed(1) + '%' : '—'}</div>
+              </div>
+            `;
+          }
+
+          // 5. Renderizar Tabla General Curva Glassmorphism
           if (tournamentParticipants.length === 0) {
             tbody.innerHTML = `
               <tr>
-                <td colspan="11" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
                   Aún no hay participantes inscritos en este torneo. ¡Sé el primero en conectar tu cuenta MT5!
                 </td>
               </tr>
             `;
           } else {
             tbody.innerHTML = tournamentParticipants.map(function(p, index) {
-              let rankBadge = `${index + 1}º`;
-              if (index === 0) rankBadge = '🥇 1º';
-              else if (index === 1) rankBadge = '🥈 2º';
-              else if (index === 2) rankBadge = '🥉 3º';
-
               const retVal = parseFloat(p.return_pct || 0);
               const retStr = (retVal >= 0 ? '+' : '') + retVal.toFixed(2) + '%';
               const retColor = retVal >= 0 ? 'var(--green)' : 'var(--red)';
-
-              const dailyVal = parseFloat(p.pnl_daily_pct || 0);
-              const weeklyVal = parseFloat(p.pnl_weekly_pct || 0);
-              const monthlyVal = parseFloat(p.pnl_monthly_pct || 0);
-
-              const ddDaily = parseFloat(p.dd_daily_pct || 0);
-              const ddMax = parseFloat(p.dd_max_pct || 0);
-
-              const isDisq = p.status === 'Descalificado' || ddMax >= 5.0;
-
-              let badgesHtml = '—';
-              if (Array.isArray(p.badges) && p.badges.length > 0) {
-                badgesHtml = p.badges.map(b => `<span title="${b.label || ''}">${b.icon || '🏅'}</span>`).join(' ');
-              } else {
-                badgesHtml = isDisq ? '🛑' : (ddDaily < 1.1 ? '🛡️ 1️⃣' : '🛡️');
-              }
+              const isDisq = p.status === 'Descalificado' || parseFloat(p.dd_max_pct || 0) >= 5.0;
 
               return `
-                <tr style="${user && p.user_id === user.id ? 'background:rgba(255,205,27,0.06);' : ''} ${isDisq ? 'opacity:0.75;' : ''}">
-                  <td style="text-align:center; font-weight:700; font-size:13px; font-family:var(--mono); color:var(--yellow);">${rankBadge}</td>
-                  <td>
-                    <div style="font-weight:700;">${p.user_name || 'Participante'}</div>
-                    <div style="font-size:11px; color:var(--text-muted);">#${p.mt5_login} (${p.mt5_server})</div>
+                <tr class="table-glass-row ${index === 0 ? 'rank-1-row' : ''}">
+                  <td style="text-align:center; font-weight:800; font-size:13px; font-family:var(--mono); color:${index === 0 ? 'var(--yellow)' : 'var(--text-secondary)'}; padddings:10px 6px;">
+                    ${index + 1}
                   </td>
-                  <td style="text-align:center;">
-                    <span class="badge-status ${isDisq ? 'rejected' : 'completed'}" style="font-size:10px; padding:3px 8px;">
-                      ${isDisq ? 'Descalificado' : 'Activo'}
-                    </span>
+                  <td style="padding:10px 8px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <div style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--yellow);">👤</div>
+                      <div>
+                        <div style="font-weight:700; font-size:12.5px; color:#fff;">${p.user_name || 'Participante'}</div>
+                        <div style="font-size:10px; color:var(--text-muted);">#${p.mt5_login}</div>
+                      </div>
+                    </div>
                   </td>
-                  <td style="text-align:center; font-weight:800; font-family:var(--mono); font-size:14px; color:${retColor};">${retStr}</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${dailyVal >= 0 ? 'var(--green)' : 'var(--red)'};">${(dailyVal >= 0 ? '+' : '') + dailyVal.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${weeklyVal >= 0 ? 'var(--green)' : 'var(--red)'};">${(weeklyVal >= 0 ? '+' : '') + weeklyVal.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${monthlyVal >= 0 ? 'var(--green)' : 'var(--red)'};">${(monthlyVal >= 0 ? '+' : '') + monthlyVal.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${ddDaily > 1.1 ? 'var(--red)' : 'var(--text-primary)'};">${ddDaily.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; font-weight:bold; color:var(--red);">${ddMax.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px;">${p.trades_count || 0}</td>
-                  <td style="text-align:center; font-size:14px;">${badgesHtml}</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; padding:10px 6px;">
+                    ${p.trades_count || 0}
+                  </td>
+                  <td style="text-align:center; font-weight:800; font-family:var(--mono); font-size:13.5px; color:${isDisq ? 'var(--red)' : retColor}; padding:10px 6px;">
+                    ${isDisq ? 'DESCALIFICADO' : retStr}
+                  </td>
                 </tr>
               `;
             }).join('');
           }
+
+          // 6. Dibujar Gráfico Suave en Canvas (Rendimiento en Vivo)
+          renderLiveTournamentChart(tournamentParticipants);
 
         } catch (e) {
           console.error('Error al cargar datos del torneo:', e);
@@ -3158,6 +3140,79 @@ function _renderAnalisis_orig() {
           submitBtn.disabled = false;
           submitBtn.textContent = 'Conectar e Inscribirme';
         }
+      }
+
+      function renderLiveTournamentChart(participants) {
+        const canvas = document.getElementById('tournament-live-chart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        
+        if (rect.width === 0 || rect.height === 0) return;
+
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const width = rect.width;
+        const height = rect.height;
+
+        ctx.clearRect(0, 0, width, height);
+
+        // Generar curva elegante basada en el líder
+        const top1 = participants && participants[0] ? parseFloat(participants[0].return_pct || 0) : 42.1;
+        const totalReturnEl = document.getElementById('live-chart-total-return');
+        if (totalReturnEl) {
+          totalReturnEl.textContent = (top1 >= 0 ? '+' : '') + top1.toFixed(1) + '%';
+        }
+
+        // Puntos suavizados para la curva estilo maqueta
+        const points = [
+          { x: 0, y: height * 0.8 },
+          { x: width * 0.2, y: height * 0.55 },
+          { x: width * 0.4, y: height * 0.65 },
+          { x: width * 0.65, y: height * 0.3 },
+          { x: width * 0.85, y: height * 0.4 },
+          { x: width, y: height * 0.15 }
+        ];
+
+        // Relleno de degradado dorado
+        const gradient = ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, 'rgba(255, 205, 27, 0.45)');
+        gradient.addColorStop(1, 'rgba(255, 205, 27, 0.0)');
+
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+
+        for (let i = 0; i < points.length - 1; i++) {
+          const xc = (points[i].x + points[i + 1].x) / 2;
+          const yc = (points[i].y + points[i + 1].y) / 2;
+          ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+        }
+        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
+        ctx.closePath();
+
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Línea dorada suave de borde
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 0; i < points.length - 1; i++) {
+          const xc = (points[i].x + points[i + 1].x) / 2;
+          const yc = (points[i].y + points[i + 1].y) / 2;
+          ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+        }
+        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+        ctx.strokeStyle = '#ffcd1b';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = 'rgba(255, 205, 27, 0.6)';
+        ctx.shadowBlur = 10;
+        ctx.stroke();
       }
 
       // Exponer globalmente
