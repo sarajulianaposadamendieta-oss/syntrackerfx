@@ -2944,7 +2944,7 @@ function _renderAnalisis_orig() {
               </div>
             `;
 
-            // Renderizar Dashboard Personal del Usuario
+            // Renderizar Dashboard Privado del Participante
             if (userDashboard && myPart) {
               userDashboard.style.display = 'block';
 
@@ -2956,13 +2956,38 @@ function _renderAnalisis_orig() {
                   : `<span class="badge-status completed" style="font-size:10px; padding:3px 8px;">🟢 ACTIVO</span>`;
               }
 
-              const pnlAcum = parseFloat(myPart.return_pct || 0);
-              const ddMax = parseFloat(myPart.dd_max_pct || 0);
+              const acctEl = document.getElementById('u-account-label');
+              if (acctEl) {
+                acctEl.textContent = `Cuenta MT5: #${myPart.mt5_login} (${myPart.mt5_server || 'MT5'})`;
+              }
 
-              const elAcum = document.getElementById('u-pnl-acum');
-              if (elAcum) {
-                elAcum.textContent = (pnlAcum >= 0 ? '+' : '') + pnlAcum.toFixed(2) + '%';
-                elAcum.style.color = pnlAcum >= 0 ? 'var(--green)' : 'var(--red)';
+              const pnlDaily = parseFloat(myPart.pnl_daily_pct || 0);
+              const pnlWeekly = parseFloat(myPart.pnl_weekly_pct || 0);
+              const pnlMonthly = parseFloat(myPart.pnl_monthly_pct || 0);
+              const pnlAcum = parseFloat(myPart.return_pct || 0);
+
+              const ddDaily = parseFloat(myPart.dd_daily_pct || 0);
+              const ddMax = parseFloat(myPart.dd_max_pct || 0);
+              const ddMargin = Math.max(0, 5.0 - ddMax);
+
+              // 1. Rendimiento
+              const setPnl = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) {
+                  el.textContent = (val >= 0 ? '+' : '') + val.toFixed(2) + '%';
+                  el.style.color = val >= 0 ? 'var(--green)' : 'var(--red)';
+                }
+              };
+              setPnl('u-pnl-daily', pnlDaily);
+              setPnl('u-pnl-weekly', pnlWeekly);
+              setPnl('u-pnl-monthly', pnlMonthly);
+              setPnl('u-pnl-acum', pnlAcum);
+
+              // 2. Riesgo
+              const elDdDaily = document.getElementById('u-dd-daily');
+              if (elDdDaily) {
+                elDdDaily.textContent = ddDaily.toFixed(2) + '%';
+                elDdDaily.style.color = ddDaily > 1.1 ? 'var(--red)' : 'var(--text-primary)';
               }
 
               const elDdMax = document.getElementById('u-dd-max');
@@ -2970,11 +2995,31 @@ function _renderAnalisis_orig() {
                 elDdMax.textContent = ddMax.toFixed(2) + '%';
               }
 
-              const elWinRate = document.getElementById('u-win-rate');
-              if (elWinRate) {
-                elWinRate.textContent = `${myPart.trades_count || 0} trades (${parseFloat(myPart.win_rate || 0).toFixed(0)}% WR)`;
+              const elMargin = document.getElementById('u-dd-margin');
+              if (elMargin) {
+                elMargin.textContent = ddMargin.toFixed(2) + '% restante';
+                elMargin.style.color = ddMargin < 1.0 ? 'var(--red)' : (ddMargin < 2.5 ? 'var(--yellow)' : 'var(--green)');
               }
 
+              // 3. Operativa
+              const elTrades = document.getElementById('u-trades-count');
+              if (elTrades) elTrades.textContent = myPart.trades_count || 0;
+
+              const elWins = document.getElementById('u-w-count');
+              if (elWins) elWins.textContent = myPart.win_count || 0;
+
+              const elLosses = document.getElementById('u-l-count');
+              if (elLosses) elLosses.textContent = myPart.loss_count || 0;
+
+              const elBE = document.getElementById('u-be-count');
+              if (elBE) elBE.textContent = myPart.be_count || 0;
+
+              const elWinRate = document.getElementById('u-win-rate');
+              if (elWinRate) {
+                elWinRate.textContent = parseFloat(myPart.win_rate || 0).toFixed(1) + '%';
+              }
+
+              // 4. Posición
               const elRankPos = document.getElementById('u-rank-pos');
               if (elRankPos) {
                 elRankPos.textContent = `#${myPartIndex + 1} de ${tournamentParticipants.length}`;
