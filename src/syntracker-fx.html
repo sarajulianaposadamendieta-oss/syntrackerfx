@@ -3164,22 +3164,33 @@
       <!-- ESTRUCTURA 3 COLUMNAS GLASSMORPHISM -->
       <div style="display:grid; grid-template-columns: 260px 1fr 280px; gap:18px; align-items:start;" id="tournament-luxury-layout">
         
-        <!-- COLUMNA IZQUIERDA: TROFEOS + LÍDERES ACTUALES -->
+        <!-- COLUMNA IZQUIERDA: TOP 3 PODIO UNIFICADO + REGLAS -->
         <div style="display:flex; flex-direction:column; gap:18px;">
           
-          <!-- Podio de Trofeos -->
+          <!-- Podio TOP 3 Unificado (Trofeo + Foto + Métricas) -->
           <div class="glass-box">
-            <div style="font-size:12px; font-weight:800; color:var(--yellow); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; text-align:center;">PODIO DE TROFEOS</div>
-            <div style="display:grid; grid-template-columns: 1fr 1.15fr 1fr; gap:8px; align-items:end;" id="tournament-trophies-container">
-              <!-- Renderizado dinámico de trofeos -->
+            <div style="font-size:13px; font-weight:800; color:var(--yellow); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:16px; text-align:center;">🏆 TOP 3</div>
+            <div style="display:grid; grid-template-columns: 1fr 1.18fr 1fr; gap:8px; align-items:end;" id="tournament-top3-container">
+              <!-- Renderizado dinámico TOP 3 -->
             </div>
           </div>
 
-          <!-- Líderes Actuales -->
-          <div class="glass-box">
-            <div style="font-size:12px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; text-align:center;">LÍDERES ACTUALES</div>
-            <div style="display:grid; grid-template-columns: 1fr 1.15fr 1fr; gap:8px; align-items:end;" id="tournament-leaders-container">
-              <!-- Renderizado dinámico de avatares -->
+          <!-- Reglas Operativas -->
+          <div class="glass-box" style="padding:16px;">
+            <div style="font-size:12px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,205,27,0.15); padding-bottom:6px;">📋 REGLAS OPERATIVAS</div>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:11px; color:var(--text-secondary);">
+              <div style="display:flex; gap:8px; align-items:center;">
+                <span style="font-size:14px;">1️⃣</span>
+                <div><strong>1 Trade / Día:</strong> Máx 1 operación diaria.</div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <span style="font-size:14px;">📉</span>
+                <div><strong>DD Diario (1.1%):</strong> Pérdida máx por día.</div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <span style="font-size:14px;">🛑</span>
+                <div><strong>DD Máx (5.0%):</strong> Descalificación automática.</div>
+              </div>
             </div>
           </div>
 

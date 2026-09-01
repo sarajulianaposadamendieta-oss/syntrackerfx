@@ -2909,6 +2909,22 @@ function _renderAnalisis_orig() {
               order: 'return_pct.desc'
             });
             tournamentParticipants = Array.isArray(participantsData) ? participantsData : [];
+
+            // Sincronizar fotos/avatares reales de la tabla profiles
+            try {
+              const profilesData = await sb.query('profiles', { select: 'id, avatar_url' });
+              if (Array.isArray(profilesData)) {
+                const avatarMap = {};
+                profilesData.forEach(pr => { if (pr.id && pr.avatar_url) avatarMap[pr.id] = pr.avatar_url; });
+                tournamentParticipants.forEach(p => {
+                  if (!p.avatar_url && avatarMap[p.user_id]) {
+                    p.avatar_url = avatarMap[p.user_id];
+                  }
+                });
+              }
+            } catch (errAv) {
+              console.log('Avatar sync check:', errAv);
+            }
           } else {
             tournamentParticipants = [];
           }
@@ -2973,66 +2989,45 @@ function _renderAnalisis_orig() {
             `;
           }
 
-          // 4. Renderizar Podio de Trofeos y Líderes Actuales (Estilo Maqueta Luxury)
-          const trophiesContainer = document.getElementById('tournament-trophies-container');
-          const leadersContainer = document.getElementById('tournament-leaders-container');
-
+          // 4. Renderizar Podio TOP 3 Unificado (Trofeo + Foto + Métricas)
+          const top3Container = document.getElementById('tournament-top3-container');
           const p1 = tournamentParticipants[0];
           const p2 = tournamentParticipants[1];
           const p3 = tournamentParticipants[2];
 
-          if (trophiesContainer) {
-            trophiesContainer.innerHTML = `
+          if (top3Container) {
+            top3Container.innerHTML = `
               <!-- 2da Posición (Plata) -->
-              <div class="trophy-rank-card">
-                <div style="font-size:28px; filter:drop-shadow(0 4px 10px rgba(192,192,192,0.4));">🥈</div>
-                <div style="font-size:16px; font-weight:900; color:#c0c0c0; margin-top:4px;">2</div>
-                <div style="font-size:9px; color:var(--text-muted); font-weight:800; text-transform:uppercase;">RANK</div>
+              <div class="trophy-rank-card" style="padding:12px 6px;">
+                <div style="font-size:24px; filter:drop-shadow(0 2px 6px rgba(192,192,192,0.5));">🥈</div>
+                <div style="display:flex; justify-content:center; margin:6px 0;">
+                  ${getParticipantAvatarHtml(p2, 38)}
+                </div>
+                <div style="font-size:11px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p2 ? p2.user_name : 'Vacante'}</div>
+                <div style="font-size:10.5px; font-weight:800; font-family:var(--mono); color:${p2 && parseFloat(p2.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin:2px 0;">${p2 ? (parseFloat(p2.return_pct) >= 0 ? '+' : '') + parseFloat(p2.return_pct).toFixed(1) + '%' : '—'}</div>
+                <div style="font-size:9px; color:#c0c0c0; font-weight:800; text-transform:uppercase;">2º RANK</div>
               </div>
 
               <!-- 1ra Posición (Oro - Centro Elevado) -->
-              <div class="trophy-rank-card rank-1">
-                <div style="font-size:36px; filter:drop-shadow(0 6px 16px rgba(255,205,27,0.6));">🏆</div>
-                <div style="font-size:20px; font-weight:900; color:var(--yellow); margin-top:4px;">1</div>
-                <div style="font-size:10px; color:var(--yellow); font-weight:800; text-transform:uppercase;">RANK</div>
+              <div class="trophy-rank-card rank-1" style="padding:14px 6px;">
+                <div style="font-size:30px; filter:drop-shadow(0 4px 12px rgba(255,205,27,0.7));">🏆</div>
+                <div style="display:flex; justify-content:center; margin:6px 0;">
+                  ${getParticipantAvatarHtml(p1, 48)}
+                </div>
+                <div style="font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p1 ? p1.user_name : 'Vacante'}</div>
+                <div style="font-size:11.5px; font-weight:900; font-family:var(--mono); color:var(--yellow); margin:2px 0;">${p1 ? (parseFloat(p1.return_pct) >= 0 ? '+' : '') + parseFloat(p1.return_pct).toFixed(1) + '%' : '—'}</div>
+                <div style="font-size:9.5px; color:var(--yellow); font-weight:900; text-transform:uppercase;">🥇 1º RANK</div>
               </div>
 
               <!-- 3ra Posición (Bronce) -->
-              <div class="trophy-rank-card">
-                <div style="font-size:28px; filter:drop-shadow(0 4px 10px rgba(205,127,50,0.4));">🥉</div>
-                <div style="font-size:16px; font-weight:900; color:#cd7f32; margin-top:4px;">3</div>
-                <div style="font-size:9px; color:var(--text-muted); font-weight:800; text-transform:uppercase;">RANK</div>
-              </div>
-            `;
-          }
-
-          if (leadersContainer) {
-            leadersContainer.innerHTML = `
-              <!-- 2º Líder -->
-              <div class="leader-avatar-card">
-                <div style="display:flex; justify-content:center; margin-bottom:4px;">
-                  ${getParticipantAvatarHtml(p2, 42)}
+              <div class="trophy-rank-card" style="padding:12px 6px;">
+                <div style="font-size:24px; filter:drop-shadow(0 2px 6px rgba(205,127,50,0.5));">🥉</div>
+                <div style="display:flex; justify-content:center; margin:6px 0;">
+                  ${getParticipantAvatarHtml(p3, 38)}
                 </div>
-                <div style="font-size:11px; font-weight:700; color:#fff; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p2 ? p2.user_name : 'Vacante'}</div>
-                <div style="font-size:10px; font-weight:800; font-family:var(--mono); color:${p2 && parseFloat(p2.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin-top:2px;">${p2 ? (parseFloat(p2.return_pct) >= 0 ? '+' : '') + parseFloat(p2.return_pct).toFixed(1) + '%' : '—'}</div>
-              </div>
-
-              <!-- 1º Líder (Centro Destacado) -->
-              <div class="leader-avatar-card center-rank">
-                <div style="display:flex; justify-content:center; margin-bottom:4px;">
-                  ${getParticipantAvatarHtml(p1, 50)}
-                </div>
-                <div style="font-size:12px; font-weight:800; color:#fff; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p1 ? p1.user_name : 'Vacante'}</div>
-                <div style="font-size:11px; font-weight:900; font-family:var(--mono); color:var(--yellow); margin-top:2px;">${p1 ? (parseFloat(p1.return_pct) >= 0 ? '+' : '') + parseFloat(p1.return_pct).toFixed(1) + '%' : '—'}</div>
-              </div>
-
-              <!-- 3º Líder -->
-              <div class="leader-avatar-card">
-                <div style="display:flex; justify-content:center; margin-bottom:4px;">
-                  ${getParticipantAvatarHtml(p3, 42)}
-                </div>
-                <div style="font-size:11px; font-weight:700; color:#fff; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p3 ? p3.user_name : 'Vacante'}</div>
-                <div style="font-size:10px; font-weight:800; font-family:var(--mono); color:${p3 && parseFloat(p3.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin-top:2px;">${p3 ? (parseFloat(p3.return_pct) >= 0 ? '+' : '') + parseFloat(p3.return_pct).toFixed(1) + '%' : '—'}</div>
+                <div style="font-size:11px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p3 ? p3.user_name : 'Vacante'}</div>
+                <div style="font-size:10.5px; font-weight:800; font-family:var(--mono); color:${p3 && parseFloat(p3.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin:2px 0;">${p3 ? (parseFloat(p3.return_pct) >= 0 ? '+' : '') + parseFloat(p3.return_pct).toFixed(1) + '%' : '—'}</div>
+                <div style="font-size:9px; color:#cd7f32; font-weight:800; text-transform:uppercase;">3º RANK</div>
               </div>
             `;
           }
