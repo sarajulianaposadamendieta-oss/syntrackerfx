@@ -2895,7 +2895,7 @@ function _renderAnalisis_orig() {
           }
 
           const nameEl = document.getElementById('tournament-name');
-          if (nameEl) nameEl.textContent = activeTournament.name;
+          if (nameEl) nameEl.textContent = 'TORNEO GOLD FX';
           const startStr = new Date(activeTournament.start_date).toLocaleDateString('es-CO');
           const endStr = new Date(activeTournament.end_date).toLocaleDateString('es-CO');
           const datesEl = document.getElementById('tournament-dates');

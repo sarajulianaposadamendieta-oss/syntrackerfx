@@ -3150,53 +3150,31 @@
 
     <div class="page" id="page-torneo">
       <!-- CABECERA DEL TORNEO -->
-      <div style="text-align:center; margin-bottom: 24px;">
-        <div style="font-size:24px; font-weight:900; letter-spacing:2px; color:#fff; text-transform:uppercase;" id="tournament-name">TORNEO GOLDFX</div>
+      <div style="text-align:center; margin-bottom: 20px;">
+        <div style="font-size:26px; font-weight:900; letter-spacing:2.5px; color:#fff; text-transform:uppercase;" id="tournament-name">TORNEO GOLD FX</div>
         <div style="display:inline-flex; align-items:center; gap:10px; margin-top:6px; font-size:12px;">
           <span class="badge-status completed" style="font-size:11px; padding:3px 10px; font-weight:700;">EN CURSO</span>
           <span id="tournament-dates" style="color:var(--text-secondary);">Remanente de tiempo —</span>
         </div>
-        <div id="tournament-join-btn-container" style="margin-top:14px;">
+        <div id="tournament-join-btn-container" style="margin-top:12px;">
           <!-- Dinámico -->
         </div>
       </div>
 
-      <!-- ESTRUCTURA 3 COLUMNAS GLASSMORPHISM -->
-      <div style="display:grid; grid-template-columns: 260px 1fr 280px; gap:18px; align-items:start;" id="tournament-luxury-layout">
-        
-        <!-- COLUMNA IZQUIERDA: TOP 3 PODIO UNIFICADO + REGLAS -->
-        <div style="display:flex; flex-direction:column; gap:18px;">
-          
-          <!-- Podio TOP 3 Unificado (Trofeo + Foto + Métricas) -->
-          <div class="glass-box">
-            <div style="font-size:13px; font-weight:800; color:var(--yellow); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:16px; text-align:center;">🏆 TOP 3</div>
-            <div style="display:grid; grid-template-columns: 1fr 1.18fr 1fr; gap:8px; align-items:end;" id="tournament-top3-container">
-              <!-- Renderizado dinámico TOP 3 -->
-            </div>
+      <!-- PODIO TOP 3 CENTRADO DEBAJO DEL TÍTULO -->
+      <div style="max-width:620px; margin: 0 auto 24px auto;">
+        <div class="glass-box" style="padding:18px 20px; border:1px solid rgba(255,205,27,0.3); background:linear-gradient(180deg, rgba(255,205,27,0.08), rgba(18,18,22,0.85));">
+          <div style="font-size:13px; font-weight:900; color:var(--yellow); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:14px; text-align:center;">🏆 PODIO TOP 3</div>
+          <div style="display:grid; grid-template-columns: 1fr 1.25fr 1fr; gap:12px; align-items:end;" id="tournament-top3-container">
+            <!-- Renderizado dinámico TOP 3 -->
           </div>
-
-          <!-- Reglas Operativas -->
-          <div class="glass-box" style="padding:16px;">
-            <div style="font-size:12px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,205,27,0.15); padding-bottom:6px;">📋 REGLAS OPERATIVAS</div>
-            <div style="display:flex; flex-direction:column; gap:10px; font-size:11px; color:var(--text-secondary);">
-              <div style="display:flex; gap:8px; align-items:center;">
-                <span style="font-size:14px;">1️⃣</span>
-                <div><strong>1 Trade / Día:</strong> Máx 1 operación diaria.</div>
-              </div>
-              <div style="display:flex; gap:8px; align-items:center;">
-                <span style="font-size:14px;">📉</span>
-                <div><strong>DD Diario (1.1%):</strong> Pérdida máx por día.</div>
-              </div>
-              <div style="display:flex; gap:8px; align-items:center;">
-                <span style="font-size:14px;">🛑</span>
-                <div><strong>DD Máx (5.0%):</strong> Descalificación automática.</div>
-              </div>
-            </div>
-          </div>
-
         </div>
+      </div>
 
-        <!-- COLUMNA CENTRAL: CLASIFICACIÓN GENERAL -->
+      <!-- GRID INFERIOR (CLASIFICACIÓN GENERAL + COLUMNA DERECHA) -->
+      <div style="display:grid; grid-template-columns: 1fr 310px; gap:20px; align-items:start;" id="tournament-luxury-layout">
+        
+        <!-- COLUMNA PRINCIPAL: CLASIFICACIÓN GENERAL -->
         <div class="glass-box">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(255,205,27,0.15); padding-bottom:10px;">
             <div style="font-size:14px; font-weight:800; color:#fff; letter-spacing:1px;">CLASIFICACIÓN GENERAL</div>
@@ -3231,8 +3209,8 @@
           </div>
         </div>
 
-        <!-- COLUMNA DERECHA: RENDIMIENTO EN VIVO + PANEL DE TRADING -->
-        <div style="display:flex; flex-direction:column; gap:20px;">
+        <!-- COLUMNA DERECHA: RENDIMIENTO EN VIVO + PANEL DE TRADING + REGLAS -->
+        <div style="display:flex; flex-direction:column; gap:18px;">
           
           <!-- Rendimiento en vivo (Chart) -->
           <div class="glass-box">
@@ -3271,6 +3249,25 @@
               <div style="display:flex; justify-content:space-between; background:rgba(0,0,0,0.3); padding:8px 10px; border-radius:6px;">
                 <span style="color:var(--text-secondary);">Posición en Ranking:</span>
                 <strong id="u-rank-pos" style="color:var(--yellow); font-family:var(--mono);">—</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reglas Operativas -->
+          <div class="glass-box" style="padding:16px;">
+            <div style="font-size:12px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,205,27,0.15); padding-bottom:6px;">📋 REGLAS OPERATIVAS</div>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:11px; color:var(--text-secondary);">
+              <div style="display:flex; gap:8px; align-items:center;">
+                <span style="font-size:14px;">1️⃣</span>
+                <div><strong>1 Trade / Día:</strong> Máx 1 operación diaria.</div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <span style="font-size:14px;">📉</span>
+                <div><strong>DD Diario (1.1%):</strong> Pérdida máx por día.</div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <span style="font-size:14px;">🛑</span>
+                <div><strong>DD Máx (5.0%):</strong> Descalificación automática.</div>
               </div>
             </div>
           </div>
