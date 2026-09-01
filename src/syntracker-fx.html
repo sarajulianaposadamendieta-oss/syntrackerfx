@@ -3151,7 +3151,7 @@
     <div class="page" id="page-torneo">
       <!-- CABECERA DEL TORNEO -->
       <div style="text-align:center; margin-bottom: 24px;">
-        <div style="font-size:22px; font-weight:900; letter-spacing:2px; color:#fff; text-transform:uppercase;" id="tournament-name">TORNEO DE TRADING DE PRIMAVERA</div>
+        <div style="font-size:24px; font-weight:900; letter-spacing:2px; color:#fff; text-transform:uppercase;" id="tournament-name">TORNEO GOLDFX</div>
         <div style="display:inline-flex; align-items:center; gap:10px; margin-top:6px; font-size:12px;">
           <span class="badge-status completed" style="font-size:11px; padding:3px 10px; font-weight:700;">EN CURSO</span>
           <span id="tournament-dates" style="color:var(--text-secondary);">Remanente de tiempo —</span>
@@ -3162,10 +3162,10 @@
       </div>
 
       <!-- ESTRUCTURA 3 COLUMNAS GLASSMORPHISM -->
-      <div style="display:grid; grid-template-columns: 300px 1fr 320px; gap:20px; align-items:start;" id="tournament-luxury-layout">
+      <div style="display:grid; grid-template-columns: 260px 1fr 280px; gap:18px; align-items:start;" id="tournament-luxury-layout">
         
         <!-- COLUMNA IZQUIERDA: TROFEOS + LÍDERES ACTUALES -->
-        <div style="display:flex; flex-direction:column; gap:20px;">
+        <div style="display:flex; flex-direction:column; gap:18px;">
           
           <!-- Podio de Trofeos -->
           <div class="glass-box">
@@ -3192,19 +3192,26 @@
             <button class="btn-cancel" onclick="loadTournamentData()" style="font-size:11px; padding:4px 10px; border-radius:6px;">🔄 Actualizar</button>
           </div>
 
-          <div class="eval-table-wrapper" style="border:none;">
-            <table class="eval-table" style="border-collapse:separate; border-spacing:0 6px;">
+          <div class="eval-table-wrapper" style="border:none; overflow-x:auto;">
+            <table class="eval-table" style="border-collapse:separate; border-spacing:0 6px; width:100%; min-width:650px;">
               <thead>
                 <tr>
-                  <th style="width: 40px; text-align: center;">Rank</th>
-                  <th>Usuario</th>
+                  <th style="width: 40px; text-align: center;">Pos</th>
+                  <th>Participante</th>
+                  <th style="text-align: center;">Estado</th>
+                  <th style="text-align: center;">Acumulado</th>
+                  <th style="text-align: center;">Diario</th>
+                  <th style="text-align: center;">Semanal</th>
+                  <th style="text-align: center;">Mensual</th>
+                  <th style="text-align: center;">DD Diario</th>
+                  <th style="text-align: center;">DD Máx</th>
                   <th style="text-align: center;">Trades</th>
-                  <th style="text-align: center;">Return P&L</th>
+                  <th style="text-align: center;">Insignias</th>
                 </tr>
               </thead>
               <tbody id="tournament-leaderboard-tbody">
                 <tr>
-                  <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                  <td colspan="11" style="text-align: center; color: var(--text-muted); padding: 30px;">
                     Cargando ranking en tiempo real...
                   </td>
                 </tr>

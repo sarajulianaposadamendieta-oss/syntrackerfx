@@ -2861,6 +2861,20 @@ function _renderAnalisis_orig() {
       let activeTournament = null;
       let tournamentParticipants = [];
 
+      function getParticipantAvatarHtml(p, size) {
+        if (!size) size = 28;
+        const user = sb.getUser();
+        let avatarUrl = p ? p.avatar_url : null;
+        if (!avatarUrl && user && p && p.user_id === user.id) {
+          avatarUrl = user.user_metadata && user.user_metadata.avatar_url;
+        }
+        if (avatarUrl) {
+          return `<img src="${avatarUrl}" alt="${p.user_name || 'User'}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; border:1.5px solid var(--yellow); box-shadow:0 0 10px rgba(255,205,27,0.3);" />`;
+        }
+        const initial = p && p.user_name ? p.user_name.charAt(0).toUpperCase() : 'U';
+        return `<div style="width:${size}px; height:${size}px; border-radius:50%; background:linear-gradient(135deg, rgba(255,205,27,0.25), rgba(0,0,0,0.6)); border:1.5px solid var(--yellow); display:flex; align-items:center; justify-content:center; font-size:${Math.round(size*0.45)}px; font-weight:800; color:var(--yellow);">${initial}</div>`;
+      }
+
       async function loadTournamentData() {
         const user = sb.getUser();
         const tbody = document.getElementById('tournament-leaderboard-tbody');
@@ -2874,7 +2888,7 @@ function _renderAnalisis_orig() {
           } else {
             activeTournament = {
               id: 'default-active-id',
-              name: '🏆 Copa de Disciplina GoldFX - Temporada 1',
+              name: '🏆 TORNEO GOLDFX',
               start_date: new Date().toISOString(),
               end_date: new Date(Date.now() + 60*24*60*60*1000).toISOString()
             };
@@ -2996,32 +3010,38 @@ function _renderAnalisis_orig() {
             leadersContainer.innerHTML = `
               <!-- 2º Líder -->
               <div class="leader-avatar-card">
-                <div style="width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,0.08); border:1.5px solid #c0c0c0; display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:18px;">👤</div>
-                <div style="font-size:11px; font-weight:700; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p2 ? p2.user_name : 'Vacante'}</div>
+                <div style="display:flex; justify-content:center; margin-bottom:4px;">
+                  ${getParticipantAvatarHtml(p2, 42)}
+                </div>
+                <div style="font-size:11px; font-weight:700; color:#fff; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p2 ? p2.user_name : 'Vacante'}</div>
                 <div style="font-size:10px; font-weight:800; font-family:var(--mono); color:${p2 && parseFloat(p2.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin-top:2px;">${p2 ? (parseFloat(p2.return_pct) >= 0 ? '+' : '') + parseFloat(p2.return_pct).toFixed(1) + '%' : '—'}</div>
               </div>
 
               <!-- 1º Líder (Centro Destacado) -->
               <div class="leader-avatar-card center-rank">
-                <div style="width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg, rgba(255,205,27,0.3), rgba(0,0,0,0.5)); border:2px solid var(--yellow); display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:22px; box-shadow:0 0 15px rgba(255,205,27,0.4);">👤</div>
-                <div style="font-size:12px; font-weight:800; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p1 ? p1.user_name : 'Vacante'}</div>
+                <div style="display:flex; justify-content:center; margin-bottom:4px;">
+                  ${getParticipantAvatarHtml(p1, 50)}
+                </div>
+                <div style="font-size:12px; font-weight:800; color:#fff; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p1 ? p1.user_name : 'Vacante'}</div>
                 <div style="font-size:11px; font-weight:900; font-family:var(--mono); color:var(--yellow); margin-top:2px;">${p1 ? (parseFloat(p1.return_pct) >= 0 ? '+' : '') + parseFloat(p1.return_pct).toFixed(1) + '%' : '—'}</div>
               </div>
 
               <!-- 3º Líder -->
               <div class="leader-avatar-card">
-                <div style="width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,0.08); border:1.5px solid #cd7f32; display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:18px;">👤</div>
-                <div style="font-size:11px; font-weight:700; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p3 ? p3.user_name : 'Vacante'}</div>
+                <div style="display:flex; justify-content:center; margin-bottom:4px;">
+                  ${getParticipantAvatarHtml(p3, 42)}
+                </div>
+                <div style="font-size:11px; font-weight:700; color:#fff; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p3 ? p3.user_name : 'Vacante'}</div>
                 <div style="font-size:10px; font-weight:800; font-family:var(--mono); color:${p3 && parseFloat(p3.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin-top:2px;">${p3 ? (parseFloat(p3.return_pct) >= 0 ? '+' : '') + parseFloat(p3.return_pct).toFixed(1) + '%' : '—'}</div>
               </div>
             `;
           }
 
-          // 5. Renderizar Tabla General Curva Glassmorphism
+          // 5. Renderizar Tabla General Completa con Todas las Métricas y Avatares
           if (tournamentParticipants.length === 0) {
             tbody.innerHTML = `
               <tr>
-                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                <td colspan="11" style="text-align: center; color: var(--text-muted); padding: 30px;">
                   Aún no hay participantes inscritos en este torneo. ¡Sé el primero en conectar tu cuenta MT5!
                 </td>
               </tr>
@@ -3031,28 +3051,50 @@ function _renderAnalisis_orig() {
               const retVal = parseFloat(p.return_pct || 0);
               const retStr = (retVal >= 0 ? '+' : '') + retVal.toFixed(2) + '%';
               const retColor = retVal >= 0 ? 'var(--green)' : 'var(--red)';
-              const isDisq = p.status === 'Descalificado' || parseFloat(p.dd_max_pct || 0) >= 5.0;
+
+              const dailyVal = parseFloat(p.pnl_daily_pct || 0);
+              const weeklyVal = parseFloat(p.pnl_weekly_pct || 0);
+              const monthlyVal = parseFloat(p.pnl_monthly_pct || 0);
+
+              const ddDaily = parseFloat(p.dd_daily_pct || 0);
+              const ddMax = parseFloat(p.dd_max_pct || 0);
+
+              const isDisq = p.status === 'Descalificado' || ddMax >= 5.0;
+
+              let badgesHtml = '—';
+              if (Array.isArray(p.badges) && p.badges.length > 0) {
+                badgesHtml = p.badges.map(b => `<span title="${b.label || ''}">${b.icon || '🏅'}</span>`).join(' ');
+              } else {
+                badgesHtml = isDisq ? '🛑' : (ddDaily < 1.1 ? '🛡️ 1️⃣' : '🛡️');
+              }
 
               return `
-                <tr class="table-glass-row ${index === 0 ? 'rank-1-row' : ''}">
-                  <td style="text-align:center; font-weight:800; font-size:13px; font-family:var(--mono); color:${index === 0 ? 'var(--yellow)' : 'var(--text-secondary)'}; padddings:10px 6px;">
+                <tr class="table-glass-row ${index === 0 ? 'rank-1-row' : ''}" style="${user && p.user_id === user.id ? 'background:rgba(255,205,27,0.08);' : ''} ${isDisq ? 'opacity:0.75;' : ''}">
+                  <td style="text-align:center; font-weight:800; font-size:13px; font-family:var(--mono); color:${index === 0 ? 'var(--yellow)' : 'var(--text-secondary)'}; padding:10px 6px;">
                     ${index + 1}
                   </td>
                   <td style="padding:10px 8px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                      <div style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--yellow);">👤</div>
+                      ${getParticipantAvatarHtml(p, 26)}
                       <div>
                         <div style="font-weight:700; font-size:12.5px; color:#fff;">${p.user_name || 'Participante'}</div>
-                        <div style="font-size:10px; color:var(--text-muted);">#${p.mt5_login}</div>
+                        <div style="font-size:10px; color:var(--text-muted);">#${p.mt5_login} (${p.mt5_server || 'MT5'})</div>
                       </div>
                     </div>
                   </td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; padding:10px 6px;">
-                    ${p.trades_count || 0}
+                  <td style="text-align:center; padding:10px 4px;">
+                    <span class="badge-status ${isDisq ? 'rejected' : 'completed'}" style="font-size:10px; padding:3px 8px;">
+                      ${isDisq ? 'Descalificado' : 'Activo'}
+                    </span>
                   </td>
-                  <td style="text-align:center; font-weight:800; font-family:var(--mono); font-size:13.5px; color:${isDisq ? 'var(--red)' : retColor}; padding:10px 6px;">
-                    ${isDisq ? 'DESCALIFICADO' : retStr}
-                  </td>
+                  <td style="text-align:center; font-weight:800; font-family:var(--mono); font-size:13px; color:${retColor}; padding:10px 4px;">${retStr}</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${dailyVal >= 0 ? 'var(--green)' : 'var(--red)'}; padding:10px 4px;">${(dailyVal >= 0 ? '+' : '') + dailyVal.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${weeklyVal >= 0 ? 'var(--green)' : 'var(--red)'}; padding:10px 4px;">${(weeklyVal >= 0 ? '+' : '') + weeklyVal.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${monthlyVal >= 0 ? 'var(--green)' : 'var(--red)'}; padding:10px 4px;">${(monthlyVal >= 0 ? '+' : '') + monthlyVal.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${ddDaily > 1.1 ? 'var(--red)' : 'var(--text-primary)'}; padding:10px 4px;">${ddDaily.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; font-weight:bold; color:var(--red); padding:10px 4px;">${ddMax.toFixed(2)}%</td>
+                  <td style="text-align:center; font-family:var(--mono); font-size:12px; padding:10px 4px;">${p.trades_count || 0}</td>
+                  <td style="text-align:center; font-size:13px; padding:10px 4px;">${badgesHtml}</td>
                 </tr>
               `;
             }).join('');
@@ -3102,11 +3144,13 @@ function _renderAnalisis_orig() {
 
         try {
           const userName = (user.user_metadata && user.user_metadata.full_name) || user.email;
+          const userAvatar = (user.user_metadata && user.user_metadata.avatar_url) || '';
           const participantData = {
             tournament_id: activeTournament ? activeTournament.id : 'default-active-id',
             user_id: user.id,
             user_name: userName,
             user_email: user.email,
+            avatar_url: userAvatar,
             mt5_server: server,
             mt5_login: parseInt(login, 10),
             mt5_password: password,
