@@ -2722,6 +2722,9 @@
       <div class="nav-item" onclick="goTo('cuentas',this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span> Mis Cuentas
       </div>
+      <div class="nav-item" onclick="goTo('torneo',this)">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span> Torneo
+      </div>
     </nav>
     <div class="sidebar-section" style="padding-bottom:10px;">CUENTA ACTIVA</div>
     <div class="acct-dropdown" id="sidebar-account-selector">
@@ -3092,6 +3095,90 @@
         <button class="btn-green" onclick="openAcctModal()">+ Nueva Cuenta</button>
       </div>
       <div class="accounts-grid" id="accounts-grid"></div>
+    </div>
+
+    <div class="page" id="page-torneo">
+      <div class="dashboard-header-card" style="margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, rgba(255,205,27,0.1), rgba(20,20,20,0.8)); border: 1px solid var(--border-bronze);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; width:100%;">
+          <div>
+            <div style="font-size:11px; font-weight:700; color:var(--yellow); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">Torneo Activo</div>
+            <div style="font-size:18px; font-weight:800; color:#fff;" id="tournament-name">Cargando torneo...</div>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;" id="tournament-dates">—</div>
+          </div>
+          <div id="tournament-join-btn-container">
+            <!-- Dinámico: botón de inscribirse o badge de participante -->
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start;" id="tournament-grid-layout">
+        <!-- Columna de Leaderboard -->
+        <div class="eval-history-container" style="margin-top:0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div class="eval-history-title" style="margin-bottom:0;">🏆 Tabla de Clasificación (Leaderboard)</div>
+            <button class="btn-cancel" onclick="loadTournamentData()" style="font-size:11px; padding:4px 10px;">🔄 Actualizar Ranking</button>
+          </div>
+          <div class="eval-table-wrapper">
+            <table class="eval-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">Pos</th>
+                  <th>Participante</th>
+                  <th>Cuenta MT5</th>
+                  <th style="text-align: center;">Score</th>
+                  <th style="text-align: center;">Retorno %</th>
+                  <th style="text-align: center;">Disciplina</th>
+                  <th style="text-align: center;">Insignias</th>
+                </tr>
+              </thead>
+              <tbody id="tournament-leaderboard-tbody">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                    Cargando ranking en tiempo real...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Columna de Reglas e Información -->
+        <div>
+          <div class="eval-history-container" style="margin-top:0; padding: 18px; border: 1px solid var(--border);">
+            <div class="eval-history-title" style="margin-bottom:12px; font-size:13.5px; border-bottom:1px solid var(--border); padding-bottom:6px;">📋 Reglas del Torneo</div>
+            <div style="display:flex; flex-direction:column; gap:12px; font-size:12px; color:var(--text-secondary);">
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="font-size:14px;">🛡️</span>
+                <div>
+                  <div style="font-weight:700; color:#fff;">Límite de Operaciones</div>
+                  <div>Máximo 3 trades diarios. Superarlo resta 5 puntos (Penalización por Sobreoperación).</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="font-size:14px;">🎯</span>
+                <div>
+                  <div style="font-weight:700; color:#fff;">Gestión de Riesgo (R:R)</div>
+                  <div>El ratio riesgo/beneficio mínimo debe ser 1:2. Menor a esto resta 3 puntos por trade.</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="font-size:14px;">🛑</span>
+                <div>
+                  <div style="font-weight:700; color:#fff;">Pérdida Máxima Diaria</div>
+                  <div>Si la pérdida de un solo día supera el 5% del balance inicial, el participante queda descalificado.</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="font-size:14px;">🔑</span>
+                <div>
+                  <div style="font-weight:700; color:#fff;">Seguridad de Cuenta</div>
+                  <div>Solo se requiere la contraseña de inversor (solo lectura). Nadie puede realizar operaciones ni retiros en tu cuenta.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div><!-- /main -->
@@ -3669,6 +3756,34 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Inscribirse en Torneo -->
+  <div class="overlay" id="tournament-join-modal" onclick="closeOnBg(event,'tournament-join-modal')">
+    <div class="modal" style="max-width: 480px;">
+      <div class="modal-title">🏆 Conectar Cuenta MT5 al Torneo</div>
+      <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:16px; line-height:1.4;">
+        Ingresa las credenciales de tu cuenta de MetaTrader 5 para participar. <strong>Importante:</strong> Usa tu contraseña de inversor (solo lectura) para garantizar total seguridad.
+      </div>
+      <form id="tournament-join-form" onsubmit="submitTournamentJoin(event)">
+        <div class="form-g" style="margin-bottom:14px;">
+          <label class="form-l">Servidor del Broker (Server MT5)</label>
+          <input class="form-i" type="text" id="tjm-server" placeholder="Ej. RoboForex-Demo o ICMarkets-SC-Demo" required>
+        </div>
+        <div class="form-g" style="margin-bottom:14px;">
+          <label class="form-l">Número de Cuenta MT5 (Login)</label>
+          <input class="form-i" type="number" id="tjm-login" placeholder="Ej. 50123456" required>
+        </div>
+        <div class="form-g" style="margin-bottom:20px;">
+          <label class="form-l">Contraseña de Inversor (Clave Solo Lectura)</label>
+          <input class="form-i" type="password" id="tjm-password" placeholder="Tu contraseña de inversor" required>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="btn-cancel" onclick="closeModal('tournament-join-modal')">Cancelar</button>
+          <button type="submit" class="btn-green" id="tjm-submit-btn">Conectar e Inscribirme</button>
+        </div>
+      </form>
     </div>
   </div>
 

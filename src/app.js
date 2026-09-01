@@ -697,7 +697,7 @@
     }
 
     // ── Navigation ──
-    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas' };
+    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading' };
     function goTo(id, el) {
       document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
@@ -711,6 +711,7 @@
       if (id === 'estadisticas') renderStats();
       if (id === 'comparar') renderComparar();
       if (id === 'cuentas') renderAccounts();
+      if (id === 'torneo') loadTournamentData();
     }
     function setView(v, btn) { document.querySelectorAll('.tog-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); }
 
@@ -2856,7 +2857,196 @@ function _renderAnalisis_orig() {
           '</div>';
       }
       function getBestAsset(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (t.asset === 'INACCIÓN') return; if (!m[t.asset]) m[t.asset] = 0; m[t.asset] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] + ' ($' + best[1].toFixed(0) + ')' : '—'; }
-      function getBestSession(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (t.asset === 'INACCIÓN') return; if (!m[t.session]) m[t.session] = 0; m[t.session] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] : '—'; }
+      // ── TORNEO DE TRADING ──
+      let activeTournament = null;
+      let tournamentParticipants = [];
+
+      async function loadTournamentData() {
+        const user = sb.getUser();
+        const tbody = document.getElementById('tournament-leaderboard-tbody');
+        if (!tbody) return;
+
+        try {
+          // 1. Cargar torneo activo
+          const tournamentsData = await sb.query('tournaments', { select: '*', filter: 'status=eq.Activo', order: 'created_at.desc' });
+          if (Array.isArray(tournamentsData) && tournamentsData.length > 0) {
+            activeTournament = tournamentsData[0];
+          } else {
+            activeTournament = {
+              id: 'default-active-id',
+              name: '🏆 Copa de Disciplina GoldFX - Temporada 1',
+              start_date: new Date().toISOString(),
+              end_date: new Date(Date.now() + 60*24*60*60*1000).toISOString()
+            };
+          }
+
+          document.getElementById('tournament-name').textContent = activeTournament.name;
+          const startStr = new Date(activeTournament.start_date).toLocaleDateString('es-CO');
+          const endStr = new Date(activeTournament.end_date).toLocaleDateString('es-CO');
+          document.getElementById('tournament-dates').textContent = `Periodo: ${startStr} — ${endStr}`;
+
+          // 2. Cargar participantes
+          if (activeTournament.id && activeTournament.id !== 'default-active-id') {
+            const participantsData = await sb.query('tournament_participants', {
+              select: '*',
+              filter: `tournament_id=eq.${activeTournament.id}`,
+              order: 'current_score.desc'
+            });
+            tournamentParticipants = Array.isArray(participantsData) ? participantsData : [];
+          } else {
+            tournamentParticipants = [];
+          }
+
+          // 3. Verificar si el usuario actual ya está inscrito
+          const btnContainer = document.getElementById('tournament-join-btn-container');
+          const isJoined = user && tournamentParticipants.some(p => p.user_id === user.id);
+
+          if (isJoined) {
+            const myPart = tournamentParticipants.find(p => p.user_id === user.id);
+            btnContainer.innerHTML = `
+              <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); padding:8px 14px; border-radius:8px; color:var(--green); font-size:12px; font-weight:700;">
+                <span>✅ Inscrito (Cuenta MT5: ${myPart ? myPart.mt5_login : '—'})</span>
+              </div>
+            `;
+          } else {
+            btnContainer.innerHTML = `
+              <button class="btn-green" onclick="openTournamentJoinModal()" style="font-size:13px; padding:10px 18px;">
+                🏆 Conectar Cuenta MT5 e Inscribirme
+              </button>
+            `;
+          }
+
+          // 4. Renderizar Leaderboard
+          if (tournamentParticipants.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                  Aún no hay participantes inscritos en este torneo. ¡Sé el primero en conectar tu cuenta MT5!
+                </td>
+              </tr>
+            `;
+          } else {
+            tbody.innerHTML = tournamentParticipants.map(function(p, index) {
+              let rankBadge = `${index + 1}º`;
+              if (index === 0) rankBadge = '🥇 1º';
+              else if (index === 1) rankBadge = '🥈 2º';
+              else if (index === 2) rankBadge = '🥉 3º';
+
+              const retVal = parseFloat(p.return_pct || 0);
+              const retColor = retVal >= 0 ? 'var(--green)' : 'var(--red)';
+              const retStr = (retVal >= 0 ? '+' : '') + retVal.toFixed(2) + '%';
+
+              const discVal = parseFloat(p.discipline_score || 100);
+
+              let badgesHtml = '—';
+              if (Array.isArray(p.badges) && p.badges.length > 0) {
+                badgesHtml = p.badges.map(b => `<span title="${b.label || ''}">${b.icon || '🏅'}</span>`).join(' ');
+              } else {
+                badgesHtml = discVal >= 90 ? '🛡️ 🎯' : '🛡️';
+              }
+
+              return `
+                <tr style="${user && p.user_id === user.id ? 'background:rgba(255,205,27,0.05);' : ''}">
+                  <td style="text-align:center; font-weight:700; font-size:14px; font-family:var(--mono); color:var(--yellow);">${rankBadge}</td>
+                  <td>
+                    <div style="font-weight:700;">${p.user_name || 'Participante'}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">${p.user_email || ''}</div>
+                  </td>
+                  <td style="font-family:var(--mono); font-size:12px;">
+                    <div>${p.mt5_server}</div>
+                    <div style="color:var(--text-muted); font-size:11px;">#${p.mt5_login}</div>
+                  </td>
+                  <td style="text-align:center; font-weight:800; font-family:var(--mono); font-size:15px; color:var(--yellow);">${parseFloat(p.current_score || 0).toFixed(1)} pts</td>
+                  <td style="text-align:center; font-weight:700; font-family:var(--mono); color:${retColor};">${retStr}</td>
+                  <td style="text-align:center;">
+                    <div style="font-size:11px; font-weight:700; font-family:var(--mono); color:var(--yellow); margin-bottom:2px;">${discVal.toFixed(0)}/100</div>
+                    <div style="width:70px; height:4px; background:var(--border); border-radius:2px; margin:0 auto; overflow:hidden;">
+                      <div style="width:${Math.min(100, Math.max(0, discVal))}%; height:100%; background:var(--yellow);"></div>
+                    </div>
+                  </td>
+                  <td style="text-align:center; font-size:14px;">${badgesHtml}</td>
+                </tr>
+              `;
+            }).join('');
+          }
+
+        } catch (e) {
+          console.error('Error al cargar datos del torneo:', e);
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--red); padding: 20px;">
+                Error al conectar con la base de datos del torneo: ${e.message}
+              </td>
+            </tr>
+          `;
+        }
+      }
+
+      function openTournamentJoinModal() {
+        const user = sb.getUser();
+        if (!user) {
+          alert('Debes iniciar sesión para inscribirte en el torneo.');
+          return;
+        }
+        document.getElementById('tournament-join-modal').classList.add('open');
+      }
+
+      async function submitTournamentJoin(event) {
+        event.preventDefault();
+        const user = sb.getUser();
+        if (!user) return;
+
+        const server = document.getElementById('tjm-server').value.trim();
+        const login = document.getElementById('tjm-login').value.trim();
+        const password = document.getElementById('tjm-password').value.trim();
+
+        if (!server || !login || !password) {
+          alert('Por favor completa todos los campos.');
+          return;
+        }
+
+        const submitBtn = document.getElementById('tjm-submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Conectando...';
+
+        try {
+          const userName = (user.user_metadata && user.user_metadata.full_name) || user.email;
+          const participantData = {
+            tournament_id: activeTournament ? activeTournament.id : 'default-active-id',
+            user_id: user.id,
+            user_name: userName,
+            user_email: user.email,
+            mt5_server: server,
+            mt5_login: parseInt(login, 10),
+            mt5_password: password,
+            initial_balance: 0.00,
+            current_balance: 0.00,
+            net_pnl: 0.00,
+            return_pct: 0.00,
+            discipline_score: 100.00,
+            win_rate: 0.00,
+            current_score: 100.00,
+            trades_count: 0,
+            badges: [{ icon: '🛡️', label: 'Sin Sobreoperación' }]
+          };
+
+          await sb.insert('tournament_participants', participantData);
+          alert('¡Genial! Tu cuenta de MT5 ha sido conectada exitosamente al torneo. El servidor central comenzará a sincronizar tus operaciones.');
+          closeModal('tournament-join-modal');
+          document.getElementById('tournament-join-form').reset();
+          await loadTournamentData();
+        } catch (e) {
+          alert('Error al inscribir la cuenta en el torneo: ' + e.message);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Conectar e Inscribirme';
+        }
+      }
+
+      // Exponer globalmente
+      window.loadTournamentData = loadTournamentData;
+      window.openTournamentJoinModal = openTournamentJoinModal;
+      window.submitTournamentJoin = submitTournamentJoin;
 
       // ── Init ──
       document.getElementById('auth-screen').style.display = 'flex';
