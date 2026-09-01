@@ -2880,10 +2880,12 @@ function _renderAnalisis_orig() {
             };
           }
 
-          document.getElementById('tournament-name').textContent = activeTournament.name;
+          const nameEl = document.getElementById('tournament-name');
+          if (nameEl) nameEl.textContent = activeTournament.name;
           const startStr = new Date(activeTournament.start_date).toLocaleDateString('es-CO');
           const endStr = new Date(activeTournament.end_date).toLocaleDateString('es-CO');
-          document.getElementById('tournament-dates').textContent = `Periodo: ${startStr} — ${endStr}`;
+          const datesEl = document.getElementById('tournament-dates');
+          if (datesEl) datesEl.textContent = `Periodo: ${startStr} — ${endStr}`;
 
           // 2. Cargar participantes ordenados por Rendimiento Acumulado %
           if (activeTournament.id && activeTournament.id !== 'default-active-id') {
@@ -2917,45 +2919,35 @@ function _renderAnalisis_orig() {
               userDashboard.style.display = 'block';
 
               const isDisqualified = myPart.status === 'Descalificado' || parseFloat(myPart.dd_max_pct || 0) >= 5.0;
-              document.getElementById('user-status-badge').innerHTML = isDisqualified
-                ? `<span class="badge-status rejected" style="font-size:11px; padding:4px 10px;">🛑 DESCALIFICADO (DD Máx >= 5.0%)</span>`
-                : `<span class="badge-status completed" style="font-size:11px; padding:4px 10px;">🟢 ACTIVO EN COMPETENCIA</span>`;
+              const badgeEl = document.getElementById('user-status-badge');
+              if (badgeEl) {
+                badgeEl.innerHTML = isDisqualified
+                  ? `<span class="badge-status rejected" style="font-size:10px; padding:3px 8px;">🛑 DESCALIFICADO</span>`
+                  : `<span class="badge-status completed" style="font-size:10px; padding:3px 8px;">🟢 ACTIVO</span>`;
+              }
 
               const pnlAcum = parseFloat(myPart.return_pct || 0);
-              const pnlDaily = parseFloat(myPart.pnl_daily_pct || 0);
-              const pnlWeekly = parseFloat(myPart.pnl_weekly_pct || 0);
-              const ddDaily = parseFloat(myPart.dd_daily_pct || 0);
               const ddMax = parseFloat(myPart.dd_max_pct || 0);
 
               const elAcum = document.getElementById('u-pnl-acum');
-              elAcum.textContent = (pnlAcum >= 0 ? '+' : '') + pnlAcum.toFixed(2) + '%';
-              elAcum.style.color = pnlAcum >= 0 ? 'var(--green)' : 'var(--red)';
+              if (elAcum) {
+                elAcum.textContent = (pnlAcum >= 0 ? '+' : '') + pnlAcum.toFixed(2) + '%';
+                elAcum.style.color = pnlAcum >= 0 ? 'var(--green)' : 'var(--red)';
+              }
 
-              document.getElementById('u-pnl-daily').textContent = (pnlDaily >= 0 ? '+' : '') + pnlDaily.toFixed(2) + '%';
-              document.getElementById('u-pnl-weekly').textContent = (pnlWeekly >= 0 ? '+' : '') + pnlWeekly.toFixed(2) + '%';
+              const elDdMax = document.getElementById('u-dd-max');
+              if (elDdMax) {
+                elDdMax.textContent = ddMax.toFixed(2) + '%';
+              }
 
-              document.getElementById('u-dd-max').textContent = ddMax.toFixed(2) + '%';
-              document.getElementById('u-dd-daily').textContent = ddDaily.toFixed(2) + '%';
+              const elWinRate = document.getElementById('u-win-rate');
+              if (elWinRate) {
+                elWinRate.textContent = `${myPart.trades_count || 0} trades (${parseFloat(myPart.win_rate || 0).toFixed(0)}% WR)`;
+              }
 
-              const ddMargin = Math.max(0, 5.0 - ddMax);
-              const elMargin = document.getElementById('u-dd-margin');
-              elMargin.textContent = ddMargin.toFixed(2) + '%';
-              elMargin.style.color = ddMargin < 1.0 ? 'var(--red)' : 'var(--green)';
-
-              document.getElementById('u-win-rate').textContent = parseFloat(myPart.win_rate || 0).toFixed(1) + '%';
-              document.getElementById('u-trades-count').textContent = myPart.trades_count || 0;
-              document.getElementById('u-w-count').textContent = myPart.win_count || 0;
-              document.getElementById('u-l-count').textContent = myPart.loss_count || 0;
-              document.getElementById('u-be-count').textContent = myPart.be_count || 0;
-
-              document.getElementById('u-rank-pos').textContent = `#${myPartIndex + 1} de ${tournamentParticipants.length}`;
-
-              if (myPartIndex > 0) {
-                const abovePart = tournamentParticipants[myPartIndex - 1];
-                const gap = (parseFloat(abovePart.return_pct || 0) - pnlAcum).toFixed(2);
-                document.getElementById('u-rank-gap').textContent = `Distancia a puesto #${myPartIndex}: +${gap}%`;
-              } else {
-                document.getElementById('u-rank-gap').textContent = `🏆 ¡Vas liderando la tabla de posiciones!`;
+              const elRankPos = document.getElementById('u-rank-pos');
+              if (elRankPos) {
+                elRankPos.textContent = `#${myPartIndex + 1} de ${tournamentParticipants.length}`;
               }
             }
           } else {
