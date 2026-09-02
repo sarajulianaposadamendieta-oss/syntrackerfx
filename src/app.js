@@ -3063,7 +3063,7 @@ function _renderAnalisis_orig() {
             `;
           }
 
-          // 4. Renderizar Podio TOP 3 Unificado (Trofeo + Foto + Métricas)
+          // 4. Renderizar Podio TOP 3 Unificado (Medallas + Foto + Métricas)
           const top3Container = document.getElementById('tournament-top3-container');
           const p1 = tournamentParticipants[0];
           const p2 = tournamentParticipants[1];
@@ -3072,36 +3072,36 @@ function _renderAnalisis_orig() {
           if (top3Container) {
             top3Container.innerHTML = `
               <!-- 2da Posición (Plata) -->
-              <div class="trophy-rank-card" style="padding:12px 6px;">
-                <div style="font-size:24px; filter:drop-shadow(0 2px 6px rgba(192,192,192,0.5));">🥈</div>
-                <div style="display:flex; justify-content:center; margin:6px 0;">
-                  ${getParticipantAvatarHtml(p2, 38)}
+              <div class="trophy-rank-card" style="padding:16px 8px;">
+                <div style="font-size:34px; line-height:1; margin-bottom:8px; filter:drop-shadow(0 3px 8px rgba(192,192,192,0.6));">🥈</div>
+                <div style="display:flex; justify-content:center; margin:4px 0;">
+                  ${getParticipantAvatarHtml(p2, 44)}
                 </div>
-                <div style="font-size:11px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p2 ? p2.user_name : 'Vacante'}</div>
-                <div style="font-size:10.5px; font-weight:800; font-family:var(--mono); color:${p2 && parseFloat(p2.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin:2px 0;">${p2 ? (parseFloat(p2.return_pct) >= 0 ? '+' : '') + parseFloat(p2.return_pct).toFixed(1) + '%' : '—'}</div>
-                <div style="font-size:9px; color:#c0c0c0; font-weight:800; text-transform:uppercase;">2º RANK</div>
+                <div style="font-size:11.5px; font-weight:700; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${p2 ? p2.user_name : 'Vacante'}</div>
+                <div style="font-size:11px; font-weight:800; font-family:var(--mono); color:${p2 && parseFloat(p2.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin:2px 0 6px 0;">${p2 ? (parseFloat(p2.return_pct) >= 0 ? '+' : '') + parseFloat(p2.return_pct).toFixed(1) + '%' : '—'}</div>
+                <div style="font-size:9px; color:#c0c0c0; font-weight:800; text-transform:uppercase; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:10px; border:1px solid rgba(255,255,255,0.15);">2º LUGAR</div>
               </div>
 
-              <!-- 1ra Posición (Oro - Centro Elevado) -->
-              <div class="trophy-rank-card rank-1" style="padding:14px 6px;">
-                <div style="font-size:30px; filter:drop-shadow(0 4px 12px rgba(255,205,27,0.7));">🏆</div>
-                <div style="display:flex; justify-content:center; margin:6px 0;">
-                  ${getParticipantAvatarHtml(p1, 48)}
+              <!-- 1ra Posición (Oro - Centro Elevado con Medalla de 1) -->
+              <div class="trophy-rank-card rank-1" style="padding:18px 8px;">
+                <div style="font-size:42px; line-height:1; margin-bottom:8px; filter:drop-shadow(0 4px 16px rgba(255,205,27,0.85));">🥇</div>
+                <div style="display:flex; justify-content:center; margin:4px 0;">
+                  ${getParticipantAvatarHtml(p1, 54)}
                 </div>
-                <div style="font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p1 ? p1.user_name : 'Vacante'}</div>
-                <div style="font-size:11.5px; font-weight:900; font-family:var(--mono); color:var(--yellow); margin:2px 0;">${p1 ? (parseFloat(p1.return_pct) >= 0 ? '+' : '') + parseFloat(p1.return_pct).toFixed(1) + '%' : '—'}</div>
-                <div style="font-size:9.5px; color:var(--yellow); font-weight:900; text-transform:uppercase;">🥇 1º RANK</div>
+                <div style="font-size:13px; font-weight:800; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${p1 ? p1.user_name : 'Vacante'}</div>
+                <div style="font-size:12px; font-weight:900; font-family:var(--mono); color:var(--yellow); margin:2px 0 6px 0;">${p1 ? (parseFloat(p1.return_pct) >= 0 ? '+' : '') + parseFloat(p1.return_pct).toFixed(1) + '%' : '—'}</div>
+                <div style="font-size:9.5px; color:var(--yellow); font-weight:900; text-transform:uppercase; background:rgba(255,205,27,0.15); padding:3px 10px; border-radius:12px; border:1px solid rgba(255,205,27,0.4); box-shadow:0 0 10px rgba(255,205,27,0.3);">🥇 1º LUGAR</div>
               </div>
 
               <!-- 3ra Posición (Bronce) -->
-              <div class="trophy-rank-card" style="padding:12px 6px;">
-                <div style="font-size:24px; filter:drop-shadow(0 2px 6px rgba(205,127,50,0.5));">🥉</div>
-                <div style="display:flex; justify-content:center; margin:6px 0;">
-                  ${getParticipantAvatarHtml(p3, 38)}
+              <div class="trophy-rank-card" style="padding:16px 8px;">
+                <div style="font-size:34px; line-height:1; margin-bottom:8px; filter:drop-shadow(0 3px 8px rgba(205,127,50,0.6));">🥉</div>
+                <div style="display:flex; justify-content:center; margin:4px 0;">
+                  ${getParticipantAvatarHtml(p3, 44)}
                 </div>
-                <div style="font-size:11px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p3 ? p3.user_name : 'Vacante'}</div>
-                <div style="font-size:10.5px; font-weight:800; font-family:var(--mono); color:${p3 && parseFloat(p3.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin:2px 0;">${p3 ? (parseFloat(p3.return_pct) >= 0 ? '+' : '') + parseFloat(p3.return_pct).toFixed(1) + '%' : '—'}</div>
-                <div style="font-size:9px; color:#cd7f32; font-weight:800; text-transform:uppercase;">3º RANK</div>
+                <div style="font-size:11.5px; font-weight:700; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${p3 ? p3.user_name : 'Vacante'}</div>
+                <div style="font-size:11px; font-weight:800; font-family:var(--mono); color:${p3 && parseFloat(p3.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin:2px 0 6px 0;">${p3 ? (parseFloat(p3.return_pct) >= 0 ? '+' : '') + parseFloat(p3.return_pct).toFixed(1) + '%' : '—'}</div>
+                <div style="font-size:9px; color:#cd7f32; font-weight:800; text-transform:uppercase; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:10px; border:1px solid rgba(205,127,50,0.3);">3º LUGAR</div>
               </div>
             `;
           }
