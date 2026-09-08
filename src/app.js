@@ -2975,12 +2975,14 @@ function _renderAnalisis_orig() {
         const numClass = isRank1 ? 'num-1' : (isRank2 ? 'num-2' : 'num-3');
         const circleClass = isRank1 ? 'circle-1' : (isRank2 ? 'circle-2' : 'circle-3');
         const baseClass = isRank1 ? 'base-1' : (isRank2 ? 'base-2' : 'base-3');
-        const tierName = isRank1 ? 'Platino' : 'Oro';
-        const tierClass = isRank1 ? 'platino' : 'oro';
-        const tierIco = isRank1 ? '🛡️' : '👑';
+        
+        const tierName = isRank1 ? '1er Lugar • Oro' : (isRank2 ? '2do Lugar • Plata' : '3er Lugar • Bronce');
+        const tierClass = isRank1 ? 'oro' : (isRank2 ? 'plata' : 'bronce');
+        const tierIco = isRank1 ? '🥇' : (isRank2 ? '🥈' : '🥉');
+        const customTierStyle = rank === 3 ? 'color:#fdba74; background:rgba(253,186,116,0.1); border:1px solid rgba(253,186,116,0.25);' : '';
 
         if (!p) {
-          const fallbackCrest = isRank1 ? CRESTS.platino(54) : CRESTS.oro(46);
+          const fallbackCrest = isRank1 ? CRESTS.oro(54) : (isRank2 ? CRESTS.plata(46) : CRESTS.bronce(46));
           return `
             <div class="stark-pedestal-card ${rankClass}">
               <div class="pedestal-content">
@@ -2992,16 +2994,12 @@ function _renderAnalisis_orig() {
                   </div>
                   <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
                 </div>
-                <div style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#fff; margin-top:12px;">Vacante</div>
-                <div class="stark-tier-pill ${tierClass}">${tierIco} ${tierName}</div>
-                ${renderBadgesGrid(null, 6)}
-                <div class="stark-pnl-pill">0.0k XP</div>
+                <div style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#fff; margin-top:8px;">Vacante</div>
+                <div class="stark-tier-pill ${tierClass}" style="${customTierStyle}">${tierIco} ${tierName}</div>
+                <div class="stark-pnl-pill">0.0% Retorno</div>
               </div>
               <div class="pedestal-flag-base ${baseClass}">
-                <div class="pedestal-flag-pillar">
-                  <div class="pedestal-flag-overlay"></div>
-                  <div class="pedestal-rank-num ${numClass}">${rank}</div>
-                </div>
+                <span class="pedestal-rank-footer-num">#${rank}</span>
               </div>
             </div>
           `;
@@ -3010,7 +3008,7 @@ function _renderAnalisis_orig() {
         const country = getParticipantCountryInfo(p);
         const avatarSize = isRank1 ? 64 : 56;
         const customAvatar = getParticipantAvatarHtml(p, avatarSize);
-        const crestSvg = isRank1 ? CRESTS.platino(54) : CRESTS.oro(46);
+        const crestSvg = isRank1 ? CRESTS.oro(54) : (isRank2 ? CRESTS.plata(46) : CRESTS.bronce(46));
         const avatarOrCrest = customAvatar || crestSvg;
 
         let retVal = 0;
@@ -3018,7 +3016,8 @@ function _renderAnalisis_orig() {
         else if (activeTournamentTimeframe === 'week') retVal = parseFloat(p.pnl_weekly_pct || 0);
         else if (activeTournamentTimeframe === 'month') retVal = parseFloat(p.pnl_monthly_pct || 0);
 
-        const xpFormatted = (Math.abs(retVal) > 0 ? (retVal >= 0 ? '+' : '') + retVal.toFixed(1) : '0.0') + 'k XP';
+        const retSign = retVal >= 0 ? '+' : '';
+        const pnlFormatted = `${retSign}${retVal.toFixed(1)}% Retorno`;
 
         return `
           <div class="stark-pedestal-card ${rankClass}">
@@ -3033,30 +3032,25 @@ function _renderAnalisis_orig() {
                 <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
               </div>
 
-              <div style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#ffffff; margin-top:12px; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              <div style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#ffffff; margin-top:8px; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                 ${p.user_name || 'Trader'}
               </div>
 
-              <div class="stark-tier-pill ${tierClass}">
+              <div class="stark-tier-pill ${tierClass}" style="${customTierStyle}">
                 ${tierIco} ${tierName}
               </div>
 
-              ${renderBadgesGrid(p, 6)}
-
-              ${isRank1 || rank === 3 ? '<div class="stark-sprout-icon">🌱</div>' : ''}
-
               <div class="stark-pnl-pill">
-                ${xpFormatted}
+                ${pnlFormatted}
               </div>
             </div>
 
-            <!-- BASE DEL PEDESTAL CON PILAR DE BANDERA ESTILIZADO -->
+            <!-- BASE DEL PEDESTAL CON BANDERA CENTRADA Y PROPORCIONADA -->
             <div class="pedestal-flag-base ${baseClass}" title="${country.name}">
-              <div class="pedestal-flag-pillar">
-                <img src="${country.flagImg}" alt="${country.name}" class="pedestal-flag-bg" />
-                <div class="pedestal-flag-overlay"></div>
-                <div class="pedestal-rank-num ${numClass}">${rank}</div>
+              <div class="pedestal-flag-box">
+                <img src="${country.flagImg}" alt="${country.name}" />
               </div>
+              <span class="pedestal-rank-footer-num">#${rank}</span>
             </div>
           </div>
         `;
