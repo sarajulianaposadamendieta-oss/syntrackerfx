@@ -7361,8 +7361,12 @@ function _renderAnalisis_orig() {
                 <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
               </div>
 
-              <div style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#ffffff; margin-top:8px; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                ${p.user_name || 'Trader'}
+              <!-- Nombre con micro-bandera elegante -->
+              <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:8px; max-width:130px;">
+                <span style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${p.user_name || 'Trader'}
+                </span>
+                <img src="${country.flagImg}" alt="${country.name}" style="width:16px; height:11px; border-radius:2px; object-fit:cover; display:inline-block; flex-shrink:0;" title="${country.name}" />
               </div>
 
               <div class="stark-tier-pill ${tierClass}" style="${customTierStyle}">
@@ -7374,11 +7378,8 @@ function _renderAnalisis_orig() {
               </div>
             </div>
 
-            <!-- BASE DEL PEDESTAL CON BANDERA CENTRADA Y PROPORCIONADA -->
-            <div class="pedestal-flag-base ${baseClass}" title="${country.name}">
-              <div class="pedestal-flag-box">
-                <img src="${country.flagImg}" alt="${country.name}" />
-              </div>
+            <!-- BASE DEL PEDESTAL MINIMALISTA -->
+            <div class="pedestal-flag-base ${baseClass}">
               <span class="pedestal-rank-footer-num">#${rank}</span>
             </div>
           </div>
