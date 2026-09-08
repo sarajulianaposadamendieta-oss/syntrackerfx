@@ -51,9 +51,12 @@ async function run() {
   copyFile(path.join(SRC_DIR, 'logo.png'), path.join(DIST_DIR, 'logo.png'));
   copyFile(path.join(SRC_DIR, 'gold_bull.png'), path.join(DIST_DIR, 'gold_bull.png'));
 
-  // 3. Process index.html (production web)
-  // Copy index.html to dist/
-  copyFile(path.join(SRC_DIR, 'index.html'), path.join(DIST_DIR, 'index.html'));
+  // 3. Process index.html with Cache Buster
+  const indexHtmlRaw = fs.readFileSync(path.join(SRC_DIR, 'index.html'), 'utf8');
+  const cacheBustIndex = indexHtmlRaw.replace('<script src="app.js"></script>', `<script src="app.js?v=${Date.now()}"></script>`);
+  fs.writeFileSync(path.join(DIST_DIR, 'index.html'), cacheBustIndex, 'utf8');
+  fs.writeFileSync(path.join(__dirname, 'index.html'), cacheBustIndex, 'utf8');
+  console.log('Saved: dist/index.html & root index.html');
 
   // 4. Obfuscate app.js
   console.log('Obfuscating app.js...');
@@ -71,7 +74,8 @@ async function run() {
 
     obfuscatedResult = JavaScriptObfuscator.obfuscate(appJsContent, obfuscationOptions);
     fs.writeFileSync(path.join(DIST_DIR, 'app.js'), obfuscatedResult.getObfuscatedCode(), 'utf8');
-    console.log('Successfully obfuscated app.js!');
+    fs.writeFileSync(path.join(__dirname, 'app.js'), obfuscatedResult.getObfuscatedCode(), 'utf8');
+    console.log('Successfully obfuscated app.js in dist/ and root!');
   } else {
     console.error('Error: src/app.js not found!');
     process.exit(1);
