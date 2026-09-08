@@ -2621,233 +2621,273 @@
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
     }
 
-    /* Podium 3 Pedestales - Exact StarkLab Layout */
+    /* Podium 3 Pedestales - StarkLab Vertical Olympic Pedestal */
     .stark-podium-outer {
       background: #0d0f14;
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 24px;
-      padding: 24px 16px 16px 16px;
+      padding: 32px 18px 20px 18px;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
     }
     .stark-podium-wrapper {
       display: grid;
-      grid-template-columns: 1fr 1.15fr 1fr;
+      grid-template-columns: 1fr 1.22fr 1fr;
       gap: 14px;
       align-items: flex-end;
+      min-height: 480px;
     }
     .stark-pedestal-card {
-      background: #10131a;
-      border-radius: 20px;
+      background: linear-gradient(180deg, #131722 0%, #0c0e15 100%);
+      border-radius: 22px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: space-between;
       position: relative;
       overflow: hidden;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    }
+    .stark-pedestal-card:hover {
+      transform: translateY(-4px);
     }
     .stark-pedestal-card.rank-1 {
+      height: 470px;
       border: 1.5px solid #ef4444;
-      box-shadow: 0 0 35px rgba(239, 68, 68, 0.25), inset 0 0 20px rgba(239, 68, 68, 0.08);
-      transform: translateY(-16px);
-      z-index: 2;
+      box-shadow: 0 0 35px rgba(239, 68, 68, 0.3), inset 0 0 25px rgba(239, 68, 68, 0.08);
+      z-index: 3;
     }
     .stark-pedestal-card.rank-2 {
+      height: 395px;
       border: 1.5px solid #10b981;
-      box-shadow: 0 0 25px rgba(16, 185, 129, 0.18), inset 0 0 15px rgba(16, 185, 129, 0.06);
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.2), inset 0 0 20px rgba(16, 185, 129, 0.06);
+      z-index: 2;
     }
     .stark-pedestal-card.rank-3 {
+      height: 355px;
       border: 1.5px solid #f97316;
-      box-shadow: 0 0 25px rgba(249, 115, 22, 0.18), inset 0 0 15px rgba(249, 115, 22, 0.06);
+      box-shadow: 0 0 25px rgba(249, 115, 22, 0.2), inset 0 0 20px rgba(249, 115, 22, 0.06);
+      z-index: 1;
     }
 
     .pedestal-content {
-      padding: 20px 10px 14px 10px;
+      padding: 16px 10px 12px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       width: 100%;
       text-align: center;
       z-index: 2;
+      flex: 1;
+      justify-content: flex-start;
     }
     .crown-glow {
-      font-size: 22px;
-      filter: drop-shadow(0 0 12px #eab308);
-      margin-bottom: 2px;
+      font-size: 24px;
+      filter: drop-shadow(0 0 14px #eab308);
+      margin-bottom: 4px;
       animation: floatCrown 2.5s ease-in-out infinite;
     }
     @keyframes floatCrown {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+      50% { transform: translateY(-5px); }
     }
 
     .pedestal-avatar-wrap {
       position: relative;
-      margin: 4px 0 8px 0;
+      margin: 4px 0 10px 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
     .pedestal-avatar-aura {
       position: absolute;
-      inset: -6px;
+      inset: -8px;
       border-radius: 50%;
-      opacity: 0.8;
-      filter: blur(8px);
+      opacity: 0.85;
+      filter: blur(10px);
       z-index: 0;
     }
-    .aura-1 { background: radial-gradient(circle, rgba(239, 68, 68, 0.8), transparent 70%); }
-    .aura-2 { background: radial-gradient(circle, rgba(16, 185, 129, 0.7), transparent 70%); }
-    .aura-3 { background: radial-gradient(circle, rgba(249, 115, 22, 0.7), transparent 70%); }
+    .aura-1 { background: radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(234, 179, 8, 0.5) 45%, transparent 70%); }
+    .aura-2 { background: radial-gradient(circle, rgba(16, 185, 129, 0.8) 0%, transparent 70%); }
+    .aura-3 { background: radial-gradient(circle, rgba(249, 115, 22, 0.8) 0%, transparent 70%); }
 
     .pedestal-avatar-circle {
       position: relative;
       z-index: 1;
       border-radius: 50%;
-      background: #161922;
+      background: #141722;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.7);
     }
     .pedestal-avatar-circle.circle-1 {
-      width: 76px;
-      height: 76px;
-      border: 2px solid #f59e0b;
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.5);
+      width: 80px;
+      height: 80px;
+      border: 2.5px solid #facc15;
+      box-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
     }
     .pedestal-avatar-circle.circle-2 {
-      width: 68px;
-      height: 68px;
+      width: 70px;
+      height: 70px;
       border: 2px solid #10b981;
-      box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
     }
     .pedestal-avatar-circle.circle-3 {
-      width: 68px;
-      height: 68px;
+      width: 70px;
+      height: 70px;
       border: 2px solid #f97316;
-      box-shadow: 0 0 14px rgba(249, 115, 22, 0.4);
+      box-shadow: 0 0 16px rgba(249, 115, 22, 0.4);
     }
 
     .pedestal-rank-badge-pill {
       position: absolute;
-      bottom: -7px;
+      bottom: -8px;
       left: 50%;
       transform: translateX(-50%);
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      background: #141720;
+      background: #0f131a;
       color: #fff;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 900;
       font-family: var(--mono);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 3;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.9);
     }
-    .pedestal-rank-badge-pill.num-1 { border: 1.5px solid #ef4444; color: #fef08a; }
-    .pedestal-rank-badge-pill.num-2 { border: 1.5px solid #10b981; color: #fff; }
-    .pedestal-rank-badge-pill.num-3 { border: 1.5px solid #f97316; color: #fff; }
+    .pedestal-rank-badge-pill.num-1 { border: 2px solid #ef4444; color: #fef08a; }
+    .pedestal-rank-badge-pill.num-2 { border: 2px solid #10b981; color: #a7f3d0; }
+    .pedestal-rank-badge-pill.num-3 { border: 2px solid #f97316; color: #fed7aa; }
+
+    .pedestal-trader-name {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: 0.4px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    }
 
     .stark-tier-pill {
       display: inline-flex;
       align-items: center;
       gap: 4px;
       font-size: 11px;
-      font-weight: 700;
-      border-radius: 12px;
-      padding: 2px 9px;
-      margin-top: 4px;
+      font-weight: 800;
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
     }
     .stark-tier-pill.platino {
       color: #22d3ee;
-      background: rgba(34, 211, 238, 0.1);
-      border: 1px solid rgba(34, 211, 238, 0.25);
+      background: rgba(34, 211, 238, 0.12);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.15);
     }
     .stark-tier-pill.oro {
-      color: #eab308;
-      background: rgba(234, 179, 8, 0.1);
-      border: 1px solid rgba(234, 179, 8, 0.25);
+      color: #fde047;
+      background: rgba(234, 179, 8, 0.12);
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.15);
     }
     .stark-tier-pill.plata {
-      color: #94a3b8;
-      background: rgba(148, 163, 184, 0.1);
-      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: #cbd5e1;
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 0 10px rgba(148, 163, 184, 0.12);
     }
-
-    .stark-badges-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 3px;
-      margin: 6px 0 2px 0;
-    }
-    .stark-badge-chip {
-      width: 20px;
-      height: 20px;
-      border-radius: 5px;
-      background: #141720;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-    }
-
-    .stark-sprout-icon {
-      margin-top: 3px;
-      font-size: 13px;
-      line-height: 1;
+    .stark-tier-pill.bronce {
+      color: #fdba74;
+      background: rgba(249, 115, 22, 0.12);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.12);
     }
 
     .stark-pnl-pill {
-      background: #141720;
-      border: 1px solid rgba(234, 179, 8, 0.25);
-      color: #eab308;
+      background: #090c13;
+      border-radius: 20px;
       font-family: var(--mono);
-      font-size: 12px;
-      font-weight: 800;
-      padding: 5px 14px;
-      border-radius: 16px;
+      font-weight: 900;
+      padding: 6px 14px;
       margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stark-pnl-pill.pill-1 {
+      border: 1px solid rgba(234, 179, 8, 0.5);
+      color: #facc15;
+      font-size: 13px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 14px rgba(234, 179, 8, 0.2);
+    }
+    .stark-pnl-pill.pill-2 {
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-size: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 12px rgba(16, 185, 129, 0.15);
+    }
+    .stark-pnl-pill.pill-3 {
+      border: 1px solid rgba(249, 115, 22, 0.4);
+      color: #fb923c;
+      font-size: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 12px rgba(249, 115, 22, 0.15);
     }
 
-    /* Pedestal Base Limpio con Bandera Centrada y Proporcionada */
+    /* Base del Pedestal Vertical Estilo Gaming con Altura Escalonada */
     .pedestal-flag-base {
       width: 100%;
-      background: #090b10;
+      background: linear-gradient(180deg, rgba(17, 21, 31, 0.95) 0%, rgba(8, 10, 15, 0.98) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 10px 0;
       position: relative;
-    }
-    .pedestal-flag-base.base-1 { border-top: 1.5px solid #ef4444; }
-    .pedestal-flag-base.base-2 { border-top: 1.5px solid #10b981; }
-    .pedestal-flag-base.base-3 { border-top: 1.5px solid #f97316; }
-
-    .pedestal-flag-box {
-      width: 36px;
-      height: 24px;
-      border-radius: 4px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-      display: inline-block;
     }
-    .pedestal-flag-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .pedestal-flag-base.base-1 {
+      height: 100px;
+      border-top: 2px solid #ef4444;
+      box-shadow: inset 0 10px 20px rgba(239, 68, 68, 0.1);
+    }
+    .pedestal-flag-base.base-2 {
+      height: 65px;
+      border-top: 2px solid #10b981;
+      box-shadow: inset 0 10px 20px rgba(16, 185, 129, 0.08);
+    }
+    .pedestal-flag-base.base-3 {
+      height: 48px;
+      border-top: 2px solid #f97316;
+      box-shadow: inset 0 10px 20px rgba(249, 115, 22, 0.08);
     }
     .pedestal-rank-footer-num {
-      font-size: 14px;
+      font-size: 38px;
       font-weight: 900;
       font-family: var(--mono);
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.12);
+      letter-spacing: 2px;
+      user-select: none;
+    }
+    .pedestal-flag-base.base-1 .pedestal-rank-footer-num {
+      color: rgba(239, 68, 68, 0.22);
+      text-shadow: 0 0 25px rgba(239, 68, 68, 0.3);
+      font-size: 44px;
+    }
+    .pedestal-flag-base.base-2 .pedestal-rank-footer-num {
+      color: rgba(16, 185, 129, 0.2);
+      text-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+      font-size: 34px;
+    }
+    .pedestal-flag-base.base-3 .pedestal-rank-footer-num {
+      color: rgba(249, 115, 22, 0.2);
+      text-shadow: 0 0 20px rgba(249, 115, 22, 0.25);
+      font-size: 30px;
     }
 
     /* Tarjetas de Clasificación #4+ */
