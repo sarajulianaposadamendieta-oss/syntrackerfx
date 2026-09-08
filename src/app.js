@@ -2927,14 +2927,7 @@ function _renderAnalisis_orig() {
           </svg>`
       };
 
-      const TACTICAL_BADGE_ICONS = [
-        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/><path d="M12 6L14 10H18L15 13L16 17L12 14L8 17L9 13L6 10H10L12 6Z" fill="#60a5fa"/></svg>`,
-        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#78350f" stroke="#f59e0b" stroke-width="1.5"/><polygon points="12,7 15,11 13,17 11,17 9,11" fill="#fbbf24"/></svg>`,
-        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#134e4a" stroke="#14b8a6" stroke-width="1.5"/><circle cx="12" cy="12" r="4" fill="#2dd4bf"/></svg>`,
-        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#312e81" stroke="#6366f1" stroke-width="1.5"/><path d="M13 7L8 14H12L11 18L16 11H12L13 7Z" fill="#a5b4fc"/></svg>`,
-        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#701a75" stroke="#d946ef" stroke-width="1.5"/><polygon points="12,8 16,12 12,16 8,12" fill="#f0abfc"/></svg>`,
-        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#1f2937" stroke="#9ca3af" stroke-width="1.5"/><path d="M8 12L11 15L16 9" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
-      ];
+      const TACTICAL_BADGE_ICONS = ['🛡️', '🎯', '🔥', '⚡', '👑', '💎'];
 
       function getParticipantCountryInfo(p) {
         let code = (p && p.country) || 'CO';
@@ -3005,8 +2998,10 @@ function _renderAnalisis_orig() {
                 <div class="stark-pnl-pill">0.0k XP</div>
               </div>
               <div class="pedestal-flag-base ${baseClass}">
-                <div class="pedestal-flag-overlay"></div>
-                <div class="pedestal-rank-num ${numClass}">${rank}</div>
+                <div class="pedestal-flag-pillar">
+                  <div class="pedestal-flag-overlay"></div>
+                  <div class="pedestal-rank-num ${numClass}">${rank}</div>
+                </div>
               </div>
             </div>
           `;
@@ -3055,11 +3050,13 @@ function _renderAnalisis_orig() {
               </div>
             </div>
 
-            <!-- BASE DEL PEDESTAL CON BANDERA VERTICAL Y NÚMERO DE PUESTO -->
+            <!-- BASE DEL PEDESTAL CON PILAR DE BANDERA ESTILIZADO -->
             <div class="pedestal-flag-base ${baseClass}" title="${country.name}">
-              <img src="${country.flagImg}" alt="${country.name}" class="pedestal-flag-bg" />
-              <div class="pedestal-flag-overlay"></div>
-              <div class="pedestal-rank-num ${numClass}">${rank}</div>
+              <div class="pedestal-flag-pillar">
+                <img src="${country.flagImg}" alt="${country.name}" class="pedestal-flag-bg" />
+                <div class="pedestal-flag-overlay"></div>
+                <div class="pedestal-rank-num ${numClass}">${rank}</div>
+              </div>
             </div>
           </div>
         `;
@@ -3127,10 +3124,10 @@ function _renderAnalisis_orig() {
 
               <!-- Insignias Tácticas Mini -->
               <div class="stark-card-badges-row hide-mobile">
-                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[0]}</div>
-                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[1]}</div>
-                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[2]}</div>
-                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[3]}</div>
+                <div class="stark-mini-badge">🛡️</div>
+                <div class="stark-mini-badge">🎯</div>
+                <div class="stark-mini-badge">🔥</div>
+                <div class="stark-mini-badge">⚡</div>
               </div>
             </div>
 

@@ -2780,64 +2780,77 @@
     .stark-badges-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
-      margin: 8px 0 4px 0;
+      gap: 3px;
+      margin: 6px 0 2px 0;
     }
     .stark-badge-chip {
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
-      background: #161922;
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: #141720;
       border: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      font-size: 10px;
     }
 
     .stark-sprout-icon {
-      margin-top: 4px;
-      font-size: 14px;
+      margin-top: 3px;
+      font-size: 13px;
       line-height: 1;
     }
 
     .stark-pnl-pill {
-      background: #161922;
+      background: #141720;
       border: 1px solid rgba(234, 179, 8, 0.25);
       color: #eab308;
       font-family: var(--mono);
       font-size: 11.5px;
       font-weight: 800;
-      padding: 4px 14px;
-      border-radius: 16px;
-      margin-top: 8px;
+      padding: 3px 12px;
+      border-radius: 14px;
+      margin-top: 6px;
     }
 
+    /* Pedestal Base con Pilar de Bandera Estilizado */
     .pedestal-flag-base {
       width: 100%;
-      height: 85px;
-      position: relative;
+      background: #0a0c12;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      padding: 6px 0;
+      position: relative;
     }
-    .pedestal-flag-base.base-1 { height: 110px; border-top: 1.5px solid #ef4444; }
-    .pedestal-flag-base.base-2 { height: 85px; border-top: 1.5px solid #10b981; }
-    .pedestal-flag-base.base-3 { height: 85px; border-top: 1.5px solid #f97316; }
+    .pedestal-flag-base.base-1 { height: 115px; border-top: 1.5px solid #ef4444; }
+    .pedestal-flag-base.base-2 { height: 75px; border-top: 1.5px solid #10b981; }
+    .pedestal-flag-base.base-3 { height: 75px; border-top: 1.5px solid #f97316; }
 
+    .pedestal-flag-pillar {
+      width: 52px;
+      height: 100%;
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
     .pedestal-flag-bg {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.42;
+      opacity: 0.55;
     }
     .pedestal-flag-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(16, 19, 26, 0.3), rgba(16, 19, 26, 0.85));
+      background: linear-gradient(180deg, rgba(10, 12, 18, 0.15), rgba(10, 12, 18, 0.75));
     }
     .pedestal-rank-num {
       position: relative;
@@ -2846,9 +2859,9 @@
       line-height: 1;
       z-index: 2;
     }
-    .pedestal-rank-num.num-1 { font-size: 42px; color: #ffffff; text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
-    .pedestal-rank-num.num-2 { font-size: 38px; color: rgba(255, 255, 255, 0.75); text-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
-    .pedestal-rank-num.num-3 { font-size: 38px; color: rgba(255, 255, 255, 0.75); text-shadow: 0 0 15px rgba(249, 115, 22, 0.6); }
+    .pedestal-rank-num.num-1 { font-size: 32px; color: #ffffff; text-shadow: 0 0 16px rgba(239, 68, 68, 0.9); }
+    .pedestal-rank-num.num-2 { font-size: 26px; color: rgba(255, 255, 255, 0.75); text-shadow: 0 0 12px rgba(16, 185, 129, 0.8); }
+    .pedestal-rank-num.num-3 { font-size: 26px; color: rgba(255, 255, 255, 0.75); text-shadow: 0 0 12px rgba(249, 115, 22, 0.8); }
 
     /* Tarjetas de Clasificación #4+ */
     .stark-rank-card {
@@ -2873,21 +2886,20 @@
     }
     .stark-card-watermark {
       position: absolute;
-      right: 85px;
+      right: 90px;
       top: 50%;
       transform: translateY(-50%);
-      width: 90px;
-      height: 55px;
+      width: 44px;
+      height: 28px;
       object-fit: cover;
-      opacity: 0.16;
-      border-radius: 4px;
+      opacity: 0.18;
+      border-radius: 3px;
       pointer-events: none;
-      mask-image: linear-gradient(to left, black 20%, transparent 90%);
-      -webkit-mask-image: linear-gradient(to left, black 20%, transparent 90%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .stark-card-crest-wrap {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: #161922;
       border: 1.5px solid rgba(255, 255, 255, 0.15);
@@ -2898,19 +2910,19 @@
     }
     .stark-card-badges-row {
       display: flex;
-      gap: 4px;
+      gap: 3px;
       margin: 0 10px;
     }
     .stark-mini-badge {
-      width: 20px;
-      height: 20px;
-      border-radius: 5px;
-      background: #161922;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: #141720;
       border: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
+      font-size: 9.5px;
     }
   </style>
 </head>
