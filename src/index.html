@@ -2582,48 +2582,224 @@
       border: 1px solid rgba(255, 205, 27, 0.4);
       box-shadow: 0 10px 40px rgba(255, 205, 27, 0.15);
     }
-    .trophy-rank-card {
-      background: rgba(255, 255, 255, 0.03);
+    
+    /* ── STARKLAB LUXURY GAMING RANKING STYLES ── */
+    .stark-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .stark-timeframe-switcher {
+      display: inline-flex;
+      background: rgba(0, 0, 0, 0.5);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
-      padding: 16px 10px;
-      text-align: center;
-      transition: all 0.3s ease;
+      padding: 4px;
+      border-radius: 24px;
+      gap: 4px;
+    }
+    .stark-time-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .stark-time-tab:hover {
+      color: #fff;
+    }
+    .stark-time-tab.active {
+      background: linear-gradient(135deg, rgba(255, 205, 27, 0.25), rgba(255, 205, 27, 0.08));
+      color: var(--yellow);
+      border: 1px solid rgba(255, 205, 27, 0.4);
+      box-shadow: 0 0 12px rgba(255, 205, 27, 0.2);
+    }
+
+    /* Podium 3 Pedestales */
+    .stark-podium-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1.18fr 1fr;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+    .stark-pedestal-card {
+      background: linear-gradient(180deg, rgba(26, 26, 36, 0.85), rgba(12, 12, 18, 0.95));
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      transition: all 0.3s ease;
+    }
+    .stark-pedestal-card.rank-1 {
+      border: 1.5px solid rgba(255, 205, 27, 0.7);
+      box-shadow: 0 0 40px rgba(255, 205, 27, 0.25), 0 15px 40px rgba(0, 0, 0, 0.8);
+      transform: translateY(-12px);
+      z-index: 2;
+    }
+    .stark-pedestal-card.rank-2 {
+      border: 1.5px solid rgba(45, 212, 191, 0.5);
+      box-shadow: 0 0 30px rgba(45, 212, 191, 0.15);
+    }
+    .stark-pedestal-card.rank-3 {
+      border: 1.5px solid rgba(249, 115, 22, 0.5);
+      box-shadow: 0 0 30px rgba(249, 115, 22, 0.15);
+    }
+
+    .pedestal-content {
+      padding: 18px 10px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      text-align: center;
+      z-index: 2;
+    }
+    .pedestal-flag-base {
+      width: 100%;
+      height: 80px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pedestal-flag-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.38;
+      filter: blur(0.5px);
+    }
+    .pedestal-flag-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(12, 12, 18, 0.4), rgba(12, 12, 18, 0.88));
+    }
+    .pedestal-rank-num {
+      position: relative;
+      font-size: 34px;
+      font-weight: 900;
+      font-family: var(--mono);
+      line-height: 1;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+    .pedestal-rank-num.num-1 { color: #fff; text-shadow: 0 0 20px rgba(255, 205, 27, 0.9); }
+    .pedestal-rank-num.num-2 { color: #e2e8f0; text-shadow: 0 0 15px rgba(45, 212, 191, 0.7); }
+    .pedestal-rank-num.num-3 { color: #fdba74; text-shadow: 0 0 15px rgba(249, 115, 22, 0.7); }
+
+    .crown-glow {
+      font-size: 24px;
+      filter: drop-shadow(0 0 10px rgba(255, 205, 27, 0.9));
+      margin-bottom: 2px;
+      animation: floatCrown 2.5s ease-in-out infinite;
+    }
+    @keyframes floatCrown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .pedestal-avatar-wrap {
+      position: relative;
+      margin: 6px 0;
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
     }
-    .trophy-rank-card.rank-1 {
-      background: linear-gradient(180deg, rgba(255, 205, 27, 0.22), rgba(20, 20, 20, 0.95));
-      border: 1.5px solid rgba(255, 205, 27, 0.6);
-      transform: translateY(-10px);
-      box-shadow: 0 12px 35px rgba(255, 205, 27, 0.3);
-      padding: 18px 10px;
+    .pedestal-avatar-aura {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      opacity: 0.75;
+      filter: blur(8px);
+      z-index: 0;
     }
-    .leader-avatar-card {
-      background: rgba(255, 255, 255, 0.03);
+    .aura-1 { background: radial-gradient(circle, rgba(255, 205, 27, 0.9), transparent); }
+    .aura-2 { background: radial-gradient(circle, rgba(45, 212, 191, 0.8), transparent); }
+    .aura-3 { background: radial-gradient(circle, rgba(249, 115, 22, 0.8), transparent); }
+
+    .stark-badges-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: center;
+      max-width: 140px;
+      margin: 6px 0;
+    }
+    .stark-badge-chip {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .stark-pnl-pill {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 205, 27, 0.4);
+      color: var(--yellow);
+      font-family: var(--mono);
+      font-size: 11.5px;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 14px;
+      margin-top: 4px;
+      box-shadow: 0 0 10px rgba(255, 205, 27, 0.15);
+    }
+
+    /* Tarjetas de Clasificación #4+ */
+    .stark-rank-card {
+      background: linear-gradient(90deg, rgba(24, 24, 32, 0.85), rgba(16, 16, 22, 0.95));
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
-      padding: 12px 8px;
-      text-align: center;
+      padding: 10px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
     }
-    .leader-avatar-card.center-rank {
-      background: linear-gradient(180deg, rgba(255, 205, 27, 0.15), rgba(20, 20, 20, 0.8));
-      border: 1px solid rgba(255, 205, 27, 0.4);
-      transform: scale(1.05);
+    .stark-rank-card:hover {
+      border-color: rgba(255, 205, 27, 0.4);
+      transform: translateX(3px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     }
-    .table-glass-row {
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: 10px;
-      transition: background 0.2s ease;
+    .stark-rank-card.my-card {
+      border: 1.5px solid rgba(255, 205, 27, 0.6);
+      background: linear-gradient(90deg, rgba(255, 205, 27, 0.12), rgba(20, 20, 26, 0.95));
     }
-    .table-glass-row:hover {
-      background: rgba(255, 205, 27, 0.08);
-    }
-    .table-glass-row.rank-1-row {
-      background: linear-gradient(90deg, rgba(255, 205, 27, 0.2), rgba(255, 205, 27, 0.05));
-      border-left: 3px solid var(--yellow);
+    .stark-card-watermark {
+      position: absolute;
+      right: 90px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 140px;
+      height: 80px;
+      object-fit: cover;
+      opacity: 0.12;
+      filter: blur(0.5px);
+      pointer-events: none;
+      mask-image: linear-gradient(to left, black 20%, transparent 90%);
+      -webkit-mask-image: linear-gradient(to left, black 20%, transparent 90%);
     }
   </style>
 </head>
@@ -3154,186 +3330,151 @@
     </div>
 
     <div class="page" id="page-torneo">
-      <!-- CABECERA DEL TORNEO -->
-      <div style="text-align:center; margin-bottom: 20px;">
-        <div style="font-size:26px; font-weight:900; letter-spacing:2.5px; color:#fff; text-transform:uppercase;" id="tournament-name">🏆 TORNEO GOLD FX</div>
-        <div style="display:inline-flex; align-items:center; gap:10px; margin-top:6px; font-size:12px;">
-          <span class="badge-status completed" style="font-size:11px; padding:3px 10px; font-weight:700;">EN CURSO</span>
-          <span id="tournament-dates" style="color:var(--text-secondary);">Remanente de tiempo —</span>
+      <!-- CABECERA PRINCIPAL ESTILO STARKLAB -->
+      <div class="stark-topbar">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="font-size:24px; font-weight:900; letter-spacing:1.5px; color:#fff; text-transform:uppercase;" id="tournament-name">🏆 TORNEO GOLD FX</div>
+            <span class="badge-status completed" style="font-size:10px; padding:3px 10px; font-weight:800;">EN CURSO</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; margin-top:4px; font-size:11.5px; color:var(--text-secondary);">
+            <span id="tournament-dates">Periodo: —</span>
+            <span>•</span>
+            <span id="tournament-participants-count" style="color:var(--yellow); font-weight:700;">0 participantes</span>
+          </div>
         </div>
-        <div id="tournament-join-btn-container" style="margin-top:12px;">
-          <!-- Dinámico -->
-        </div>
-      </div>
 
-      <!-- PODIO TOP 3 CENTRADO DEBAJO DEL TÍTULO -->
-      <div style="max-width:620px; margin: 0 auto 24px auto;">
-        <div class="glass-box" style="padding:18px 20px; border:1px solid rgba(255,205,27,0.3); background:linear-gradient(180deg, rgba(255,205,27,0.08), rgba(18,18,22,0.85));">
-          <div style="font-size:13px; font-weight:900; color:var(--yellow); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:14px; text-align:center;">🏆 PODIO TOP 3</div>
-          <div style="display:grid; grid-template-columns: 1fr 1.25fr 1fr; gap:12px; align-items:end;" id="tournament-top3-container">
-            <!-- Renderizado dinámico TOP 3 -->
+        <!-- FILTROS DE TIEMPO Y BOTÓN DE ACCIÓN -->
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <div class="stark-timeframe-switcher">
+            <button class="stark-time-tab active" id="stark-tab-all" onclick="setTournamentTimeframe('all')">Todo el torneo</button>
+            <button class="stark-time-tab" id="stark-tab-week" onclick="setTournamentTimeframe('week')">Esta semana</button>
+            <button class="stark-time-tab" id="stark-tab-month" onclick="setTournamentTimeframe('month')">Este mes</button>
+          </div>
+          <div id="tournament-join-btn-container">
+            <!-- Dinámico -->
           </div>
         </div>
       </div>
 
-      <!-- GRID INFERIOR (CLASIFICACIÓN GENERAL + COLUMNA DERECHA) -->
-      <div style="display:grid; grid-template-columns: 1fr 310px; gap:20px; align-items:start;" id="tournament-luxury-layout">
+      <!-- PANEL PRIVADO DEL PARTICIPANTE (TARJETA VIP HERO) -->
+      <div class="glass-box" id="tournament-user-dashboard" style="display:none; margin-bottom:24px; padding:18px 20px; border:1.5px solid rgba(255,205,27,0.4); background:linear-gradient(180deg, rgba(255,205,27,0.08), rgba(16,16,22,0.95)); box-shadow:0 10px 40px rgba(0,0,0,0.6);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(255,205,27,0.2); padding-bottom:10px; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:16px;">🔒</span>
+            <div>
+              <div style="font-size:13px; font-weight:900; color:var(--yellow); text-transform:uppercase; letter-spacing:1px;">MI PANEL DE COMPETIDOR</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="u-account-label">Cuenta MT5: —</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div id="u-rank-pos-badge" style="font-size:11px; font-weight:900; color:var(--yellow); background:rgba(255,205,27,0.15); border:1px solid rgba(255,205,27,0.4); padding:4px 12px; border-radius:12px; font-family:var(--mono);">POSICIÓN: —</div>
+            <div id="user-status-badge"></div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:14px; font-size:11.5px;">
+          <!-- BLOQUE 1: RENDIMIENTO -->
+          <div style="background:rgba(0,0,0,0.4); padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+            <div style="font-size:11px; font-weight:800; color:var(--yellow); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+              <span>📈</span> Rendimiento
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px 12px;">
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Hoy:</span><strong id="u-pnl-daily" style="font-family:var(--mono);">—</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Esta sem:</span><strong id="u-pnl-weekly" style="font-family:var(--mono);">—</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Este mes:</span><strong id="u-pnl-monthly" style="font-family:var(--mono);">—</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Acumulado:</span><strong id="u-pnl-acum" style="font-family:var(--mono); font-weight:800;">—</strong></div>
+            </div>
+          </div>
+
+          <!-- BLOQUE 2: RIESGO -->
+          <div style="background:rgba(0,0,0,0.4); padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+            <div style="font-size:11px; font-weight:800; color:#f87171; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+              <span>🛡️</span> Gestión de Riesgo
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">DD Diario (Máx 1.1%):</span><strong id="u-dd-daily" style="font-family:var(--mono);">—</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">DD Máx (Límite 5.0%):</span><strong id="u-dd-max" style="font-family:var(--mono); color:var(--red);">—</strong></div>
+              <div style="display:flex; justify-content:space-between; border-top:1px dashed rgba(255,255,255,0.1); padding-top:4px;"><span style="color:var(--text-secondary);">Margen restante:</span><strong id="u-dd-margin" style="font-family:var(--mono);">—</strong></div>
+            </div>
+          </div>
+
+          <!-- BLOQUE 3: OPERATIVA -->
+          <div style="background:rgba(0,0,0,0.4); padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+            <div style="font-size:11px; font-weight:800; color:#60a5fa; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+              <span>🎯</span> Operativa & Disciplina
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px 12px;">
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Trades:</span><strong id="u-trades-count" style="font-family:var(--mono);">0</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Ganadas (W):</span><strong id="u-w-count" style="font-family:var(--mono); color:var(--green);">0</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Perdidas (L):</span><strong id="u-l-count" style="font-family:var(--mono); color:var(--red);">0</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Break-Even:</span><strong id="u-be-count" style="font-family:var(--mono); color:var(--yellow);">0</strong></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:6px; border-top:1px dashed rgba(255,255,255,0.1); padding-top:4px;">
+              <span style="color:var(--text-secondary);">Win Rate:</span><strong id="u-win-rate" style="font-family:var(--mono); font-weight:800;">—</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYOUT PRINCIPAL DE 2 COLUMNAS (PODIO IZQUIERDA + CLASIFICACIÓN DERECHA) -->
+      <div style="display:grid; grid-template-columns: minmax(360px, 460px) 1fr; gap:20px; align-items:start;" id="tournament-main-grid">
         
-        <!-- COLUMNA PRINCIPAL: CLASIFICACIÓN GENERAL -->
-        <div class="glass-box">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(255,205,27,0.15); padding-bottom:10px;">
-            <div style="font-size:14px; font-weight:800; color:#fff; letter-spacing:1px;">CLASIFICACIÓN GENERAL</div>
-            <button class="btn-cancel" onclick="loadTournamentData()" style="font-size:11px; padding:4px 10px; border-radius:6px;">🔄 Actualizar</button>
+        <!-- COLUMNA IZQUIERDA: PODIO TOP 3 ESTILO STARKLAB (3 PEDESTALES) -->
+        <div>
+          <div class="glass-box" style="padding:18px 14px; border:1px solid rgba(255,205,27,0.3); background:linear-gradient(180deg, rgba(255,205,27,0.06), rgba(16,16,22,0.95));">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div style="font-size:12px; font-weight:900; color:var(--yellow); text-transform:uppercase; letter-spacing:1.5px; display:flex; align-items:center; gap:6px;">
+                <span>👑</span> PODIO TOP 3
+              </div>
+              <span style="font-size:10.5px; color:var(--text-muted); font-weight:700;">LÍDERES ACTUALES</span>
+            </div>
+
+            <div class="stark-podium-wrapper" id="tournament-top3-container">
+              <!-- Renderizado dinámico de 3 pedestales -->
+            </div>
           </div>
 
-          <div class="eval-table-wrapper" style="border:none; overflow-x:auto;">
-            <table class="eval-table" style="border-collapse:separate; border-spacing:0 6px; width:100%; min-width:650px;">
-              <thead>
-                <tr>
-                  <th style="width: 40px; text-align: center;">Pos</th>
-                  <th>Participante</th>
-                  <th style="text-align: center;">Estado</th>
-                  <th style="text-align: center;">Acumulado</th>
-                  <th style="text-align: center;">Diario</th>
-                  <th style="text-align: center;">Semanal</th>
-                  <th style="text-align: center;">Mensual</th>
-                  <th style="text-align: center;">DD Diario</th>
-                  <th style="text-align: center;">DD Máx</th>
-                  <th style="text-align: center;">Trades</th>
-                  <th style="text-align: center;">Insignias</th>
-                </tr>
-              </thead>
-              <tbody id="tournament-leaderboard-tbody">
-                <tr>
-                  <td colspan="11" style="text-align: center; color: var(--text-muted); padding: 30px;">
-                    Cargando ranking en tiempo real...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- REGLAS OPERATIVAS COMPACTAS -->
+          <div class="glass-box" style="margin-top:16px; padding:16px; border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:11px; font-weight:900; color:#fff; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+              <span>📋</span> REGLAS OPERATIVAS DEL TORNEO
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; font-size:10.5px; color:var(--text-secondary); text-align:center;">
+              <div style="background:rgba(255,255,255,0.03); padding:8px 6px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+                <div style="font-size:14px; margin-bottom:2px;">1️⃣</div>
+                <strong style="color:#fff;">1 Trade / Día</strong>
+                <div style="font-size:9.5px; color:var(--text-muted);">Límite estricto</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); padding:8px 6px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+                <div style="font-size:14px; margin-bottom:2px;">📉</div>
+                <strong style="color:var(--yellow);">DD Diario 1.1%</strong>
+                <div style="font-size:9.5px; color:var(--text-muted);">Pérdida máx/día</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); padding:8px 6px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+                <div style="font-size:14px; margin-bottom:2px;">🛑</div>
+                <strong style="color:var(--red);">DD Máx 5.0%</strong>
+                <div style="font-size:9.5px; color:var(--text-muted);">Descalificación</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- COLUMNA DERECHA: PANEL DE TRADING PRIVADO + REGLAS -->
-        <div style="display:flex; flex-direction:column; gap:18px;">
-          
-          <!-- Panel Privado de Participante -->
-          <div class="glass-box" id="tournament-user-dashboard" style="display:none; padding:18px; border:1.5px solid rgba(255,205,27,0.35); background:linear-gradient(180deg, rgba(255,205,27,0.06), rgba(18,18,22,0.95)); box-shadow:0 8px 32px rgba(0,0,0,0.5);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(255,205,27,0.2); padding-bottom:10px;">
+        <!-- COLUMNA DERECHA: CLASIFICACIÓN COMPLETA (#4+) EN TARJETAS NEÓN FLOTANTES -->
+        <div>
+          <div class="glass-box" style="padding:18px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px;">
               <div>
-                <div style="font-size:12px; font-weight:900; color:var(--yellow); text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:6px;">
-                  <span>🔒 MI PANEL PRIVADO</span>
-                </div>
-                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;" id="u-account-label">Cuenta MT5: —</div>
+                <div style="font-size:13px; font-weight:900; color:#fff; letter-spacing:1px; text-transform:uppercase;">CLASIFICACIÓN GENERAL</div>
+                <div style="font-size:10.5px; color:var(--text-muted); margin-top:2px;" id="stark-timeframe-label">Según rendimiento acumulado</div>
               </div>
-              <div id="user-status-badge"></div>
+              <button class="btn-cancel" onclick="loadTournamentData()" style="font-size:11px; padding:4px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:4px;">🔄 Actualizar</button>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap:12px; font-size:11.5px;">
-              
-              <!-- SECCIÓN 1: RENDIMIENTO -->
-              <div style="background:rgba(0,0,0,0.35); padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                <div style="font-size:10.5px; font-weight:800; color:var(--yellow); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; gap:5px;">
-                  <span>📈</span> Rendimiento
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px 12px;">
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">Hoy:</span>
-                    <strong id="u-pnl-daily" style="font-family:var(--mono);">—</strong>
-                  </div>
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">Esta semana:</span>
-                    <strong id="u-pnl-weekly" style="font-family:var(--mono);">—</strong>
-                  </div>
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">Este mes:</span>
-                    <strong id="u-pnl-monthly" style="font-family:var(--mono);">—</strong>
-                  </div>
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">Acumulado:</span>
-                    <strong id="u-pnl-acum" style="font-family:var(--mono); font-weight:800;">—</strong>
-                  </div>
-                </div>
-              </div>
-
-              <!-- SECCIÓN 2: RIESGO -->
-              <div style="background:rgba(0,0,0,0.35); padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                <div style="font-size:10.5px; font-weight:800; color:#f87171; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; gap:5px;">
-                  <span>🛡️</span> Riesgo
-                </div>
-                <div style="display:flex; flex-direction:column; gap:6px;">
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">DD Diario (Máx 1.1%):</span>
-                    <strong id="u-dd-daily" style="font-family:var(--mono);">—</strong>
-                  </div>
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">DD Máximo (Máx 5.0%):</span>
-                    <strong id="u-dd-max" style="font-family:var(--mono); color:var(--red);">—</strong>
-                  </div>
-                  <div style="display:flex; justify-content:space-between; border-top:1px dashed rgba(255,255,255,0.1); padding-top:4px;">
-                    <span style="color:var(--text-secondary);">Distancia hasta límite DD:</span>
-                    <strong id="u-dd-margin" style="font-family:var(--mono);">—</strong>
-                  </div>
-                </div>
-              </div>
-
-              <!-- SECCIÓN 3: OPERATIVA -->
-              <div style="background:rgba(0,0,0,0.35); padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                <div style="font-size:10.5px; font-weight:800; color:#60a5fa; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; gap:5px;">
-                  <span>🎯</span> Operativa
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px 12px;">
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">Realizadas:</span>
-                    <strong id="u-trades-count" style="font-family:var(--mono);">0</strong>
-                  </div>
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">Ganadoras:</span>
-                    <strong id="u-w-count" style="font-family:var(--mono); color:var(--green);">0</strong>
-                  </div>
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">Perdedoras:</span>
-                    <strong id="u-l-count" style="font-family:var(--mono); color:var(--red);">0</strong>
-                  </div>
-                  <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-secondary);">Break-Even:</span>
-                    <strong id="u-be-count" style="font-family:var(--mono); color:var(--yellow);">0</strong>
-                  </div>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-top:6px; border-top:1px dashed rgba(255,255,255,0.1); padding-top:4px;">
-                  <span style="color:var(--text-secondary);">Win Rate:</span>
-                  <strong id="u-win-rate" style="font-family:var(--mono); font-weight:800;">—</strong>
-                </div>
-              </div>
-
-              <!-- POSICIÓN EN RANKING -->
-              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,205,27,0.1); padding:8px 12px; border-radius:8px; border:1px solid rgba(255,205,27,0.25);">
-                <span style="color:var(--text-secondary); font-weight:700;">Posición Ranking:</span>
-                <strong id="u-rank-pos" style="color:var(--yellow); font-family:var(--mono); font-size:13px; font-weight:900;">—</strong>
-              </div>
-
+            <div id="tournament-cards-container">
+              <!-- Renderizado dinámico de tarjetas #4 en adelante o lista completa -->
             </div>
           </div>
-
-          <!-- Reglas Operativas -->
-          <div class="glass-box" style="padding:16px;">
-            <div style="font-size:12px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid rgba(255,205,27,0.15); padding-bottom:6px;">📋 REGLAS OPERATIVAS</div>
-            <div style="display:flex; flex-direction:column; gap:10px; font-size:11px; color:var(--text-secondary);">
-              <div style="display:flex; gap:8px; align-items:center;">
-                <span style="font-size:14px;">1️⃣</span>
-                <div><strong>1 Trade / Día:</strong> Máx 1 operación diaria.</div>
-              </div>
-              <div style="display:flex; gap:8px; align-items:center;">
-                <span style="font-size:14px;">📉</span>
-                <div><strong>DD Diario (1.1%):</strong> Pérdida máx por día.</div>
-              </div>
-              <div style="display:flex; gap:8px; align-items:center;">
-                <span style="font-size:14px;">🛑</span>
-                <div><strong>DD Máx (5.0%):</strong> Descalificación automática.</div>
-              </div>
-            </div>
-          </div>
-
         </div>
 
       </div>
@@ -3932,6 +4073,31 @@
         <div class="form-g" style="margin-bottom:14px;">
           <label class="form-l">Número de Cuenta MT5 (Login)</label>
           <input class="form-i" type="number" id="tjm-login" placeholder="Ej. 50123456" required>
+        </div>
+        <div class="form-g" style="margin-bottom:14px;">
+          <label class="form-l">País de Representación 🌍</label>
+          <select class="form-i" id="tjm-country" required>
+            <option value="CO">🇨🇴 Colombia</option>
+            <option value="MX">🇲🇽 México</option>
+            <option value="AR">🇦🇷 Argentina</option>
+            <option value="CL">🇨🇱 Chile</option>
+            <option value="PE">🇵🇪 Perú</option>
+            <option value="ES">🇪🇸 España</option>
+            <option value="US">🇺🇸 Estados Unidos</option>
+            <option value="EC">🇪🇨 Ecuador</option>
+            <option value="VE">🇻🇪 Venezuela</option>
+            <option value="BO">🇧🇴 Bolivia</option>
+            <option value="UY">🇺🇾 Uruguay</option>
+            <option value="PY">🇵🇾 Paraguay</option>
+            <option value="PA">🇵🇦 Panamá</option>
+            <option value="CR">🇨🇷 Costa Rica</option>
+            <option value="DO">🇩🇴 Rep. Dominicana</option>
+            <option value="GT">🇬🇹 Guatemala</option>
+            <option value="SV">🇸🇻 El Salvador</option>
+            <option value="HN">🇭🇳 Honduras</option>
+            <option value="BR">🇧🇷 Brasil</option>
+            <option value="OTHER">🌐 Otro País</option>
+          </select>
         </div>
         <div class="form-g" style="margin-bottom:20px;">
           <label class="form-l">Contraseña de Inversor (Clave Solo Lectura)</label>

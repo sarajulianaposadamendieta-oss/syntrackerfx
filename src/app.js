@@ -2865,9 +2865,39 @@ function _renderAnalisis_orig() {
           '</div>';
       }
       function getBestAsset(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (t.asset === 'INACCIÓN') return; if (!m[t.asset]) m[t.asset] = 0; m[t.asset] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] + ' ($' + best[1].toFixed(0) + ')' : '—'; }
-      // ── TORNEO DE TRADING ──
+      // ── TORNEO DE TRADING (STARKLAB LUXURY GAMING EDITION) ──
       let activeTournament = null;
       let tournamentParticipants = [];
+      let activeTournamentTimeframe = 'all'; // 'all' | 'week' | 'month'
+
+      const COUNTRIES_MAP = {
+        'CO': { name: 'Colombia', flag: '🇨🇴', flagImg: 'https://flagcdn.com/w160/co.png' },
+        'MX': { name: 'México', flag: '🇲🇽', flagImg: 'https://flagcdn.com/w160/mx.png' },
+        'AR': { name: 'Argentina', flag: '🇦🇷', flagImg: 'https://flagcdn.com/w160/ar.png' },
+        'CL': { name: 'Chile', flag: '🇨🇱', flagImg: 'https://flagcdn.com/w160/cl.png' },
+        'PE': { name: 'Perú', flag: '🇵🇪', flagImg: 'https://flagcdn.com/w160/pe.png' },
+        'ES': { name: 'España', flag: '🇪🇸', flagImg: 'https://flagcdn.com/w160/es.png' },
+        'US': { name: 'Estados Unidos', flag: '🇺🇸', flagImg: 'https://flagcdn.com/w160/us.png' },
+        'EC': { name: 'Ecuador', flag: '🇪🇨', flagImg: 'https://flagcdn.com/w160/ec.png' },
+        'VE': { name: 'Venezuela', flag: '🇻🇪', flagImg: 'https://flagcdn.com/w160/ve.png' },
+        'BO': { name: 'Bolivia', flag: '🇧🇴', flagImg: 'https://flagcdn.com/w160/bo.png' },
+        'UY': { name: 'Uruguay', flag: '🇺🇾', flagImg: 'https://flagcdn.com/w160/uy.png' },
+        'PY': { name: 'Paraguay', flag: '🇵🇾', flagImg: 'https://flagcdn.com/w160/py.png' },
+        'PA': { name: 'Panamá', flag: '🇵🇦', flagImg: 'https://flagcdn.com/w160/pa.png' },
+        'CR': { name: 'Costa Rica', flag: '🇨🇷', flagImg: 'https://flagcdn.com/w160/cr.png' },
+        'DO': { name: 'Rep. Dominicana', flag: '🇩🇴', flagImg: 'https://flagcdn.com/w160/do.png' },
+        'GT': { name: 'Guatemala', flag: '🇬🇹', flagImg: 'https://flagcdn.com/w160/gt.png' },
+        'SV': { name: 'El Salvador', flag: '🇸🇻', flagImg: 'https://flagcdn.com/w160/sv.png' },
+        'HN': { name: 'Honduras', flag: '🇭🇳', flagImg: 'https://flagcdn.com/w160/hn.png' },
+        'BR': { name: 'Brasil', flag: '🇧🇷', flagImg: 'https://flagcdn.com/w160/br.png' }
+      };
+
+      function getParticipantCountryInfo(p) {
+        let code = (p && p.country) || 'CO';
+        code = String(code).toUpperCase();
+        if (COUNTRIES_MAP[code]) return COUNTRIES_MAP[code];
+        return { name: 'Internacional', flag: '🌐', flagImg: 'https://flagcdn.com/w160/un.png' };
+      }
 
       function getParticipantAvatarHtml(p, size) {
         if (!size) size = 28;
@@ -2887,16 +2917,235 @@ function _renderAnalisis_orig() {
           }
         }
         if (avatarUrl) {
-          return `<img src="${avatarUrl}" alt="${p && p.user_name ? p.user_name : 'User'}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; border:1.5px solid var(--yellow); box-shadow:0 0 10px rgba(255,205,27,0.3); display:inline-block;" />`;
+          return `<img src="${avatarUrl}" alt="${p && p.user_name ? p.user_name : 'User'}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; border:2px solid var(--yellow); box-shadow:0 0 12px rgba(255,205,27,0.35); display:inline-block;" />`;
         }
         const initial = p && p.user_name ? p.user_name.charAt(0).toUpperCase() : 'U';
-        return `<div style="width:${size}px; height:${size}px; border-radius:50%; background:linear-gradient(135deg, rgba(255,205,27,0.25), rgba(0,0,0,0.6)); border:1.5px solid var(--yellow); display:flex; align-items:center; justify-content:center; font-size:${Math.round(size*0.45)}px; font-weight:800; color:var(--yellow);">${initial}</div>`;
+        return `<div style="width:${size}px; height:${size}px; border-radius:50%; background:linear-gradient(135deg, rgba(255,205,27,0.25), rgba(0,0,0,0.7)); border:2px solid var(--yellow); display:flex; align-items:center; justify-content:center; font-size:${Math.round(size*0.42)}px; font-weight:900; color:var(--yellow);">${initial}</div>`;
       }
+
+      function renderBadgesGrid(p, maxCount) {
+        if (!maxCount) maxCount = 6;
+        let badges = [];
+        if (p && Array.isArray(p.badges)) badges = p.badges;
+        else if (p && typeof p.badges === 'string') {
+          try { badges = JSON.parse(p.badges); } catch (e) { badges = []; }
+        }
+        if (!badges || badges.length === 0) {
+          badges = ['🛡️', '🎯', '🔥', '⚡', '👑', '💎'];
+        }
+        return `
+          <div class="stark-badges-grid">
+            ${badges.slice(0, maxCount).map(b => `<div class="stark-badge-chip" title="Insignia de Disciplina">${typeof b === 'object' ? (b.icon || '🏅') : b}</div>`).join('')}
+          </div>
+        `;
+      }
+
+      function renderStarkPedestal(p, rank) {
+        const rankNumClass = rank === 1 ? 'num-1' : (rank === 2 ? 'num-2' : 'num-3');
+        if (!p) {
+          return `
+            <div class="stark-pedestal-card rank-${rank}">
+              <div class="pedestal-content">
+                ${rank === 1 ? '<div class="crown-glow">👑</div>' : ''}
+                <div class="pedestal-avatar-wrap">
+                  <div class="pedestal-avatar-aura aura-${rank}"></div>
+                  <div style="width:${rank === 1 ? 56 : 46}px; height:${rank === 1 ? 56 : 46}px; border-radius:50%; background:#1c1c24; border:1.5px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:800; font-size:16px;">—</div>
+                </div>
+                <div style="font-size:${rank === 1 ? '13px' : '11.5px'}; font-weight:800; color:#fff; margin-top:4px;">Vacante</div>
+                <div style="font-size:10.5px; color:var(--text-muted); font-weight:700; margin-top:2px;">—</div>
+                <div class="stark-pnl-pill" style="border-color:rgba(255,255,255,0.1); color:var(--text-muted);">0.0% PnL</div>
+              </div>
+              <div class="pedestal-flag-base">
+                <div class="pedestal-flag-overlay"></div>
+                <div class="pedestal-rank-num ${rankNumClass}">${rank}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        const country = getParticipantCountryInfo(p);
+        const avatarSize = rank === 1 ? 56 : 46;
+        const avatarHtml = getParticipantAvatarHtml(p, avatarSize);
+        let retVal = 0;
+        if (activeTournamentTimeframe === 'all') retVal = parseFloat(p.return_pct || 0);
+        else if (activeTournamentTimeframe === 'week') retVal = parseFloat(p.pnl_weekly_pct || 0);
+        else if (activeTournamentTimeframe === 'month') retVal = parseFloat(p.pnl_monthly_pct || 0);
+
+        const retSign = retVal >= 0 ? '+' : '';
+        const tierName = rank === 1 ? 'Platino' : (rank === 2 ? 'Oro' : 'Bronce');
+        const tierColor = rank === 1 ? 'var(--yellow)' : (rank === 2 ? '#2dd4bf' : '#fb923c');
+
+        return `
+          <div class="stark-pedestal-card rank-${rank}">
+            <div class="pedestal-content">
+              ${rank === 1 ? '<div class="crown-glow">👑</div>' : ''}
+              <div class="pedestal-avatar-wrap">
+                <div class="pedestal-avatar-aura aura-${rank}"></div>
+                ${avatarHtml}
+              </div>
+              <div style="font-size:${rank === 1 ? '13px' : '11.5px'}; font-weight:800; color:#fff; margin-top:4px; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${p.user_name || 'Participante'}
+              </div>
+              <div style="font-size:10px; font-weight:800; color:${tierColor}; margin-top:2px; display:inline-flex; align-items:center; gap:4px;">
+                <span>${country.flag}</span> ${tierName}
+              </div>
+              
+              ${renderBadgesGrid(p, rank === 1 ? 6 : 4)}
+
+              <div class="stark-pnl-pill" style="color:${retVal >= 0 ? 'var(--yellow)' : 'var(--red)'};">
+                ${retSign}${retVal.toFixed(1)}% PnL
+              </div>
+            </div>
+
+            <!-- BASE DEL PEDESTAL CON BANDERA DE FONDO Y NÚMERO DE PUESTO -->
+            <div class="pedestal-flag-base" title="${country.name}">
+              <img src="${country.flagImg}" alt="${country.name}" class="pedestal-flag-bg" />
+              <div class="pedestal-flag-overlay"></div>
+              <div class="pedestal-rank-num ${rankNumClass}">${rank}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderStarkRankCard(p, rank, isCurrentUser) {
+        const country = getParticipantCountryInfo(p);
+        const avatarHtml = getParticipantAvatarHtml(p, 36);
+        let retVal = 0;
+        if (activeTournamentTimeframe === 'all') retVal = parseFloat(p.return_pct || 0);
+        else if (activeTournamentTimeframe === 'week') retVal = parseFloat(p.pnl_weekly_pct || 0);
+        else if (activeTournamentTimeframe === 'month') retVal = parseFloat(p.pnl_monthly_pct || 0);
+
+        const retSign = retVal >= 0 ? '+' : '';
+        const rankColor = rank <= 3 ? 'var(--yellow)' : (rank <= 6 ? '#f59e0b' : '#38bdf8');
+        const tierName = rank <= 3 ? 'Platino' : (rank <= 6 ? 'Oro' : 'Plata');
+        const ddMax = parseFloat(p.dd_max_pct || 0).toFixed(1);
+
+        return `
+          <div class="stark-rank-card ${isCurrentUser ? 'my-card' : ''}">
+            <img src="${country.flagImg}" alt="${country.name}" class="stark-card-watermark" />
+            
+            <div style="display:flex; align-items:center; gap:12px; z-index:2; flex:1; min-width:0;">
+              <!-- Posición -->
+              <div style="width:28px; text-align:center; font-size:15px; font-weight:900; font-family:var(--mono); color:${rankColor};">
+                ${rank}
+              </div>
+
+              <!-- Avatar -->
+              <div style="flex-shrink:0;">
+                ${avatarHtml}
+              </div>
+
+              <!-- Nombre y Detalles -->
+              <div style="min-width:0; overflow:hidden;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:12.5px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    ${p.user_name || 'Participante'}
+                  </span>
+                  <span style="font-size:12px;" title="${country.name}">${country.flag}</span>
+                  ${isCurrentUser ? '<span class="badge-status completed" style="font-size:9px; padding:2px 6px;">TÚ</span>' : ''}
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:10.5px; color:var(--text-muted); margin-top:2px;">
+                  <span style="color:${rankColor}; font-weight:700;">🛡️ ${tierName}</span>
+                  <span>•</span>
+                  <span>#${p.mt5_login}</span>
+                  <span>•</span>
+                  <span>DD: ${ddMax}%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Insignias Mini -->
+            <div style="display:flex; gap:4px; margin:0 12px; z-index:2;" class="hide-mobile">
+              <div class="stark-badge-chip">🛡️</div>
+              <div class="stark-badge-chip">🎯</div>
+              <div class="stark-badge-chip">🔥</div>
+            </div>
+
+            <!-- Retorno % -->
+            <div style="text-align:right; z-index:2; flex-shrink:0;">
+              <div style="font-size:14px; font-weight:900; font-family:var(--mono); color:${retVal >= 0 ? 'var(--yellow)' : 'var(--red)'};">
+                ${retSign}${retVal.toFixed(1)}%
+              </div>
+              <div style="font-size:9.5px; color:var(--text-muted); font-weight:700;">RETORNO</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderTournamentViews() {
+        const user = sb.getUser();
+        const top3Container = document.getElementById('tournament-top3-container');
+        const cardsContainer = document.getElementById('tournament-cards-container');
+
+        // Ordenar participantes según el marco temporal activo
+        const sortedList = [...tournamentParticipants].sort((a, b) => {
+          let valA = 0, valB = 0;
+          if (activeTournamentTimeframe === 'all') {
+            valA = parseFloat(a.return_pct || 0);
+            valB = parseFloat(b.return_pct || 0);
+          } else if (activeTournamentTimeframe === 'week') {
+            valA = parseFloat(a.pnl_weekly_pct || 0);
+            valB = parseFloat(b.pnl_weekly_pct || 0);
+          } else if (activeTournamentTimeframe === 'month') {
+            valA = parseFloat(a.pnl_monthly_pct || 0);
+            valB = parseFloat(b.pnl_monthly_pct || 0);
+          }
+          return valB - valA;
+        });
+
+        // 1. Renderizar Podio TOP 3 (3 pedestales: 2do a la izq, 1ro al centro, 3ro a la der)
+        if (top3Container) {
+          const p1 = sortedList[0] || null;
+          const p2 = sortedList[1] || null;
+          const p3 = sortedList[2] || null;
+
+          top3Container.innerHTML = `
+            ${renderStarkPedestal(p2, 2)}
+            ${renderStarkPedestal(p1, 1)}
+            ${renderStarkPedestal(p3, 3)}
+          `;
+        }
+
+        // 2. Renderizar Tarjetas de Clasificación
+        if (cardsContainer) {
+          if (sortedList.length === 0) {
+            cardsContainer.innerHTML = `
+              <div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12.5px;">
+                <div style="font-size:28px; margin-bottom:8px;">🏆</div>
+                Aún no hay participantes inscritos en este torneo.<br>
+                ¡Sé el primero en conectar tu cuenta MT5 y liderar el podio!
+              </div>
+            `;
+          } else {
+            // Mostrar todos los participantes en formato de tarjeta flotante
+            cardsContainer.innerHTML = sortedList.map((p, idx) => {
+              const isMe = user && p.user_id === user.id;
+              return renderStarkRankCard(p, idx + 1, isMe);
+            }).join('');
+          }
+        }
+      }
+
+      window.setTournamentTimeframe = function(tf) {
+        activeTournamentTimeframe = tf;
+        ['all', 'week', 'month'].forEach(t => {
+          const tab = document.getElementById('stark-tab-' + t);
+          if (tab) {
+            if (t === tf) tab.classList.add('active');
+            else tab.classList.remove('active');
+          }
+        });
+        const tfLabel = document.getElementById('stark-timeframe-label');
+        if (tfLabel) {
+          if (tf === 'all') tfLabel.textContent = 'Según rendimiento acumulado';
+          else if (tf === 'week') tfLabel.textContent = 'Según rendimiento de esta semana';
+          else if (tf === 'month') tfLabel.textContent = 'Según rendimiento de este mes';
+        }
+        renderTournamentViews();
+      };
 
       async function loadTournamentData() {
         const user = sb.getUser();
-        const tbody = document.getElementById('tournament-leaderboard-tbody');
-        if (!tbody) return;
 
         try {
           // 1. Cargar torneo activo
@@ -2919,7 +3168,7 @@ function _renderAnalisis_orig() {
           const datesEl = document.getElementById('tournament-dates');
           if (datesEl) datesEl.textContent = `Periodo: ${startStr} — ${endStr}`;
 
-          // 2. Cargar participantes ordenados por Rendimiento Acumulado %
+          // 2. Cargar participantes
           if (activeTournament.id && activeTournament.id !== 'default-active-id') {
             const participantsData = await sb.query('tournament_participants', {
               select: '*',
@@ -2930,22 +3179,31 @@ function _renderAnalisis_orig() {
 
             // Sincronizar fotos/avatares reales de la tabla profiles
             try {
-              const profilesData = await sb.query('profiles', { select: 'id, avatar_url' });
+              const profilesData = await sb.query('profiles', { select: 'id, avatar_url, country' });
               if (Array.isArray(profilesData)) {
-                const avatarMap = {};
-                profilesData.forEach(pr => { if (pr.id && pr.avatar_url) avatarMap[pr.id] = pr.avatar_url; });
+                const profileMap = {};
+                profilesData.forEach(pr => { if (pr.id) profileMap[pr.id] = pr; });
                 tournamentParticipants.forEach(p => {
-                  if (!p.avatar_url && avatarMap[p.user_id]) {
-                    p.avatar_url = avatarMap[p.user_id];
+                  if (profileMap[p.user_id]) {
+                    if (!p.avatar_url && profileMap[p.user_id].avatar_url) {
+                      p.avatar_url = profileMap[p.user_id].avatar_url;
+                    }
+                    if (!p.country && profileMap[p.user_id].country) {
+                      p.country = profileMap[p.user_id].country;
+                    }
                   }
                 });
               }
             } catch (errAv) {
-              console.log('Avatar sync check:', errAv);
+              console.log('Profile sync check:', errAv);
             }
           } else {
             tournamentParticipants = [];
           }
+
+          // Actualizar contador de participantes
+          const pCountEl = document.getElementById('tournament-participants-count');
+          if (pCountEl) pCountEl.textContent = `${tournamentParticipants.length} participante${tournamentParticipants.length === 1 ? '' : 's'}`;
 
           // 3. Verificar si el usuario actual ya está inscrito
           const btnContainer = document.getElementById('tournament-join-btn-container');
@@ -2956,7 +3214,7 @@ function _renderAnalisis_orig() {
             const myPartIndex = tournamentParticipants.findIndex(p => p.user_id === user.id);
             const myPart = tournamentParticipants[myPartIndex];
 
-            // Sincronizar foto/avatar del usuario en la tabla pública de participantes para que todos los demás la vean
+            // Sincronizar foto/avatar del usuario en la tabla pública
             let currentAvatar = (user.user_metadata && user.user_metadata.avatar_url) || '';
             if (!currentAvatar) {
               const avImg = document.querySelector('.user-av img');
@@ -2968,8 +3226,8 @@ function _renderAnalisis_orig() {
             }
 
             btnContainer.innerHTML = `
-              <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); padding:8px 14px; border-radius:8px; color:var(--green); font-size:12px; font-weight:700;">
-                <span>✅ Inscrito (Cuenta MT5: #${myPart ? myPart.mt5_login : '—'})</span>
+              <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); padding:7px 14px; border-radius:18px; color:var(--green); font-size:11.5px; font-weight:700;">
+                <span>✅ Conectado (#${myPart ? myPart.mt5_login : '—'})</span>
               </div>
             `;
 
@@ -2986,8 +3244,9 @@ function _renderAnalisis_orig() {
               }
 
               const acctEl = document.getElementById('u-account-label');
+              const countryInfo = getParticipantCountryInfo(myPart);
               if (acctEl) {
-                acctEl.textContent = `Cuenta MT5: #${myPart.mt5_login} (${myPart.mt5_server || 'MT5'})`;
+                acctEl.textContent = `${countryInfo.flag} ${countryInfo.name} | Cuenta MT5: #${myPart.mt5_login} (${myPart.mt5_server || 'MT5'})`;
               }
 
               const pnlDaily = parseFloat(myPart.pnl_daily_pct || 0);
@@ -3049,138 +3308,33 @@ function _renderAnalisis_orig() {
               }
 
               // 4. Posición
-              const elRankPos = document.getElementById('u-rank-pos');
-              if (elRankPos) {
-                elRankPos.textContent = `#${myPartIndex + 1} de ${tournamentParticipants.length}`;
+              const elRankBadge = document.getElementById('u-rank-pos-badge');
+              if (elRankBadge) {
+                elRankBadge.textContent = `POSICIÓN: #${myPartIndex + 1} DE ${tournamentParticipants.length}`;
               }
             }
           } else {
             if (userDashboard) userDashboard.style.display = 'none';
             btnContainer.innerHTML = `
-              <button class="btn-green" onclick="openTournamentJoinModal()" style="font-size:13px; padding:10px 18px;">
-                🏆 Conectar Cuenta MT5 e Inscribirme
+              <button class="btn-green" onclick="openTournamentJoinModal()" style="font-size:12px; padding:7px 16px; border-radius:18px;">
+                🏆 Conectar MT5 e Inscribirme
               </button>
             `;
           }
 
-          // 4. Renderizar Podio TOP 3 Unificado (Medallas + Foto + Métricas)
-          const top3Container = document.getElementById('tournament-top3-container');
-          const p1 = tournamentParticipants[0];
-          const p2 = tournamentParticipants[1];
-          const p3 = tournamentParticipants[2];
-
-          if (top3Container) {
-            top3Container.innerHTML = `
-              <!-- 2da Posición (Plata) -->
-              <div class="trophy-rank-card" style="padding:16px 8px;">
-                <div style="font-size:34px; line-height:1; margin-bottom:8px; filter:drop-shadow(0 3px 8px rgba(192,192,192,0.6));">🥈</div>
-                <div style="display:flex; justify-content:center; margin:4px 0;">
-                  ${getParticipantAvatarHtml(p2, 44)}
-                </div>
-                <div style="font-size:11.5px; font-weight:700; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${p2 ? p2.user_name : 'Vacante'}</div>
-                <div style="font-size:11px; font-weight:800; font-family:var(--mono); color:${p2 && parseFloat(p2.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin:2px 0 6px 0;">${p2 ? (parseFloat(p2.return_pct) >= 0 ? '+' : '') + parseFloat(p2.return_pct).toFixed(1) + '%' : '—'}</div>
-                <div style="font-size:9px; color:#c0c0c0; font-weight:800; text-transform:uppercase; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:10px; border:1px solid rgba(255,255,255,0.15);">2º LUGAR</div>
-              </div>
-
-              <!-- 1ra Posición (Oro - Centro Elevado con Medalla de 1) -->
-              <div class="trophy-rank-card rank-1" style="padding:18px 8px;">
-                <div style="font-size:42px; line-height:1; margin-bottom:8px; filter:drop-shadow(0 4px 16px rgba(255,205,27,0.85));">🥇</div>
-                <div style="display:flex; justify-content:center; margin:4px 0;">
-                  ${getParticipantAvatarHtml(p1, 54)}
-                </div>
-                <div style="font-size:13px; font-weight:800; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${p1 ? p1.user_name : 'Vacante'}</div>
-                <div style="font-size:12px; font-weight:900; font-family:var(--mono); color:var(--yellow); margin:2px 0 6px 0;">${p1 ? (parseFloat(p1.return_pct) >= 0 ? '+' : '') + parseFloat(p1.return_pct).toFixed(1) + '%' : '—'}</div>
-                <div style="font-size:9.5px; color:var(--yellow); font-weight:900; text-transform:uppercase; background:rgba(255,205,27,0.15); padding:3px 10px; border-radius:12px; border:1px solid rgba(255,205,27,0.4); box-shadow:0 0 10px rgba(255,205,27,0.3);">🥇 1º LUGAR</div>
-              </div>
-
-              <!-- 3ra Posición (Bronce) -->
-              <div class="trophy-rank-card" style="padding:16px 8px;">
-                <div style="font-size:34px; line-height:1; margin-bottom:8px; filter:drop-shadow(0 3px 8px rgba(205,127,50,0.6));">🥉</div>
-                <div style="display:flex; justify-content:center; margin:4px 0;">
-                  ${getParticipantAvatarHtml(p3, 44)}
-                </div>
-                <div style="font-size:11.5px; font-weight:700; color:#fff; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${p3 ? p3.user_name : 'Vacante'}</div>
-                <div style="font-size:11px; font-weight:800; font-family:var(--mono); color:${p3 && parseFloat(p3.return_pct) >= 0 ? 'var(--green)' : 'var(--red)'}; margin:2px 0 6px 0;">${p3 ? (parseFloat(p3.return_pct) >= 0 ? '+' : '') + parseFloat(p3.return_pct).toFixed(1) + '%' : '—'}</div>
-                <div style="font-size:9px; color:#cd7f32; font-weight:800; text-transform:uppercase; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:10px; border:1px solid rgba(205,127,50,0.3);">3º LUGAR</div>
-              </div>
-            `;
-          }
-
-          // 5. Renderizar Tabla General Completa con Todas las Métricas y Avatares
-          if (tournamentParticipants.length === 0) {
-            tbody.innerHTML = `
-              <tr>
-                <td colspan="11" style="text-align: center; color: var(--text-muted); padding: 30px;">
-                  Aún no hay participantes inscritos en este torneo. ¡Sé el primero en conectar tu cuenta MT5!
-                </td>
-              </tr>
-            `;
-          } else {
-            tbody.innerHTML = tournamentParticipants.map(function(p, index) {
-              const retVal = parseFloat(p.return_pct || 0);
-              const retStr = (retVal >= 0 ? '+' : '') + retVal.toFixed(2) + '%';
-              const retColor = retVal >= 0 ? 'var(--green)' : 'var(--red)';
-
-              const dailyVal = parseFloat(p.pnl_daily_pct || 0);
-              const weeklyVal = parseFloat(p.pnl_weekly_pct || 0);
-              const monthlyVal = parseFloat(p.pnl_monthly_pct || 0);
-
-              const ddDaily = parseFloat(p.dd_daily_pct || 0);
-              const ddMax = parseFloat(p.dd_max_pct || 0);
-
-              const isDisq = p.status === 'Descalificado' || ddMax >= 5.0;
-
-              let badgesHtml = '—';
-              if (Array.isArray(p.badges) && p.badges.length > 0) {
-                badgesHtml = p.badges.map(b => `<span title="${b.label || ''}">${b.icon || '🏅'}</span>`).join(' ');
-              } else {
-                badgesHtml = isDisq ? '🛑' : (ddDaily < 1.1 ? '🛡️ 1️⃣' : '🛡️');
-              }
-
-              return `
-                <tr class="table-glass-row ${index === 0 ? 'rank-1-row' : ''}" style="${user && p.user_id === user.id ? 'background:rgba(255,205,27,0.08);' : ''} ${isDisq ? 'opacity:0.75;' : ''}">
-                  <td style="text-align:center; font-weight:800; font-size:13px; font-family:var(--mono); color:${index === 0 ? 'var(--yellow)' : 'var(--text-secondary)'}; padding:10px 6px;">
-                    ${index + 1}
-                  </td>
-                  <td style="padding:10px 8px;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                      ${getParticipantAvatarHtml(p, 26)}
-                      <div>
-                        <div style="font-weight:700; font-size:12.5px; color:#fff;">${p.user_name || 'Participante'}</div>
-                        <div style="font-size:10px; color:var(--text-muted);">#${p.mt5_login} (${p.mt5_server || 'MT5'})</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style="text-align:center; padding:10px 4px;">
-                    <span class="badge-status ${isDisq ? 'rejected' : 'completed'}" style="font-size:10px; padding:3px 8px;">
-                      ${isDisq ? 'Descalificado' : 'Activo'}
-                    </span>
-                  </td>
-                  <td style="text-align:center; font-weight:800; font-family:var(--mono); font-size:13px; color:${retColor}; padding:10px 4px;">${retStr}</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${dailyVal >= 0 ? 'var(--green)' : 'var(--red)'}; padding:10px 4px;">${(dailyVal >= 0 ? '+' : '') + dailyVal.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${weeklyVal >= 0 ? 'var(--green)' : 'var(--red)'}; padding:10px 4px;">${(weeklyVal >= 0 ? '+' : '') + weeklyVal.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${monthlyVal >= 0 ? 'var(--green)' : 'var(--red)'}; padding:10px 4px;">${(monthlyVal >= 0 ? '+' : '') + monthlyVal.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; color:${ddDaily > 1.1 ? 'var(--red)' : 'var(--text-primary)'}; padding:10px 4px;">${ddDaily.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; font-weight:bold; color:var(--red); padding:10px 4px;">${ddMax.toFixed(2)}%</td>
-                  <td style="text-align:center; font-family:var(--mono); font-size:12px; padding:10px 4px;">${p.trades_count || 0}</td>
-                  <td style="text-align:center; font-size:13px; padding:10px 4px;">${badgesHtml}</td>
-                </tr>
-              `;
-            }).join('');
-          }
-
-          // 6. Dibujar Gráfico Suave en Canvas (Rendimiento en Vivo)
-          renderLiveTournamentChart(tournamentParticipants);
+          // 4. Renderizar vistas principales (Podio 3 pedestales + Tarjetas de ranking)
+          renderTournamentViews();
 
         } catch (e) {
           console.error('Error al cargar datos del torneo:', e);
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="11" style="text-align: center; color: var(--red); padding: 20px;">
+          const cardsContainer = document.getElementById('tournament-cards-container');
+          if (cardsContainer) {
+            cardsContainer.innerHTML = `
+              <div style="text-align: center; color: var(--red); padding: 20px; font-size:12.5px;">
                 Error al conectar con la base de datos del torneo: ${e.message}
-              </td>
-            </tr>
-          `;
+              </div>
+            `;
+          }
         }
       }
 
@@ -3200,6 +3354,7 @@ function _renderAnalisis_orig() {
 
         const server = document.getElementById('tjm-server').value.trim();
         const login = document.getElementById('tjm-login').value.trim();
+        const country = document.getElementById('tjm-country').value || 'CO';
         const password = document.getElementById('tjm-password').value.trim();
 
         if (!server || !login || !password) {
@@ -3220,6 +3375,7 @@ function _renderAnalisis_orig() {
             user_name: userName,
             user_email: user.email,
             avatar_url: userAvatar,
+            country: country,
             mt5_server: server,
             mt5_login: parseInt(login, 10),
             mt5_password: password,
@@ -3231,10 +3387,13 @@ function _renderAnalisis_orig() {
             win_rate: 0.00,
             current_score: 100.00,
             trades_count: 0,
-            badges: [{ icon: '🛡️', label: 'Sin Sobreoperación' }]
+            badges: ['🛡️', '🎯', '🔥']
           };
 
           await sb.insert('tournament_participants', participantData);
+          try {
+            await sb.update('profiles', user.id, { country: country });
+          } catch (pe) {}
           alert('¡Genial! Tu cuenta de MT5 ha sido conectada exitosamente al torneo. El servidor central comenzará a sincronizar tus operaciones.');
           closeModal('tournament-join-modal');
           document.getElementById('tournament-join-form').reset();
