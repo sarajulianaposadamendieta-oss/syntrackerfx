@@ -2959,13 +2959,84 @@ function _renderAnalisis_orig() {
         return null;
       }
 
-      function renderBadgesGrid(p, maxCount) {
-        if (!maxCount) maxCount = 6;
-        return `
-          <div class="stark-badges-grid">
-            ${TACTICAL_BADGE_ICONS.slice(0, maxCount).map(ico => `<div class="stark-badge-chip">${ico}</div>`).join('')}
-          </div>
-        `;
+      const TOURNAMENT_ACHIEVEMENTS = [
+        {
+          id: 'disciplina',
+          icon: '🎖️',
+          name: 'Disciplina',
+          desc: 'Cumple la regla de 1 operación por día y respeta el límite de drawdown.',
+          color: '#38bdf8',
+          bg: 'rgba(56, 189, 248, 0.12)',
+          border: 'rgba(56, 189, 248, 0.35)'
+        },
+        {
+          id: 'consistencia',
+          icon: '🔥',
+          name: 'Consistencia',
+          desc: 'Mantiene resultados positivos y gestión constante en sus operaciones.',
+          color: '#f97316',
+          bg: 'rgba(249, 115, 22, 0.12)',
+          border: 'rgba(249, 115, 22, 0.35)'
+        },
+        {
+          id: 'semana',
+          icon: '🏆',
+          name: 'Trader de la Semana',
+          desc: 'Participante con el mayor rendimiento porcentual de esta semana.',
+          color: '#eab308',
+          bg: 'rgba(234, 179, 8, 0.15)',
+          border: 'rgba(234, 179, 8, 0.45)'
+        },
+        {
+          id: 'mes',
+          icon: '👑',
+          name: 'Trader del Mes',
+          desc: 'Participante con el mayor rendimiento porcentual de este mes.',
+          color: '#c084fc',
+          bg: 'rgba(192, 132, 252, 0.15)',
+          border: 'rgba(192, 132, 252, 0.45)'
+        }
+      ];
+
+      function calculateParticipantBadges(p, allParticipants) {
+        if (!p) return [];
+        const badges = [];
+        const isDisqualified = p.status === 'Descalificado' || parseFloat(p.dd_max_pct || 0) >= 5.0;
+        if (isDisqualified) return [];
+
+        const pnlAcum = parseFloat(p.return_pct || 0);
+        const pnlWeekly = parseFloat(p.pnl_weekly_pct || 0);
+        const pnlMonthly = parseFloat(p.pnl_monthly_pct || 0);
+        const ddDaily = parseFloat(p.dd_daily_pct || 0);
+        const trades = parseInt(p.total_trades || p.trades_count || 0, 10);
+
+        // 1. 🎖️ Disciplina: Ha operado al menos 1 trade, DD diario <= 1.1%
+        if (trades >= 1 && ddDaily <= 1.1) {
+          badges.push(TOURNAMENT_ACHIEVEMENTS[0]);
+        }
+
+        // 2. 🔥 Consistencia: Retorno positivo acumulado (> 0%) y al menos 2 trades
+        if (pnlAcum > 0 && trades >= 2) {
+          badges.push(TOURNAMENT_ACHIEVEMENTS[1]);
+        }
+
+        // 3. 🏆 Trader de la Semana: Mejor rendimiento semanal > 0
+        if (allParticipants && allParticipants.length > 0 && pnlWeekly > 0) {
+          const maxWeekly = Math.max(...allParticipants.map(x => parseFloat(x.pnl_weekly_pct || 0)));
+          if (pnlWeekly === maxWeekly && maxWeekly > 0) {
+            badges.push(TOURNAMENT_ACHIEVEMENTS[2]);
+          }
+        }
+
+        // 4. 👑 Trader del Mes: Mejor rendimiento mensual > 0
+        if (allParticipants && allParticipants.length > 0 && pnlMonthly > 0) {
+          const maxMonthly = Math.max(...allParticipants.map(x => parseFloat(x.pnl_monthly_pct || 0)));
+          if (pnlMonthly === maxMonthly && maxMonthly > 0) {
+            badges.push(TOURNAMENT_ACHIEVEMENTS[3]);
+          }
+        }
+
+        return badges;
       }
 
       function renderStarkPedestal(p, rank) {
@@ -3018,6 +3089,13 @@ function _renderAnalisis_orig() {
         const retSign = retVal >= 0 ? '+' : '';
         const pnlFormatted = `${retSign}${retVal.toFixed(1)}% Retorno`;
 
+        const badges = calculateParticipantBadges(p, tournamentParticipants);
+        const badgesHtml = badges.length > 0 ? `
+          <div style="display:flex; align-items:center; justify-content:center; gap:4px; margin-top:6px; flex-wrap:wrap;">
+            ${badges.map(b => `<span title="${b.name}: ${b.desc}" style="background:${b.bg}; border:1px solid ${b.border}; color:${b.color}; font-size:9.5px; font-weight:800; padding:2px 7px; border-radius:12px; display:inline-flex; align-items:center; gap:3px; cursor:help;">${b.icon} <span>${b.name}</span></span>`).join('')}
+          </div>
+        ` : '';
+
         return `
           <div class="stark-pedestal-card ${rankClass}">
             <div class="pedestal-content">
@@ -3042,6 +3120,8 @@ function _renderAnalisis_orig() {
               <div class="stark-tier-pill ${tierClass}">
                 ${tierIco} ${tierName}
               </div>
+
+              ${badgesHtml}
 
               <div class="stark-pnl-pill pill-${rank}">
                 ${pnlFormatted}
@@ -3094,6 +3174,13 @@ function _renderAnalisis_orig() {
         const sSign = pnlWeekly >= 0 ? '+' : '';
         const mSign = pnlMonthly >= 0 ? '+' : '';
 
+        const badges = calculateParticipantBadges(p, tournamentParticipants);
+        const badgesHtml = badges.length > 0 ? `
+          <div style="display:inline-flex; align-items:center; gap:4px; margin-left:4px; flex-wrap:wrap;">
+            ${badges.map(b => `<span title="${b.name}: ${b.desc}" style="background:${b.bg}; border:1px solid ${b.border}; color:${b.color}; font-size:9px; font-weight:800; padding:1.5px 6px; border-radius:8px; display:inline-flex; align-items:center; gap:2.5px; cursor:help;">${b.icon} <span class="hide-mobile">${b.name}</span></span>`).join('')}
+          </div>
+        ` : '';
+
         return `
           <div class="stark-rank-card ${isCurrentUser ? 'my-card' : ''}" style="border-color:${borderCol}; box-shadow: 0 0 16px ${borderCol}18;">
             <div style="display:flex; align-items:center; gap:12px; z-index:2; flex:1; min-width:0;">
@@ -3109,12 +3196,13 @@ function _renderAnalisis_orig() {
 
               <!-- Nombre y Nivel / Tier -->
               <div style="min-width:130px; overflow:hidden;">
-                <div style="display:flex; align-items:center; gap:6px;">
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                   <span style="font-size:13.5px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     ${p.user_name || 'Participante'}
                   </span>
                   <img src="${country.flagImg}" alt="${country.name}" style="width:16px; height:11px; border-radius:2px; object-fit:cover; display:inline-block; flex-shrink:0;" title="${country.name}" />
                   ${isCurrentUser ? '<span class="badge-status completed" style="font-size:9px; padding:1px 5px; margin-left:2px;">TÚ</span>' : ''}
+                  ${badgesHtml}
                 </div>
                 <div style="display:flex; align-items:center; gap:6px; font-size:10.5px; color:#64748b; margin-top:2px;">
                   <span style="color:${tierCol}; font-weight:700;">${tierName}</span>
@@ -3411,6 +3499,37 @@ function _renderAnalisis_orig() {
               const elRankBadge = document.getElementById('u-rank-pos-badge');
               if (elRankBadge) {
                 elRankBadge.textContent = `POSICIÓN: #${myPartIndex + 1} DE ${tournamentParticipants.length}`;
+              }
+
+              // 5. Insignias & Reconocimientos del usuario
+              const badgesGridEl = document.getElementById('u-badges-grid');
+              if (badgesGridEl) {
+                const myEarnedBadges = calculateParticipantBadges(myPart, tournamentParticipants);
+                const earnedIds = new Set(myEarnedBadges.map(b => b.id));
+
+                badgesGridEl.innerHTML = TOURNAMENT_ACHIEVEMENTS.map(ach => {
+                  const isUnlocked = earnedIds.has(ach.id);
+                  return `
+                    <div style="background:${isUnlocked ? ach.bg : 'rgba(255,255,255,0.02)'}; border:1px solid ${isUnlocked ? ach.border : 'rgba(255,255,255,0.06)'}; border-radius:10px; padding:10px 12px; display:flex; align-items:flex-start; gap:10px; opacity:${isUnlocked ? '1' : '0.45'}; transition:all 0.2s ease;">
+                      <div style="font-size:22px; line-height:1; filter:${isUnlocked ? 'none' : 'grayscale(1)'}; flex-shrink:0;">
+                        ${ach.icon}
+                      </div>
+                      <div style="flex:1; min-width:0;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; margin-bottom:3px;">
+                          <span style="font-size:11.5px; font-weight:800; color:${isUnlocked ? ach.color : '#94a3b8'};">
+                            ${ach.name}
+                          </span>
+                          <span style="font-size:8.5px; font-weight:700; padding:1px 5px; border-radius:6px; background:${isUnlocked ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.05)'}; color:${isUnlocked ? '#4ade80' : '#64748b'}; text-transform:uppercase;">
+                            ${isUnlocked ? 'OBTENIDA' : 'BLOQUEADA'}
+                          </span>
+                        </div>
+                        <div style="font-size:10px; color:#94a3b8; line-height:1.3;">
+                          ${ach.desc}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('');
               }
             }
           } else {
