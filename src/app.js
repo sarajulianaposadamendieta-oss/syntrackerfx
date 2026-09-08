@@ -3058,12 +3058,15 @@ function _renderAnalisis_orig() {
 
       function renderStarkRankCard(p, rank, isCurrentUser) {
         const country = getParticipantCountryInfo(p);
-        let retVal = 0;
-        if (activeTournamentTimeframe === 'all') retVal = parseFloat(p.return_pct || 0);
-        else if (activeTournamentTimeframe === 'week') retVal = parseFloat(p.pnl_weekly_pct || 0);
-        else if (activeTournamentTimeframe === 'month') retVal = parseFloat(p.pnl_monthly_pct || 0);
+        
+        const pnlAcum = parseFloat(p.return_pct || 0);
+        const pnlDaily = parseFloat(p.pnl_daily_pct || 0);
+        const pnlWeekly = parseFloat(p.pnl_weekly_pct || 0);
+        const pnlMonthly = parseFloat(p.pnl_monthly_pct || 0);
+        const ddDaily = parseFloat(p.dd_daily_pct || 0);
+        const tradesCount = parseInt(p.total_trades || 0, 10);
 
-        // Paleta de colores neón por rango según la captura de StarkLab
+        // Paleta de colores neón por rango
         const COLOR_PALETTE = [
           '#ef4444', // 4 (rojo)
           '#f97316', // 5 (naranja)
@@ -3077,23 +3080,26 @@ function _renderAnalisis_orig() {
         const borderCol = COLOR_PALETTE[(rank - 4) % COLOR_PALETTE.length] || '#3b82f6';
         const isOro = rank <= 5;
         const tierName = isOro ? 'Oro' : 'Plata';
-        const tierIco = isOro ? '👑' : '🛡️';
         const tierCol = isOro ? '#eab308' : '#94a3b8';
-        const levelNum = Math.max(12, 24 - rank);
 
-        const customAvatar = getParticipantAvatarHtml(p, 28);
-        const crestSvg = isOro ? CRESTS.oro(28) : CRESTS.plata(28);
+        const customAvatar = getParticipantAvatarHtml(p, 32);
+        const crestSvg = isOro ? CRESTS.oro(32) : CRESTS.plata(32);
         const avatarOrCrest = customAvatar || crestSvg;
 
-        const xpFormatted = (retVal >= 0 ? '' : '-') + Math.abs(retVal).toFixed(1) + 'k';
-        const subStat = '▲ ' + (Math.abs(retVal) * 0.18 + 0.8).toFixed(1) + 'k';
+        const acumSign = pnlAcum >= 0 ? '+' : '';
+        const acumFormatted = `${acumSign}${pnlAcum.toFixed(1)}%`;
+        const acumCol = pnlAcum >= 0 ? '#4ade80' : '#f87171';
+
+        const dSign = pnlDaily >= 0 ? '+' : '';
+        const sSign = pnlWeekly >= 0 ? '+' : '';
+        const mSign = pnlMonthly >= 0 ? '+' : '';
 
         return `
           <div class="stark-rank-card ${isCurrentUser ? 'my-card' : ''}" style="border-color:${borderCol}; box-shadow: 0 0 16px ${borderCol}18;">
             <div style="display:flex; align-items:center; gap:12px; z-index:2; flex:1; min-width:0;">
               <!-- Posición -->
-              <div style="width:24px; text-align:center; font-size:15px; font-weight:900; font-family:var(--mono); color:${borderCol};">
-                ${rank}
+              <div style="width:26px; text-align:center; font-size:15px; font-weight:900; font-family:var(--mono); color:${borderCol}; flex-shrink:0;">
+                #${rank}
               </div>
 
               <!-- Crest / Avatar con aro de color -->
@@ -3101,38 +3107,59 @@ function _renderAnalisis_orig() {
                 ${avatarOrCrest}
               </div>
 
-              <!-- Nombre y Detalles de Nivel -->
-              <div style="min-width:0; overflow:hidden;">
+              <!-- Nombre y Nivel / Tier -->
+              <div style="min-width:130px; overflow:hidden;">
                 <div style="display:flex; align-items:center; gap:6px;">
-                  <span style="font-size:13px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  <span style="font-size:13.5px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     ${p.user_name || 'Participante'}
                   </span>
-                  <img src="${country.flagImg}" alt="${country.name}" style="width:16px; height:11px; border-radius:2px; object-fit:cover; display:inline-block;" title="${country.name}" />
+                  <img src="${country.flagImg}" alt="${country.name}" style="width:16px; height:11px; border-radius:2px; object-fit:cover; display:inline-block; flex-shrink:0;" title="${country.name}" />
                   ${isCurrentUser ? '<span class="badge-status completed" style="font-size:9px; padding:1px 5px; margin-left:2px;">TÚ</span>' : ''}
                 </div>
                 <div style="display:flex; align-items:center; gap:6px; font-size:10.5px; color:#64748b; margin-top:2px;">
-                  <span style="color:${tierCol}; font-weight:700;">${tierIco} ${tierName}</span>
-                  <span>Nivel ${levelNum}</span>
-                  <span>—</span>
+                  <span style="color:${tierCol}; font-weight:700;">${tierName}</span>
                 </div>
               </div>
 
-              <!-- Insignias Tácticas Mini -->
-              <div class="stark-card-badges-row hide-mobile">
-                <div class="stark-mini-badge">🛡️</div>
-                <div class="stark-mini-badge">🎯</div>
-                <div class="stark-mini-badge">🔥</div>
-                <div class="stark-mini-badge">⚡</div>
+              <!-- Métricas de Trading: D, S, M, DD Diario, Trades -->
+              <div class="hide-mobile" style="display:flex; align-items:center; gap:16px; margin-left:auto; margin-right:20px; font-size:11px; font-family:var(--mono);">
+                <!-- D (Diario) -->
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                  <span style="font-size:9px; color:#64748b; font-weight:700; text-transform:uppercase;">D</span>
+                  <span style="color:${pnlDaily >= 0 ? '#4ade80' : '#f87171'}; font-weight:800;">${dSign}${pnlDaily.toFixed(1)}%</span>
+                </div>
+
+                <!-- S (Semanal) -->
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                  <span style="font-size:9px; color:#64748b; font-weight:700; text-transform:uppercase;">S</span>
+                  <span style="color:${pnlWeekly >= 0 ? '#4ade80' : '#f87171'}; font-weight:800;">${sSign}${pnlWeekly.toFixed(1)}%</span>
+                </div>
+
+                <!-- M (Mensual) -->
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                  <span style="font-size:9px; color:#64748b; font-weight:700; text-transform:uppercase;">M</span>
+                  <span style="color:${pnlMonthly >= 0 ? '#4ade80' : '#f87171'}; font-weight:800;">${mSign}${pnlMonthly.toFixed(1)}%</span>
+                </div>
+
+                <!-- Drawdown Diario -->
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                  <span style="font-size:9px; color:#64748b; font-weight:700; text-transform:uppercase;">DD Diario</span>
+                  <span style="color:${ddDaily > 1.1 ? '#f87171' : '#cbd5e1'}; font-weight:800;">${ddDaily.toFixed(1)}%</span>
+                </div>
+
+                <!-- Trades -->
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                  <span style="font-size:9px; color:#64748b; font-weight:700; text-transform:uppercase;">Trades</span>
+                  <span style="color:#94a3b8; font-weight:800;">${tradesCount}</span>
+                </div>
               </div>
             </div>
 
-            <!-- Retorno / XP a la derecha -->
-            <div style="text-align:right; z-index:2; flex-shrink:0;">
-              <div style="font-size:14px; font-weight:900; font-family:var(--mono); color:${borderCol};">
-                ${xpFormatted} <span style="font-size:10px; color:#64748b; font-weight:600;">XP</span>
-              </div>
-              <div style="font-size:10px; color:#64748b; font-weight:600; margin-top:1px;">
-                ${subStat}
+            <!-- Acumulado a la derecha -->
+            <div style="text-align:right; z-index:2; flex-shrink:0; min-width:85px;">
+              <div style="font-size:9.5px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Acumulado</div>
+              <div style="font-size:15px; font-weight:900; font-family:var(--mono); color:${acumCol};">
+                ${acumFormatted}
               </div>
             </div>
           </div>
