@@ -89,14 +89,45 @@
         user = d.user || d;
         return d;
       }
-      return { signUp, signIn, signOut, getUser, query, insert, update, remove, uploadFile, updateUser };
+      async function recoverPassword(email) {
+        const r = await fetch(SUPABASE_URL + '/auth/v1/recover', {
+          method: 'POST',
+          headers: base,
+          body: JSON.stringify({ email: email })
+        });
+        if (!r.ok) {
+          let errMsg = 'Error al enviar correo de recuperación';
+          try {
+            const e = await r.json();
+            errMsg = e.error_description || e.message || errMsg;
+          } catch(err) {}
+          throw new Error(errMsg);
+        }
+        return r.json().catch(() => ({}));
+      }
+      function setToken(t, u) { token = t; if (u) user = u; }
+      function getToken() { return token; }
+      return { signUp, signIn, signOut, getUser, query, insert, update, remove, uploadFile, updateUser, recoverPassword, setToken, getToken };
     })();
 
     // ── Auth UI ──
     function switchAuthTab(tab) {
+      const tabsEl = document.querySelector('.auth-tabs');
+      if (tabsEl) {
+        tabsEl.style.display = (tab === 'forgot' || tab === 'reset') ? 'none' : 'flex';
+      }
       document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register')));
-      document.getElementById('auth-form-login').style.display = tab === 'login' ? 'flex' : 'none';
-      document.getElementById('auth-form-register').style.display = tab === 'register' ? 'flex' : 'none';
+      
+      const lf = document.getElementById('auth-form-login');
+      const rf = document.getElementById('auth-form-register');
+      const ff = document.getElementById('auth-form-forgot');
+      const rstf = document.getElementById('auth-form-reset');
+
+      if (lf) lf.style.display = tab === 'login' ? 'flex' : 'none';
+      if (rf) rf.style.display = tab === 'register' ? 'flex' : 'none';
+      if (ff) ff.style.display = tab === 'forgot' ? 'flex' : 'none';
+      if (rstf) rstf.style.display = tab === 'reset' ? 'flex' : 'none';
+
       document.getElementById('auth-error').classList.remove('show');
       document.getElementById('auth-success').classList.remove('show');
     }
@@ -131,6 +162,73 @@
         switchAuthTab('login'); document.getElementById('login-email').value = email;
       } catch (e) { showAuthError(e.message); } finally { showLoading(false); }
     }
+    async function doSendRecovery() {
+      const emailEl = document.getElementById('forgot-email');
+      const email = emailEl ? emailEl.value.trim() : '';
+      if (!email) return showAuthError('Ingresa tu correo electrónico registrado');
+      showLoading(true);
+      try {
+        await sb.recoverPassword(email);
+        showAuthSuccess('¡Correo enviado! Revisa tu bandeja de entrada o spam para restablecer tu contraseña.');
+        if (emailEl) emailEl.value = '';
+      } catch (e) {
+        showAuthError(e.message || 'Error al enviar correo de recuperación');
+      } finally {
+        showLoading(false);
+      }
+    }
+    async function doResetPassword() {
+      const p1El = document.getElementById('reset-pass');
+      const p2El = document.getElementById('reset-pass-confirm');
+      const p1 = p1El ? p1El.value : '';
+      const p2 = p2El ? p2El.value : '';
+      if (!p1 || !p2) return showAuthError('Completa todos los campos');
+      if (p1.length < 6) return showAuthError('La contraseña debe tener al menos 6 caracteres');
+      if (p1 !== p2) return showAuthError('Las contraseñas no coinciden');
+      showLoading(true);
+      try {
+        await sb.updateUser({ password: p1 });
+        showAuthSuccess('¡Contraseña actualizada con éxito! Ya puedes iniciar sesión con tu nueva clave.');
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, null, window.location.pathname);
+        }
+        setTimeout(function () {
+          switchAuthTab('login');
+          if (p1El) p1El.value = '';
+          if (p2El) p2El.value = '';
+        }, 2200);
+      } catch (e) {
+        showAuthError(e.message || 'Error al actualizar contraseña');
+      } finally {
+        showLoading(false);
+      }
+    }
+    function checkRecoveryFlow() {
+      try {
+        var hash = window.location.hash || '';
+        var search = window.location.search || '';
+        var rawStr = hash.startsWith('#') ? hash.substring(1) : (search.startsWith('?') ? search.substring(1) : '');
+        if (!rawStr) return;
+        var params = new URLSearchParams(rawStr);
+        var type = params.get('type');
+        var accessToken = params.get('access_token');
+        var errorCode = params.get('error_code');
+        var errorDesc = params.get('error_description');
+
+        if (errorCode || errorDesc) {
+          showAuthError(decodeURIComponent(errorDesc || errorCode));
+          return;
+        }
+
+        if (type === 'recovery' && accessToken) {
+          sb.setToken(accessToken);
+          switchAuthTab('reset');
+          showAuthSuccess('Ingresa tu nueva contraseña para actualizar el acceso a tu cuenta.');
+        }
+      } catch (err) {
+        console.error('Error checking recovery flow:', err);
+      }
+    }
     async function doLogout() {
       showLoading(true); await sb.signOut();
       trades = []; accounts = [];
@@ -140,7 +238,14 @@
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter') return;
       const lf = document.getElementById('auth-form-login');
-      if (lf && lf.style.display !== 'none') doLogin(); else doRegister();
+      const rf = document.getElementById('auth-form-register');
+      const ff = document.getElementById('auth-form-forgot');
+      const rstf = document.getElementById('auth-form-reset');
+
+      if (lf && lf.style.display !== 'none') doLogin();
+      else if (rf && rf.style.display !== 'none') doRegister();
+      else if (ff && ff.style.display !== 'none') doSendRecovery();
+      else if (rstf && rstf.style.display !== 'none') doResetPassword();
     });
 
     // ── App state ──
@@ -4005,8 +4110,16 @@ function _renderAnalisis_orig() {
       window.openTournamentJoinModal = openTournamentJoinModal;
       window.submitTournamentJoin = submitTournamentJoin;
 
+      window.switchAuthTab = switchAuthTab;
+      window.doLogin = doLogin;
+      window.doRegister = doRegister;
+      window.doSendRecovery = doSendRecovery;
+      window.doResetPassword = doResetPassword;
+      window.checkRecoveryFlow = checkRecoveryFlow;
+
       // ── Init ──
       document.getElementById('auth-screen').style.display = 'flex';
+      checkRecoveryFlow();
 
 
 
