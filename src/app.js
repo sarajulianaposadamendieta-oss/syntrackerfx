@@ -3096,8 +3096,6 @@ function _renderAnalisis_orig() {
 
         return `
           <div class="stark-rank-card ${isCurrentUser ? 'my-card' : ''}" style="border-color:${borderCol}; box-shadow: 0 0 16px ${borderCol}18;">
-            <img src="${country.flagImg}" alt="${country.name}" class="stark-card-watermark" />
-            
             <div style="display:flex; align-items:center; gap:12px; z-index:2; flex:1; min-width:0;">
               <!-- Posición -->
               <div style="width:24px; text-align:center; font-size:15px; font-weight:900; font-family:var(--mono); color:${borderCol};">
@@ -3111,9 +3109,12 @@ function _renderAnalisis_orig() {
 
               <!-- Nombre y Detalles de Nivel -->
               <div style="min-width:0; overflow:hidden;">
-                <div style="font-size:13px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                  ${p.user_name || 'Participante'}
-                  ${isCurrentUser ? '<span class="badge-status completed" style="font-size:9px; padding:1px 5px; margin-left:4px;">TÚ</span>' : ''}
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:13px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    ${p.user_name || 'Participante'}
+                  </span>
+                  <img src="${country.flagImg}" alt="${country.name}" style="width:16px; height:11px; border-radius:2px; object-fit:cover; display:inline-block;" title="${country.name}" />
+                  ${isCurrentUser ? '<span class="badge-status completed" style="font-size:9px; padding:1px 5px; margin-left:2px;">TÚ</span>' : ''}
                 </div>
                 <div style="display:flex; align-items:center; gap:6px; font-size:10.5px; color:#64748b; margin-top:2px;">
                   <span style="color:${tierCol}; font-weight:700;">${tierIco} ${tierName}</span>
