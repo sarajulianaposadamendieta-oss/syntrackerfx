@@ -169,12 +169,34 @@
         rawNotes = rawNotes.substring(0, metaIdx).trim();
       }
 
+      // Parsear fotos (soporte multi-imagen)
+      let parsedPhotos = [];
+      if (t.photo) {
+        if (typeof t.photo === 'string') {
+          const trimmed = t.photo.trim();
+          if (trimmed.startsWith('[')) {
+            try {
+              const arr = JSON.parse(trimmed);
+              if (Array.isArray(arr)) parsedPhotos = arr;
+            } catch(e) {
+              parsedPhotos = [t.photo];
+            }
+          } else {
+            parsedPhotos = [t.photo];
+          }
+        } else if (Array.isArray(t.photo)) {
+          parsedPhotos = t.photo;
+        }
+      }
+
       return {
         id: t.id, date: t.date, account: t.account, asset: t.asset, side: t.side,
         entryTime: t.entry_time || '—', exitTime: t.exit_time || '—',
         pnl: parseFloat(t.pnl) || 0, rr: parseFloat(t.rr) || 0,
         session: t.session || '—', setup: t.setup || '—', news: t.news || 'no',
-        photo: t.photo || null, notes: rawNotes, plan: t.plan || null,
+        photos: parsedPhotos,
+        photo: parsedPhotos[0] || null,
+        notes: rawNotes, plan: t.plan || null,
         plan_why: extractedWhy || t.plan_why || null,
         confirmations: Array.isArray(t.confirmations) ? t.confirmations : [],
         // Campos del motor GoldFX
@@ -489,6 +511,8 @@
       });
       var notesWithMeta = (finalNotes || '') + metaBlock;
 
+      const photoPayload = currentPhotosData.length === 0 ? null : (currentPhotosData.length === 1 ? currentPhotosData[0] : JSON.stringify(currentPhotosData));
+
       const tradeData = {
         user_id: user.id,
         account: document.getElementById('tm-account').value,
@@ -501,7 +525,7 @@
         session: document.getElementById('tm-session').value,
         setup: buildSetupValue('tm-bias', 'tm-tipo'),
         date: document.getElementById('tm-date').value || new Date().toISOString().slice(0, 10),
-        photo: currentPhotoData || null,
+        photo: photoPayload,
         notes: notesWithMeta
       };
 
@@ -561,12 +585,9 @@
       if(resSel) resSel.querySelectorAll('.setup-btn').forEach(function(b){ b.classList.remove('active'); });
       var resHid = document.getElementById('edit-result'); if(resHid) resHid.value = '';
       if(t.result_type) selectSetupBtnByVal('edit-result-sel', 'edit-result', t.result_type);
-      // Foto
-      if (t.photo) {
-        setEditPhotoPreview(t.photo);
-      } else {
-        removeEditPhoto();
-      }
+      // Fotos
+      editPhotosData = (t.photos && t.photos.length) ? [...t.photos] : (t.photo ? [t.photo] : []);
+      renderEditPhotoPreviews();
       document.getElementById('edit-modal').classList.add('open');
     }
 
@@ -597,6 +618,7 @@
       });
       var notesWithMeta = (finalNotes || '') + metaBlock;
 
+      const photoPayload = editPhotosData.length === 0 ? null : (editPhotosData.length === 1 ? editPhotosData[0] : JSON.stringify(editPhotosData));
 
       const data = {
         account: document.getElementById('edit-account').value,
@@ -610,7 +632,7 @@
         setup: buildSetupValue('edit-bias', 'edit-tipo'),
         date: document.getElementById('edit-date').value,
         notes: notesWithMeta,
-        photo: editPhotoData || null
+        photo: photoPayload
       };
       showLoading(true);
       try {
@@ -984,8 +1006,9 @@
     function selectNews(btn) { document.querySelectorAll('.news-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); document.getElementById('news-val').value = btn.dataset.val; }
 
 
-    // ── Photo ──
-    let currentPhotoData = null;
+    // ── Multi-Photo Management ──
+    let currentPhotosData = [];
+    let editPhotosData = [];
 
     function compressImage(dataUrl, callback) {
       var img = new Image();
@@ -1002,121 +1025,348 @@
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.95); // High quality HD
+        var compressed = canvas.toDataURL('image/jpeg', 0.95);
         callback(compressed);
       };
       img.src = dataUrl;
     }
 
+    function processMultipleFiles(files, targetArray, onDone) {
+      if (!files || !files.length) return;
+      var fileList = Array.from(files).filter(function(f){ return f.type.startsWith('image/'); });
+      if (!fileList.length) return;
+      var count = fileList.length;
+      var loaded = 0;
+      fileList.forEach(function(file) {
+        if (file.size > 10 * 1024 * 1024) {
+          alert('La imagen "' + file.name + '" excede los 10MB.');
+          loaded++;
+          if (loaded === count && onDone) onDone();
+          return;
+        }
+        var r = new FileReader();
+        r.onload = function(e) {
+          compressImage(e.target.result, function(compressed) {
+            targetArray.push(compressed);
+            loaded++;
+            if (loaded === count && onDone) onDone();
+          });
+        };
+        r.readAsDataURL(file);
+      });
+    }
+
     function handlePhoto(input) {
-      var file = input.files[0];
-      if (!file) return;
-      if (file.size > 10 * 1024 * 1024) {
-        alert('La imagen es demasiado grande (máx 10MB)');
-        return;
+      processMultipleFiles(input.files, currentPhotosData, function() {
+        renderPhotoPreviews();
+        input.value = '';
+      });
+    }
+
+    function renderPhotoPreviews() {
+      var gallery = document.getElementById('photo-gallery-preview');
+      var placeholder = document.getElementById('photo-placeholder');
+      var actionsBar = document.getElementById('photo-actions-bar');
+      var drop = document.getElementById('photo-drop');
+      if (!gallery) return;
+
+      if (currentPhotosData.length > 0) {
+        gallery.style.display = 'grid';
+        if (placeholder) placeholder.style.display = 'none';
+        if (actionsBar) actionsBar.style.display = 'flex';
+        if (drop) drop.style.padding = '8px';
+
+        gallery.innerHTML = currentPhotosData.map(function(src, idx) {
+          return `
+            <div class="photo-thumb-card" onclick="event.stopPropagation();">
+              <span class="photo-thumb-badge">#${idx + 1}</span>
+              <button type="button" class="photo-thumb-del" onclick="event.stopPropagation(); removePhotoIndex(${idx})" title="Quitar foto">✕</button>
+              <img src="${src}" alt="Foto ${idx + 1}" onclick="openLightboxFromSrc('${src}')">
+            </div>
+          `;
+        }).join('');
+      } else {
+        gallery.style.display = 'none';
+        gallery.innerHTML = '';
+        if (placeholder) placeholder.style.display = 'flex';
+        if (actionsBar) actionsBar.style.display = 'none';
+        if (drop) drop.style.padding = '20px';
       }
-      var r = new FileReader();
-      r.onload = function (e) {
-        compressImage(e.target.result, function (compressed) {
-          setPhotoPreview(compressed);
-        });
-      };
-      r.readAsDataURL(file);
     }
-    function setPhotoPreview(url) {
-      currentPhotoData = url;
-      document.getElementById('photo-preview').src = url; document.getElementById('photo-preview').style.display = 'block';
-      document.getElementById('photo-placeholder').style.display = 'none'; document.getElementById('photo-remove').style.display = 'block';
-      document.getElementById('photo-drop').style.padding = '6px';
+
+    function removePhotoIndex(idx) {
+      if (idx >= 0 && idx < currentPhotosData.length) {
+        currentPhotosData.splice(idx, 1);
+        renderPhotoPreviews();
+      }
     }
+
     function removePhoto() {
-      currentPhotoData = null;
-      document.getElementById('photo-preview').style.display = 'none'; document.getElementById('photo-placeholder').style.display = 'flex';
-      document.getElementById('photo-remove').style.display = 'none'; document.getElementById('photo-input').value = '';
-      document.getElementById('photo-drop').style.padding = '20px';
+      currentPhotosData = [];
+      renderPhotoPreviews();
+      var input = document.getElementById('photo-input');
+      if (input) input.value = '';
     }
+
     function dragOver(e) { e.preventDefault(); document.getElementById('photo-drop').classList.add('drag-over'); }
     function dropPhoto(e) {
-      e.preventDefault(); document.getElementById('photo-drop').classList.remove('drag-over');
-      var file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) {
-        var r = new FileReader();
-        r.onload = function (ev) {
-          compressImage(ev.target.result, function (compressed) {
-            setPhotoPreview(compressed);
-          });
-        };
-        r.readAsDataURL(file);
+      e.preventDefault();
+      document.getElementById('photo-drop').classList.remove('drag-over');
+      if (e.dataTransfer && e.dataTransfer.files) {
+        processMultipleFiles(e.dataTransfer.files, currentPhotosData, function() {
+          renderPhotoPreviews();
+        });
       }
     }
 
-    let editPhotoData = null;
+    // ── Edit modal photo handling ──
     function handleEditPhoto(input) {
-      var file = input.files[0];
-      if (!file) return;
-      if (file.size > 10 * 1024 * 1024) {
-        alert('La imagen es demasiado grande (máx 10MB)');
-        return;
+      processMultipleFiles(input.files, editPhotosData, function() {
+        renderEditPhotoPreviews();
+        input.value = '';
+      });
+    }
+
+    function renderEditPhotoPreviews() {
+      var gallery = document.getElementById('edit-photo-gallery-preview');
+      var placeholder = document.getElementById('edit-photo-placeholder');
+      var actionsBar = document.getElementById('edit-photo-actions-bar');
+      var drop = document.getElementById('edit-photo-drop');
+      if (!gallery) return;
+
+      if (editPhotosData.length > 0) {
+        gallery.style.display = 'grid';
+        if (placeholder) placeholder.style.display = 'none';
+        if (actionsBar) actionsBar.style.display = 'flex';
+        if (drop) drop.style.padding = '8px';
+
+        gallery.innerHTML = editPhotosData.map(function(src, idx) {
+          return `
+            <div class="photo-thumb-card" onclick="event.stopPropagation();">
+              <span class="photo-thumb-badge">#${idx + 1}</span>
+              <button type="button" class="photo-thumb-del" onclick="event.stopPropagation(); removeEditPhotoIndex(${idx})" title="Quitar foto">✕</button>
+              <img src="${src}" alt="Foto ${idx + 1}" onclick="openLightboxFromSrc('${src}')">
+            </div>
+          `;
+        }).join('');
+      } else {
+        gallery.style.display = 'none';
+        gallery.innerHTML = '';
+        if (placeholder) placeholder.style.display = 'flex';
+        if (actionsBar) actionsBar.style.display = 'none';
+        if (drop) drop.style.padding = '20px';
       }
-      var r = new FileReader();
-      r.onload = function (e) {
-        compressImage(e.target.result, function (compressed) {
-          setEditPhotoPreview(compressed);
-        });
-      };
-      r.readAsDataURL(file);
     }
-    function setEditPhotoPreview(url) {
-      editPhotoData = url;
-      document.getElementById('edit-photo-preview').src = url; document.getElementById('edit-photo-preview').style.display = 'block';
-      document.getElementById('edit-photo-placeholder').style.display = 'none'; document.getElementById('edit-photo-remove').style.display = 'block';
-      document.getElementById('edit-photo-drop').style.padding = '6px';
+
+    function removeEditPhotoIndex(idx) {
+      if (idx >= 0 && idx < editPhotosData.length) {
+        editPhotosData.splice(idx, 1);
+        renderEditPhotoPreviews();
+      }
     }
+
     function removeEditPhoto() {
-      editPhotoData = null;
-      document.getElementById('edit-photo-preview').style.display = 'none'; document.getElementById('edit-photo-placeholder').style.display = 'flex';
-      document.getElementById('edit-photo-remove').style.display = 'none'; document.getElementById('edit-photo-input').value = '';
-      document.getElementById('edit-photo-drop').style.padding = '20px';
+      editPhotosData = [];
+      renderEditPhotoPreviews();
+      var input = document.getElementById('edit-photo-input');
+      if (input) input.value = '';
     }
+
     function editDragOver(e) { e.preventDefault(); document.getElementById('edit-photo-drop').classList.add('drag-over'); }
     function editDropPhoto(e) {
-      e.preventDefault(); document.getElementById('edit-photo-drop').classList.remove('drag-over');
-      var file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) {
-        var r = new FileReader();
-        r.onload = function (ev) {
-          compressImage(ev.target.result, function (compressed) {
-            setEditPhotoPreview(compressed);
-          });
-        };
-        r.readAsDataURL(file);
+      e.preventDefault();
+      document.getElementById('edit-photo-drop').classList.remove('drag-over');
+      if (e.dataTransfer && e.dataTransfer.files) {
+        processMultipleFiles(e.dataTransfer.files, editPhotosData, function() {
+          renderEditPhotoPreviews();
+        });
       }
     }
+
+    // ── Enhanced Lightbox Gallery ──
+    let currentLightboxPhotos = [];
+    let currentLightboxIndex = 0;
+
+    function openLightboxGallery(photosOrTradeId, initialIdx) {
+      if (!initialIdx) initialIdx = 0;
+      if (typeof photosOrTradeId === 'string') {
+        const t = trades.find(function(x){ return x.id === photosOrTradeId; });
+        if (t && t.photos && t.photos.length) {
+          currentLightboxPhotos = t.photos;
+        } else if (t && t.photo) {
+          currentLightboxPhotos = [t.photo];
+        } else if (photosOrTradeId.startsWith('http') || photosOrTradeId.startsWith('data:')) {
+          currentLightboxPhotos = [photosOrTradeId];
+        } else {
+          currentLightboxPhotos = [];
+        }
+      } else if (Array.isArray(photosOrTradeId)) {
+        currentLightboxPhotos = photosOrTradeId;
+      } else {
+        currentLightboxPhotos = [];
+      }
+
+      if (!currentLightboxPhotos.length) return;
+      currentLightboxIndex = Math.max(0, Math.min(initialIdx, currentLightboxPhotos.length - 1));
+      renderLightboxView();
+      var lb = document.getElementById('lightbox');
+      if (lb) lb.classList.add('open');
+    }
+
+    function openLightboxFromSrc(src) {
+      openLightboxGallery([src], 0);
+    }
     function openLightbox(src) {
-      var lb = document.getElementById('lightbox');
-      lb.querySelector('img').src = src;
-      lb.classList.add('open');
+      openLightboxGallery([src], 0);
     }
-
     function openLightboxFromImg(imgEl) {
-      var lb = document.getElementById('lightbox');
-      lb.querySelector('img').src = imgEl.src;
-      lb.classList.add('open');
+      if (imgEl && imgEl.src) openLightboxGallery([imgEl.src], 0);
     }
 
+    function renderLightboxView() {
+      var img = document.getElementById('lb-img');
+      var counter = document.getElementById('lb-counter');
+      var prevBtn = document.getElementById('lb-prev');
+      var nextBtn = document.getElementById('lb-next');
+      var thumbs = document.getElementById('lb-thumbs');
+
+      if (img && currentLightboxPhotos[currentLightboxIndex]) {
+        img.src = currentLightboxPhotos[currentLightboxIndex];
+      }
+
+      if (counter) {
+        counter.textContent = `Foto ${currentLightboxIndex + 1} de ${currentLightboxPhotos.length}`;
+        counter.style.display = currentLightboxPhotos.length > 1 ? 'block' : 'none';
+      }
+
+      if (prevBtn) prevBtn.style.display = currentLightboxPhotos.length > 1 ? 'flex' : 'none';
+      if (nextBtn) nextBtn.style.display = currentLightboxPhotos.length > 1 ? 'flex' : 'none';
+
+      if (thumbs) {
+        if (currentLightboxPhotos.length > 1) {
+          thumbs.style.display = 'flex';
+          thumbs.innerHTML = currentLightboxPhotos.map(function(p, i) {
+            return `<img src="${p}" class="lb-thumb-item ${i === currentLightboxIndex ? 'active' : ''}" onclick="setLightboxIndex(${i})">`;
+          }).join('');
+        } else {
+          thumbs.style.display = 'none';
+          thumbs.innerHTML = '';
+        }
+      }
+    }
+
+    function setLightboxIndex(idx) {
+      if (idx >= 0 && idx < currentLightboxPhotos.length) {
+        currentLightboxIndex = idx;
+        renderLightboxView();
+      }
+    }
+
+    function nextLightboxImage() {
+      if (currentLightboxPhotos.length > 1) {
+        currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxPhotos.length;
+        renderLightboxView();
+      }
+    }
+
+    function prevLightboxImage() {
+      if (currentLightboxPhotos.length > 1) {
+        currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxPhotos.length) % currentLightboxPhotos.length;
+        renderLightboxView();
+      }
+    }
+
+    function closeLightbox() {
+      var lb = document.getElementById('lightbox');
+      if (lb) lb.classList.remove('open');
+    }
+
+    function closeLightboxOnBg(e) {
+      if (e.target.id === 'lightbox') closeLightbox();
+    }
+
+    document.addEventListener('keydown', function(e) {
+      var lb = document.getElementById('lightbox');
+      if (lb && lb.classList.contains('open')) {
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowRight') nextLightboxImage();
+        else if (e.key === 'ArrowLeft') prevLightboxImage();
+      }
+    });
+
+    // ── Trade Side Panel Photo Navigation ──
+    let _activePanelTradeId = null;
+    let _activePanelPhotoIdx = 0;
+
+    function setPanelPhotoIndex(tradeId, idx) {
+      const t = trades.find(function(x){ return x.id === tradeId; });
+      if (!t) return;
+      const pList = (t.photos && t.photos.length) ? t.photos : (t.photo ? [t.photo] : []);
+      if (!pList[idx]) return;
+      _activePanelPhotoIdx = idx;
+      const imgEl = document.getElementById('tdp-active-img');
+      if (imgEl) imgEl.src = pList[idx];
+      document.querySelectorAll('.tdp-thumb-strip-item').forEach(function(im, i){
+        im.style.borderColor = i === idx ? 'var(--yellow)' : 'rgba(255,255,255,0.15)';
+        im.style.opacity = i === idx ? '1' : '0.5';
+      });
+    }
+
+    // ── Trade Detail Modal Photo Navigation ──
+    let _activeDetailTradeId = null;
+    let _activeDetailPhotoIdx = 0;
+
+    function setDetailModalPhotoIndex(tradeId, idx) {
+      const t = trades.find(function(x){ return x.id === tradeId; });
+      if (!t) return;
+      const pList = (t.photos && t.photos.length) ? t.photos : (t.photo ? [t.photo] : []);
+      if (!pList[idx]) return;
+      _activeDetailPhotoIdx = idx;
+      const imgEl = document.getElementById('td-active-img');
+      if (imgEl) imgEl.src = pList[idx];
+      const countEl = document.getElementById('td-img-counter');
+      if (countEl) countEl.textContent = `Foto ${idx + 1} de ${pList.length}`;
+      document.querySelectorAll('.td-thumb-strip-item').forEach(function(im, i){
+        im.style.borderColor = i === idx ? 'var(--yellow)' : 'rgba(255,255,255,0.15)';
+        im.style.opacity = i === idx ? '1' : '0.5';
+      });
+    }
 
     function openTradeDetail(tradeId) {
       var t = trades.find(function (x) { return x.id === tradeId; });
       if (!t) return;
+      _activeDetailTradeId = tradeId;
+      _activeDetailPhotoIdx = 0;
+
       var imgContent = document.getElementById('td-img-content');
       var imgLabel = document.getElementById('td-img-label');
-      if (t.photo) {
-        imgContent.innerHTML = '<img src="' + t.photo + '" alt="" style="width:100%;max-height:420px;object-fit:contain;border-radius:10px;cursor:zoom-in;" onclick="openLightboxFromImg(this)">';
-        if (imgLabel) imgLabel.textContent = 'Click para ampliar';
+      const pList = (t.photos && t.photos.length) ? t.photos : (t.photo ? [t.photo] : []);
+
+      if (pList.length > 0) {
+        imgContent.innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:center;width:100%;">
+            <div style="position:relative;width:100%;text-align:center;">
+              <img id="td-active-img" src="${pList[0]}" alt="" style="width:100%;max-height:380px;object-fit:contain;border-radius:10px;cursor:zoom-in;" onclick="openLightboxGallery('${t.id}', _activeDetailPhotoIdx)">
+              <div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.7);padding:2px 8px;border-radius:6px;font-size:10px;color:#fff;pointer-events:none;">🔍 Clic para ampliar</div>
+            </div>
+            ${pList.length > 1 ? `
+              <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:10px;">
+                <span id="td-img-counter" style="font-size:11px;font-weight:700;font-family:var(--mono);color:var(--yellow);">Foto 1 de ${pList.length}</span>
+                <div style="display:flex;gap:6px;overflow-x:auto;max-width:300px;padding:2px;">
+                  ${pList.map((src, idx) => `
+                    <img src="${src}" class="td-thumb-strip-item" onclick="setDetailModalPhotoIndex('${t.id}', ${idx})" style="width:42px;height:28px;border-radius:4px;object-fit:cover;cursor:pointer;border:1.5px solid ${idx === 0 ? 'var(--yellow)' : 'rgba(255,255,255,0.15)'};opacity:${idx === 0 ? '1' : '0.5'};transition:all 0.15s;">
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+        if (imgLabel) imgLabel.textContent = pList.length > 1 ? `${pList.length} Fotos` : 'Captura';
       } else {
         imgContent.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0.3;color:var(--text-muted);"><span style="font-size:60px">📷</span><span>Sin captura</span></div>';
         if (imgLabel) imgLabel.textContent = 'Sin imagen';
       }
+
       document.getElementById('td-asset').textContent = t.asset + ' · ' + t.date;
       document.getElementById('td-date').textContent = t.account + '  ·  ' + t.session;
       var pnlBadge = document.getElementById('td-pnl-badge');
@@ -1158,20 +1408,37 @@
     function showTradePanel(tradeId) {
       var t = trades.find(function (x) { return x.id === tradeId; });
       if (!t) return;
+      _activePanelTradeId = tradeId;
+      _activePanelPhotoIdx = 0;
+
       // Highlight selected row
       document.querySelectorAll('#trades-body tr').forEach(function(r){ r.classList.remove('tr-selected'); });
       var selRow = document.getElementById('tr-' + tradeId);
       if (selRow) selRow.classList.add('tr-selected');
+
       // Build panel HTML
       var isWin = t.pnl >= 0;
       var pnlColor = isWin ? '#ffcd1b' : '#ef4444';
       var pnlBg = isWin ? 'rgba(255,205,27,0.12)' : 'rgba(239,68,68,0.12)';
       var pnlBorder = isWin ? 'rgba(255,205,27,0.3)' : 'rgba(239,68,68,0.3)';
-      var newsMap = { no: 'Sin noticia', naranja: '🟠 Naranja', roja: '🔴 Roja' };
-      var imgHtml = t.photo
-        ? '<img src="' + t.photo + '" onclick="openLightboxFromImg(this)" style="width:100%;max-height:230px;object-fit:contain;display:block;">'
-        + '<div class="tdp-zoom-hint">🔍 Ampliar</div>'
+      const pList = (t.photos && t.photos.length) ? t.photos : (t.photo ? [t.photo] : []);
+
+      var imgHtml = pList.length > 0
+        ? `
+          <div style="position:relative;width:100%;">
+            <img id="tdp-active-img" src="${pList[0]}" onclick="openLightboxGallery('${t.id}', _activePanelPhotoIdx)" style="width:100%;max-height:220px;object-fit:contain;display:block;cursor:zoom-in;border-radius:6px;">
+            <div class="tdp-zoom-hint">🔍 Ampliar ${pList.length > 1 ? '(' + pList.length + ' fotos)' : ''}</div>
+          </div>
+          ${pList.length > 1 ? `
+            <div style="display:flex;gap:5px;padding:6px 0 0 0;overflow-x:auto;width:100%;">
+              ${pList.map((src, idx) => `
+                <img src="${src}" class="tdp-thumb-strip-item" onclick="event.stopPropagation(); setPanelPhotoIndex('${t.id}', ${idx})" style="width:40px;height:26px;border-radius:4px;object-fit:cover;cursor:pointer;border:1.5px solid ${idx === 0 ? 'var(--yellow)' : 'rgba(255,255,255,0.15)'};opacity:${idx === 0 ? '1' : '0.5'};transition:all 0.15s;">
+              `).join('')}
+            </div>
+          ` : ''}
+        `
         : '<div class="tdp-img-placeholder">📷</div><div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Sin captura</div>';
+
       var notesHtml = t.notes
         ? '<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px;">Notas</div><div class="tdp-notes">' + t.notes + '</div>'
         : '';
@@ -1181,7 +1448,7 @@
       var panel = document.getElementById('tl-detail-panel');
       panel.className = 'tl-detail-panel';
       panel.innerHTML =
-        '<div class="tdp-img-box" onclick="' + (t.photo ? 'openLightboxFromImg(this.querySelector(\"img\"))' : '') + '">' + imgHtml + '</div>' +
+        '<div class="tdp-img-box">' + imgHtml + '</div>' +
         '<div class="tdp-body">' +
           '<div class="tdp-header">' +
             '<div><div class="tdp-asset">' + t.asset + '</div><div class="tdp-sub">' + t.date + ' &nbsp;·&nbsp; ' + t.session + '</div></div>' +
@@ -2052,9 +2319,13 @@
           
           var discVal = t.discipline_score != null && t.discipline_score !== "" ? parseFloat(t.discipline_score) : null;
           var discCol = discVal !== null ? (discVal >= 85 ? 'var(--green)' : (discVal >= 70 ? 'var(--yellow)' : 'var(--red)')) : 'var(--text-muted)';
-          var discHtml = discVal !== null ? '<span style="font-weight:700;color:' + discCol + ';font-family:var(--mono)">🎯 ' + Math.round(discVal) + '%</span>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
-          
-          var photoHtml = t.photo ? '<img class="trade-thumb" src="' + t.photo + '" alt="" data-photo="1" onclick="openLightboxFromImg(this)">' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
+          var photoList = (t.photos && t.photos.length) ? t.photos : (t.photo ? [t.photo] : []);
+          var photoHtml = photoList.length > 0
+            ? '<div class="trade-thumb-wrap" style="position:relative;display:inline-block;" onclick="event.stopPropagation();openLightboxGallery(\'' + safeId + '\', 0)">'
+            + '<img class="trade-thumb" src="' + photoList[0] + '" alt="">'
+            + (photoList.length > 1 ? '<span class="thumb-multi-badge">+' + (photoList.length - 1) + '</span>' : '')
+            + '</div>'
+            : '<span style="color:var(--text-muted);font-size:12px">—</span>';
           var notesHtml = t.notes ? '<button class="ta n" title="Ver notas" onclick="openNotesModal(\'' + t.notes.replace(/'/g, "\\'").replace(/\\n/g, ' ') + '\')">📝</button>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
           var safeId = t.id;
           return '<tr style="cursor:pointer;" id="tr-' + safeId + '" onclick="showTradePanel(\'' + safeId + '\')">' +
@@ -3690,13 +3961,37 @@ function _renderAnalisis_orig() {
           const yc = (points[i].y + points[i + 1].y) / 2;
           ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
         }
-        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
         ctx.strokeStyle = '#ffcd1b';
         ctx.lineWidth = 2.5;
         ctx.shadowColor = 'rgba(255, 205, 27, 0.6)';
         ctx.shadowBlur = 10;
         ctx.stroke();
       }
+
+      // Exponer globalmente funciones de multi-foto y galería lightbox
+      window.handlePhoto = handlePhoto;
+      window.removePhoto = removePhoto;
+      window.removePhotoIndex = removePhotoIndex;
+      window.dragOver = dragOver;
+      window.dropPhoto = dropPhoto;
+
+      window.handleEditPhoto = handleEditPhoto;
+      window.removeEditPhoto = removeEditPhoto;
+      window.removeEditPhotoIndex = removeEditPhotoIndex;
+      window.editDragOver = editDragOver;
+      window.editDropPhoto = editDropPhoto;
+
+      window.openLightboxGallery = openLightboxGallery;
+      window.openLightboxFromSrc = openLightboxFromSrc;
+      window.openLightboxFromImg = openLightboxFromImg;
+      window.setLightboxIndex = setLightboxIndex;
+      window.nextLightboxImage = nextLightboxImage;
+      window.prevLightboxImage = prevLightboxImage;
+      window.closeLightbox = closeLightbox;
+      window.closeLightboxOnBg = closeLightboxOnBg;
+
+      window.setPanelPhotoIndex = setPanelPhotoIndex;
+      window.setDetailModalPhotoIndex = setDetailModalPhotoIndex;
 
       // Exponer globalmente
       window.loadTournamentData = loadTournamentData;
