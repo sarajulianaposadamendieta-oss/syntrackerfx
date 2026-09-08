@@ -2621,57 +2621,63 @@
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
     }
 
-    /* Podium 3 Pedestales - StarkLab Vertical Olympic Pedestal */
+    /* PODIO TOP 3 HORIZONTAL 3D - LUXURY GAMING SHOWCASE */
     .stark-podium-outer {
-      background: #0d0f14;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 24px;
-      padding: 32px 18px 20px 18px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+      background: radial-gradient(circle at 50% 15%, #181e2e 0%, #0a0c13 75%);
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+      padding: 34px 24px 28px 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
     }
     .stark-podium-wrapper {
       display: grid;
-      grid-template-columns: 1fr 1.22fr 1fr;
-      gap: 14px;
+      grid-template-columns: 1fr 1.25fr 1fr;
+      gap: 20px;
       align-items: flex-end;
-      min-height: 480px;
+      max-width: 960px;
+      margin: 0 auto;
+      min-height: 440px;
     }
     .stark-pedestal-card {
-      background: linear-gradient(180deg, #131722 0%, #0c0e15 100%);
-      border-radius: 22px;
+      border-radius: 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
       position: relative;
       overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .stark-pedestal-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-6px) scale(1.02);
     }
     .stark-pedestal-card.rank-1 {
-      height: 470px;
-      border: 1.5px solid #ef4444;
-      box-shadow: 0 0 35px rgba(239, 68, 68, 0.3), inset 0 0 25px rgba(239, 68, 68, 0.08);
+      height: 450px;
+      background: linear-gradient(180deg, #1c2235 0%, #121522 55%, #080a10 100%);
+      border: 2px solid #eab308;
+      box-shadow: 0 14px 0 #78350f, 0 24px 45px rgba(0, 0, 0, 0.9), 0 0 35px rgba(234, 179, 8, 0.35);
       z-index: 3;
     }
     .stark-pedestal-card.rank-2 {
-      height: 395px;
-      border: 1.5px solid #10b981;
-      box-shadow: 0 0 25px rgba(16, 185, 129, 0.2), inset 0 0 20px rgba(16, 185, 129, 0.06);
+      height: 380px;
+      background: linear-gradient(180deg, #16202c 0%, #0f151e 55%, #080a10 100%);
+      border: 2px solid #10b981;
+      box-shadow: 0 11px 0 #064e3b, 0 20px 35px rgba(0, 0, 0, 0.85), 0 0 25px rgba(16, 185, 129, 0.25);
       z-index: 2;
     }
     .stark-pedestal-card.rank-3 {
-      height: 355px;
-      border: 1.5px solid #f97316;
-      box-shadow: 0 0 25px rgba(249, 115, 22, 0.2), inset 0 0 20px rgba(249, 115, 22, 0.06);
+      height: 340px;
+      background: linear-gradient(180deg, #221b18 0%, #161210 55%, #080a10 100%);
+      border: 2px solid #f97316;
+      box-shadow: 0 9px 0 #7c2d12, 0 18px 30px rgba(0, 0, 0, 0.85), 0 0 25px rgba(249, 115, 22, 0.25);
       z-index: 1;
     }
 
     .pedestal-content {
-      padding: 16px 10px 12px 10px;
+      padding: 20px 14px 14px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -2682,169 +2688,193 @@
       justify-content: flex-start;
     }
     .crown-glow {
-      font-size: 24px;
-      filter: drop-shadow(0 0 14px #eab308);
-      margin-bottom: 4px;
+      font-size: 28px;
+      filter: drop-shadow(0 0 16px #facc15);
+      margin-bottom: 2px;
       animation: floatCrown 2.5s ease-in-out infinite;
     }
     @keyframes floatCrown {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
+      50% { transform: translateY(-6px); }
     }
 
     .pedestal-avatar-wrap {
       position: relative;
-      margin: 4px 0 10px 0;
+      margin: 4px 0 12px 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
     .pedestal-avatar-aura {
       position: absolute;
-      inset: -8px;
+      inset: -10px;
       border-radius: 50%;
-      opacity: 0.85;
-      filter: blur(10px);
+      opacity: 0.9;
+      filter: blur(12px);
       z-index: 0;
     }
-    .aura-1 { background: radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(234, 179, 8, 0.5) 45%, transparent 70%); }
-    .aura-2 { background: radial-gradient(circle, rgba(16, 185, 129, 0.8) 0%, transparent 70%); }
-    .aura-3 { background: radial-gradient(circle, rgba(249, 115, 22, 0.8) 0%, transparent 70%); }
+    .aura-1 { background: radial-gradient(circle, rgba(234, 179, 8, 0.7) 0%, rgba(239, 68, 68, 0.4) 50%, transparent 75%); }
+    .aura-2 { background: radial-gradient(circle, rgba(16, 185, 129, 0.7) 0%, transparent 75%); }
+    .aura-3 { background: radial-gradient(circle, rgba(249, 115, 22, 0.7) 0%, transparent 75%); }
 
     .pedestal-avatar-circle {
       position: relative;
       z-index: 1;
       border-radius: 50%;
-      background: #141722;
+      background: #141724;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.7);
+      box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.8);
     }
     .pedestal-avatar-circle.circle-1 {
-      width: 80px;
-      height: 80px;
-      border: 2.5px solid #facc15;
-      box-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+      width: 86px;
+      height: 86px;
+      border: 3px solid #facc15;
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.6);
     }
     .pedestal-avatar-circle.circle-2 {
-      width: 70px;
-      height: 70px;
-      border: 2px solid #10b981;
-      box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+      width: 74px;
+      height: 74px;
+      border: 2.5px solid #10b981;
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.5);
     }
     .pedestal-avatar-circle.circle-3 {
-      width: 70px;
-      height: 70px;
-      border: 2px solid #f97316;
-      box-shadow: 0 0 16px rgba(249, 115, 22, 0.4);
+      width: 74px;
+      height: 74px;
+      border: 2.5px solid #f97316;
+      box-shadow: 0 0 18px rgba(249, 115, 22, 0.5);
     }
 
     .pedestal-rank-badge-pill {
       position: absolute;
-      bottom: -8px;
+      bottom: -9px;
       left: 50%;
       transform: translateX(-50%);
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      background: #0f131a;
+      background: #0d1017;
       color: #fff;
-      font-size: 11.5px;
+      font-size: 12px;
       font-weight: 900;
       font-family: var(--mono);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 3;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.9);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.9);
     }
-    .pedestal-rank-badge-pill.num-1 { border: 2px solid #ef4444; color: #fef08a; }
+    .pedestal-rank-badge-pill.num-1 { border: 2px solid #eab308; color: #fef08a; }
     .pedestal-rank-badge-pill.num-2 { border: 2px solid #10b981; color: #a7f3d0; }
     .pedestal-rank-badge-pill.num-3 { border: 2px solid #f97316; color: #fed7aa; }
 
-    .pedestal-trader-name {
+    /* NOMBRES CON GRADIENTES METÁLICOS VIBRANTES (SIN TEXTO PLANO) */
+    .pedestal-trader-name-1 {
       font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
-      font-weight: 800;
-      color: #ffffff;
+      font-weight: 900;
+      font-size: 19px;
+      background: linear-gradient(180deg, #ffffff 0%, #fef08a 45%, #eab308 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.6px;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      letter-spacing: 0.4px;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    }
+    .pedestal-trader-name-2 {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #a7f3d0 45%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pedestal-trader-name-3 {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #fed7aa 45%, #fb923c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .stark-tier-pill {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       font-size: 11px;
-      font-weight: 800;
+      font-weight: 900;
       border-radius: 20px;
-      padding: 3px 10px;
+      padding: 4px 12px;
       margin-top: 6px;
-      letter-spacing: 0.3px;
-    }
-    .stark-tier-pill.platino {
-      color: #22d3ee;
-      background: rgba(34, 211, 238, 0.12);
-      border: 1px solid rgba(34, 211, 238, 0.4);
-      box-shadow: 0 0 10px rgba(34, 211, 238, 0.15);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
     }
     .stark-tier-pill.oro {
-      color: #fde047;
-      background: rgba(234, 179, 8, 0.12);
-      border: 1px solid rgba(234, 179, 8, 0.4);
-      box-shadow: 0 0 10px rgba(234, 179, 8, 0.15);
+      color: #fef08a;
+      background: linear-gradient(180deg, rgba(234, 179, 8, 0.25) 0%, rgba(161, 98, 7, 0.3) 100%);
+      border: 1.5px solid #facc15;
+      box-shadow: 0 0 15px rgba(234, 179, 8, 0.35);
     }
     .stark-tier-pill.plata {
-      color: #cbd5e1;
-      background: rgba(148, 163, 184, 0.12);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      box-shadow: 0 0 10px rgba(148, 163, 184, 0.12);
+      color: #a7f3d0;
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.22) 0%, rgba(6, 78, 59, 0.3) 100%);
+      border: 1.5px solid #10b981;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
     }
     .stark-tier-pill.bronce {
-      color: #fdba74;
-      background: rgba(249, 115, 22, 0.12);
-      border: 1px solid rgba(249, 115, 22, 0.35);
-      box-shadow: 0 0 10px rgba(249, 115, 22, 0.12);
+      color: #fed7aa;
+      background: linear-gradient(180deg, rgba(249, 115, 22, 0.22) 0%, rgba(124, 45, 18, 0.3) 100%);
+      border: 1.5px solid #f97316;
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
     }
 
     .stark-pnl-pill {
-      background: #090c13;
-      border-radius: 20px;
+      background: #080b12;
+      border-radius: 24px;
       font-family: var(--mono);
       font-weight: 900;
-      padding: 6px 14px;
+      padding: 7px 16px;
       margin-top: 10px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
     }
     .stark-pnl-pill.pill-1 {
-      border: 1px solid rgba(234, 179, 8, 0.5);
-      color: #facc15;
-      font-size: 13px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 14px rgba(234, 179, 8, 0.2);
+      border: 1.5px solid #eab308;
+      color: #fde047;
+      font-size: 14.5px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 0 16px rgba(234, 179, 8, 0.25);
     }
     .stark-pnl-pill.pill-2 {
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      border: 1.5px solid #10b981;
       color: #34d399;
-      font-size: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 12px rgba(16, 185, 129, 0.15);
+      font-size: 13px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 0 14px rgba(16, 185, 129, 0.2);
     }
     .stark-pnl-pill.pill-3 {
-      border: 1px solid rgba(249, 115, 22, 0.4);
+      border: 1.5px solid #f97316;
       color: #fb923c;
-      font-size: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 12px rgba(249, 115, 22, 0.15);
+      font-size: 13px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 0 14px rgba(249, 115, 22, 0.2);
     }
 
-    /* Base del Pedestal Vertical Estilo Gaming con Altura Escalonada */
+    /* Base del Pedestal 3D Escalonado */
     .pedestal-flag-base {
       width: 100%;
-      background: linear-gradient(180deg, rgba(17, 21, 31, 0.95) 0%, rgba(8, 10, 15, 0.98) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2852,42 +2882,46 @@
       overflow: hidden;
     }
     .pedestal-flag-base.base-1 {
-      height: 100px;
-      border-top: 2px solid #ef4444;
-      box-shadow: inset 0 10px 20px rgba(239, 68, 68, 0.1);
+      height: 90px;
+      border-top: 2px solid #eab308;
+      background: linear-gradient(180deg, rgba(234, 179, 8, 0.15) 0%, rgba(10, 12, 18, 0.98) 100%);
+      box-shadow: inset 0 10px 25px rgba(234, 179, 8, 0.15);
     }
     .pedestal-flag-base.base-2 {
       height: 65px;
       border-top: 2px solid #10b981;
-      box-shadow: inset 0 10px 20px rgba(16, 185, 129, 0.08);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.12) 0%, rgba(10, 12, 18, 0.98) 100%);
+      box-shadow: inset 0 10px 20px rgba(16, 185, 129, 0.12);
     }
     .pedestal-flag-base.base-3 {
       height: 48px;
       border-top: 2px solid #f97316;
-      box-shadow: inset 0 10px 20px rgba(249, 115, 22, 0.08);
+      background: linear-gradient(180deg, rgba(249, 115, 22, 0.12) 0%, rgba(10, 12, 18, 0.98) 100%);
+      box-shadow: inset 0 10px 20px rgba(249, 115, 22, 0.12);
     }
-    .pedestal-rank-footer-num {
+    .pedestal-flag-base.base-1 .pedestal-rank-footer-num {
+      font-size: 48px;
+      font-weight: 900;
+      font-family: var(--mono);
+      color: #facc15;
+      text-shadow: 0 0 25px rgba(250, 204, 21, 0.5);
+      opacity: 0.85;
+    }
+    .pedestal-flag-base.base-2 .pedestal-rank-footer-num {
       font-size: 38px;
       font-weight: 900;
       font-family: var(--mono);
-      color: rgba(255, 255, 255, 0.12);
-      letter-spacing: 2px;
-      user-select: none;
-    }
-    .pedestal-flag-base.base-1 .pedestal-rank-footer-num {
-      color: rgba(239, 68, 68, 0.22);
-      text-shadow: 0 0 25px rgba(239, 68, 68, 0.3);
-      font-size: 44px;
-    }
-    .pedestal-flag-base.base-2 .pedestal-rank-footer-num {
-      color: rgba(16, 185, 129, 0.2);
-      text-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
-      font-size: 34px;
+      color: #34d399;
+      text-shadow: 0 0 20px rgba(52, 211, 153, 0.5);
+      opacity: 0.8;
     }
     .pedestal-flag-base.base-3 .pedestal-rank-footer-num {
-      color: rgba(249, 115, 22, 0.2);
-      text-shadow: 0 0 20px rgba(249, 115, 22, 0.25);
-      font-size: 30px;
+      font-size: 34px;
+      font-weight: 900;
+      font-family: var(--mono);
+      color: #fb923c;
+      text-shadow: 0 0 20px rgba(251, 146, 60, 0.5);
+      opacity: 0.8;
     }
 
     /* Tarjetas de Clasificación #4+ */
@@ -3547,54 +3581,52 @@
         </div>
       </div>
 
-      <!-- LAYOUT PRINCIPAL DE 2 COLUMNAS (PODIO IZQUIERDA + CLASIFICACIÓN DERECHA) -->
-      <div style="display:grid; grid-template-columns: minmax(360px, 470px) 1fr; gap:24px; align-items:start;" id="tournament-main-grid">
-        
-        <!-- COLUMNA IZQUIERDA: PODIO TOP 3 ESTILO STARKLAB (3 PEDESTALES) -->
-        <div>
-          <div class="stark-podium-outer">
-            <div class="stark-podium-wrapper" id="tournament-top3-container">
-              <!-- Renderizado dinámico de 3 pedestales -->
-            </div>
-          </div>
+      <!-- PODIO TOP 3 HORIZONTAL 3D (SHOWCASE GAMING A PANTALLA COMPLETA) -->
+      <div class="stark-podium-outer">
+        <div style="font-size:12px; font-weight:900; color:#eab308; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <span>👑</span> PODIO DE HONOR • TOP 3 <span>👑</span>
+        </div>
+        <div class="stark-podium-wrapper" id="tournament-top3-container">
+          <!-- Renderizado dinámico de 3 pedestales (2do a la izq, 1ro al centro, 3ro a la der) -->
+        </div>
+      </div>
 
-          <!-- REGLAS OPERATIVAS COMPACTAS -->
-          <div style="margin-top:16px; padding:16px; border-radius:18px; background:#0d0f14; border:1px solid rgba(255,255,255,0.05);">
-            <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
-              <span>📋</span> REGLAS OPERATIVAS DEL TORNEO
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; font-size:10.5px; color:var(--text-secondary); text-align:center;">
-              <div style="background:#13161f; padding:10px 6px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
-                <div style="font-size:14px; margin-bottom:2px;">1️⃣</div>
-                <strong style="color:#fff;">1 Trade / Día</strong>
-                <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Límite estricto</div>
-              </div>
-              <div style="background:#13161f; padding:10px 6px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
-                <div style="font-size:14px; margin-bottom:2px;">📉</div>
-                <strong style="color:var(--yellow);">DD Diario 1.1%</strong>
-                <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Pérdida máx/día</div>
-              </div>
-              <div style="background:#13161f; padding:10px 6px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
-                <div style="font-size:14px; margin-bottom:2px;">🛑</div>
-                <strong style="color:var(--red);">DD Máx 5.0%</strong>
-                <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Descalificación</div>
-              </div>
-            </div>
+      <!-- REGLAS OPERATIVAS COMPACTAS -->
+      <div style="margin-bottom:24px; padding:16px 20px; border-radius:18px; background:#0d0f14; border:1px solid rgba(255,255,255,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+          <span>📋</span> REGLAS OPERATIVAS DEL TORNEO
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; font-size:11px; color:var(--text-secondary); text-align:center;">
+          <div style="background:#13161f; padding:12px 10px; border-radius:14px; border:1px solid rgba(255,255,255,0.06); box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+            <div style="font-size:18px; margin-bottom:3px;">1️⃣</div>
+            <strong style="color:#fff; font-size:12px;">1 Trade / Día</strong>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Límite estricto de operativa</div>
+          </div>
+          <div style="background:#13161f; padding:12px 10px; border-radius:14px; border:1px solid rgba(255,255,255,0.06); box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+            <div style="font-size:18px; margin-bottom:3px;">📉</div>
+            <strong style="color:var(--yellow); font-size:12px;">DD Diario 1.1%</strong>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Pérdida máxima por día</div>
+          </div>
+          <div style="background:#13161f; padding:12px 10px; border-radius:14px; border:1px solid rgba(255,255,255,0.06); box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+            <div style="font-size:18px; margin-bottom:3px;">🛑</div>
+            <strong style="color:var(--red); font-size:12px;">DD Máx 5.0%</strong>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Límite de descalificación</div>
           </div>
         </div>
+      </div>
 
-        <!-- COLUMNA DERECHA: CLASIFICACIÓN COMPLETA (#4+) EN TARJETAS NEÓN FLOTANTES -->
-        <div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 4px;">
-            <div style="font-size:11.5px; font-weight:800; color:#64748b; letter-spacing:1px; text-transform:uppercase;">CLASIFICACIÓN COMPLETA</div>
-            <div style="font-size:11px; color:#475569;" id="stark-timeframe-label">Según todo tiempo</div>
+      <!-- SECCIÓN: CLASIFICACIÓN COMPLETA (TABLA DE TARJETAS NEÓN FLOTANTES) -->
+      <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.06); border-radius:24px; padding:22px 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.7);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding:0 4px;">
+          <div style="font-size:12px; font-weight:900; color:#cbd5e1; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+            <span>🎖️</span> CLASIFICACIÓN COMPLETA
           </div>
-
-          <div id="tournament-cards-container">
-            <!-- Renderizado dinámico de tarjetas #4 en adelante o lista completa -->
-          </div>
+          <div style="font-size:11.5px; color:#64748b; font-weight:600;" id="stark-timeframe-label">Según todo tiempo</div>
         </div>
 
+        <div id="tournament-cards-container">
+          <!-- Renderizado dinámico de tarjetas #4 en adelante o lista completa -->
+        </div>
       </div>
     </div>
 
@@ -7350,7 +7382,7 @@ function _renderAnalisis_orig() {
         const tierIco = isRank1 ? '🥇' : (isRank2 ? '🥈' : '🥉');
 
         if (!p) {
-          const fallbackCrest = isRank1 ? CRESTS.oro(54) : (isRank2 ? CRESTS.plata(46) : CRESTS.bronce(46));
+          const fallbackCrest = isRank1 ? CRESTS.oro(60) : (isRank2 ? CRESTS.plata(52) : CRESTS.bronce(52));
           return `
             <div class="stark-pedestal-card ${rankClass}">
               <div class="pedestal-content">
@@ -7362,7 +7394,7 @@ function _renderAnalisis_orig() {
                   </div>
                   <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
                 </div>
-                <div class="pedestal-trader-name" style="font-size:${isRank1 ? '16px' : '14px'}; margin-top:8px; color:#94a3b8;">Vacante</div>
+                <div class="pedestal-trader-name-${rank}" style="margin-top:8px;">Vacante</div>
                 <div class="stark-tier-pill ${tierClass}">${tierIco} ${tierName}</div>
                 <div class="stark-pnl-pill pill-${rank}">0.0% Retorno</div>
               </div>
@@ -7374,9 +7406,9 @@ function _renderAnalisis_orig() {
         }
 
         const country = getParticipantCountryInfo(p);
-        const avatarSize = isRank1 ? 64 : 56;
+        const avatarSize = isRank1 ? 72 : 62;
         const customAvatar = getParticipantAvatarHtml(p, avatarSize);
-        const crestSvg = isRank1 ? CRESTS.oro(54) : (isRank2 ? CRESTS.plata(46) : CRESTS.bronce(46));
+        const crestSvg = isRank1 ? CRESTS.oro(60) : (isRank2 ? CRESTS.plata(52) : CRESTS.bronce(52));
         const avatarOrCrest = customAvatar || crestSvg;
 
         let retVal = 0;
@@ -7400,12 +7432,12 @@ function _renderAnalisis_orig() {
                 <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
               </div>
 
-              <!-- Nombre con micro-bandera elegante -->
-              <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:8px; max-width:130px;">
-                <span class="pedestal-trader-name" style="font-size:${isRank1 ? '16px' : '14px'};">
+              <!-- Nombre con micro-bandera elegante y tipografía metálica con gradiente -->
+              <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px; max-width:220px;">
+                <span class="pedestal-trader-name-${rank}">
                   ${p.user_name || 'Trader'}
                 </span>
-                <img src="${country.flagImg}" alt="${country.name}" style="width:16px; height:11px; border-radius:2px; object-fit:cover; display:inline-block; flex-shrink:0; box-shadow:0 1px 4px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.15);" title="${country.name}" />
+                <img src="${country.flagImg}" alt="${country.name}" style="width:18px; height:12px; border-radius:2px; object-fit:cover; display:inline-block; flex-shrink:0; box-shadow:0 2px 5px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.2);" title="${country.name}" />
               </div>
 
               <div class="stark-tier-pill ${tierClass}">
@@ -7417,7 +7449,7 @@ function _renderAnalisis_orig() {
               </div>
             </div>
 
-            <!-- BASE DEL PEDESTAL MINIMALISTA ESCALONADA -->
+            <!-- BASE DEL PEDESTAL 3D ESCALONADA -->
             <div class="pedestal-flag-base ${baseClass}">
               <span class="pedestal-rank-footer-num">${rank}</span>
             </div>

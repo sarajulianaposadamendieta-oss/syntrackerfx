@@ -2981,7 +2981,7 @@ function _renderAnalisis_orig() {
         const tierIco = isRank1 ? '🥇' : (isRank2 ? '🥈' : '🥉');
 
         if (!p) {
-          const fallbackCrest = isRank1 ? CRESTS.oro(54) : (isRank2 ? CRESTS.plata(46) : CRESTS.bronce(46));
+          const fallbackCrest = isRank1 ? CRESTS.oro(60) : (isRank2 ? CRESTS.plata(52) : CRESTS.bronce(52));
           return `
             <div class="stark-pedestal-card ${rankClass}">
               <div class="pedestal-content">
@@ -2993,7 +2993,7 @@ function _renderAnalisis_orig() {
                   </div>
                   <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
                 </div>
-                <div class="pedestal-trader-name" style="font-size:${isRank1 ? '16px' : '14px'}; margin-top:8px; color:#94a3b8;">Vacante</div>
+                <div class="pedestal-trader-name-${rank}" style="margin-top:8px;">Vacante</div>
                 <div class="stark-tier-pill ${tierClass}">${tierIco} ${tierName}</div>
                 <div class="stark-pnl-pill pill-${rank}">0.0% Retorno</div>
               </div>
@@ -3005,9 +3005,9 @@ function _renderAnalisis_orig() {
         }
 
         const country = getParticipantCountryInfo(p);
-        const avatarSize = isRank1 ? 64 : 56;
+        const avatarSize = isRank1 ? 72 : 62;
         const customAvatar = getParticipantAvatarHtml(p, avatarSize);
-        const crestSvg = isRank1 ? CRESTS.oro(54) : (isRank2 ? CRESTS.plata(46) : CRESTS.bronce(46));
+        const crestSvg = isRank1 ? CRESTS.oro(60) : (isRank2 ? CRESTS.plata(52) : CRESTS.bronce(52));
         const avatarOrCrest = customAvatar || crestSvg;
 
         let retVal = 0;
@@ -3031,12 +3031,12 @@ function _renderAnalisis_orig() {
                 <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
               </div>
 
-              <!-- Nombre con micro-bandera elegante -->
-              <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:8px; max-width:130px;">
-                <span class="pedestal-trader-name" style="font-size:${isRank1 ? '16px' : '14px'};">
+              <!-- Nombre con micro-bandera elegante y tipografía metálica con gradiente -->
+              <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px; max-width:220px;">
+                <span class="pedestal-trader-name-${rank}">
                   ${p.user_name || 'Trader'}
                 </span>
-                <img src="${country.flagImg}" alt="${country.name}" style="width:16px; height:11px; border-radius:2px; object-fit:cover; display:inline-block; flex-shrink:0; box-shadow:0 1px 4px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.15);" title="${country.name}" />
+                <img src="${country.flagImg}" alt="${country.name}" style="width:18px; height:12px; border-radius:2px; object-fit:cover; display:inline-block; flex-shrink:0; box-shadow:0 2px 5px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.2);" title="${country.name}" />
               </div>
 
               <div class="stark-tier-pill ${tierClass}">
@@ -3048,7 +3048,7 @@ function _renderAnalisis_orig() {
               </div>
             </div>
 
-            <!-- BASE DEL PEDESTAL MINIMALISTA ESCALONADA -->
+            <!-- BASE DEL PEDESTAL 3D ESCALONADA -->
             <div class="pedestal-flag-base ${baseClass}">
               <span class="pedestal-rank-footer-num">${rank}</span>
             </div>
