@@ -1715,6 +1715,12 @@
               'Impaciencia': 'La impaciencia',
               'Frustración': 'La frustración',
               'Confianza': 'La confianza',
+              'Calma': 'La calma',
+              'Claridad': 'La claridad',
+              'Duda': 'La duda',
+              'Avaricia': 'La avaricia',
+              'Venganza': 'La venganza',
+              'Arrepentimiento': 'El arrepentimiento',
               'Neutral': 'La actitud neutral'
             };
             const emotionLabel = articles[domEmo] || ('La emoción ' + domEmo);
@@ -1825,7 +1831,7 @@
           var emoScore = 0;
           if (audit['aud-beh-journal']) emoScore += 5;
           if (audit['aud-beh-reflexion']) emoScore += 5;
-          if (t.emotion === 'Miedo' || t.emotion === 'Impaciencia' || t.emotion === 'Frustración') {
+          if (['Miedo', 'Impaciencia', 'Frustración', 'Avaricia', 'Venganza', 'Arrepentimiento', 'Duda'].indexOf(t.emotion) !== -1) {
             emoScore -= 5;
           }
           emoScore = Math.max(0, Math.min(10, emoScore));
@@ -2314,11 +2320,13 @@
           var entryTypeHtml = t.entry_type ? '<span style="font-size:11px;">' + t.entry_type + '</span>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
           var resultColor = t.result_type === 'TP' ? 'var(--green)' : t.result_type === 'SL' ? 'var(--red)' : 'var(--purple)';
           var resultHtml = t.result_type ? '<span style="font-weight:700;color:' + resultColor + ';font-size:11px;">' + t.result_type + '</span>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
-          var emotionMap = { 'Confianza':'😌', 'Miedo':'😰', 'Impaciencia':'😤', 'Frustración':'😡', 'Neutral':'🤔' };
+          var emotionMap = { 'Confianza':'😌', 'Calma':'🧘', 'Claridad':'💡', 'Neutral':'🤔', 'Duda':'❓', 'Miedo':'😰', 'Impaciencia':'😤', 'Frustración':'😡', 'Avaricia':'🤑', 'Venganza':'⚔️', 'Arrepentimiento':'🤦' };
           var emotionHtml = t.emotion ? '<span style="font-size:12px;" title="' + t.emotion + '">' + (emotionMap[t.emotion]||'') + ' ' + t.emotion + '</span>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
           
           var discVal = t.discipline_score != null && t.discipline_score !== "" ? parseFloat(t.discipline_score) : null;
           var discCol = discVal !== null ? (discVal >= 85 ? 'var(--green)' : (discVal >= 70 ? 'var(--yellow)' : 'var(--red)')) : 'var(--text-muted)';
+          var discHtml = discVal !== null ? '<span style="font-family:var(--mono);font-size:12px;font-weight:700;color:' + discCol + ';">' + discVal + '%</span>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
+          var safeId = t.id;
           var photoList = (t.photos && t.photos.length) ? t.photos : (t.photo ? [t.photo] : []);
           var photoHtml = photoList.length > 0
             ? '<div class="trade-thumb-wrap" style="position:relative;display:inline-block;" onclick="event.stopPropagation();openLightboxGallery(\'' + safeId + '\', 0)">'
@@ -2327,7 +2335,6 @@
             + '</div>'
             : '<span style="color:var(--text-muted);font-size:12px">—</span>';
           var notesHtml = t.notes ? '<button class="ta n" title="Ver notas" onclick="openNotesModal(\'' + t.notes.replace(/'/g, "\\'").replace(/\\n/g, ' ') + '\')">📝</button>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
-          var safeId = t.id;
           return '<tr style="cursor:pointer;" id="tr-' + safeId + '" onclick="showTradePanel(\'' + safeId + '\')">' +
             '<td style="font-family:var(--mono);font-size:12px;color:var(--text-muted)">' + t.date + '</td>' +
             '<td>' + t.account + '</td>' +
@@ -2375,7 +2382,7 @@
         // ── Build enriched day map ──
         var dayMap = {};
         var inactionMap = {}; // track inaction days separately
-        var emoIcons = { 'Confianza':'😌', 'Miedo':'😰', 'Impaciencia':'😤', 'Frustración':'😡', 'Neutral':'🤔' };
+        var emoIcons = { 'Confianza':'😌', 'Calma':'🧘', 'Claridad':'💡', 'Neutral':'🤔', 'Duda':'❓', 'Miedo':'😰', 'Impaciencia':'😤', 'Frustración':'😡', 'Avaricia':'🤑', 'Venganza':'⚔️', 'Arrepentimiento':'🤦' };
         mTrades.forEach(function (t) {
           var d = new Date(t.date + 'T00:00:00').getDate();
           // Handle INACCIÓN records
