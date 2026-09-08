@@ -244,58 +244,56 @@
       gap: 12px;
       background: rgba(0,0,0,0.2);
     }
-
     .user-card {
       display: flex;
       align-items: center;
       gap: 12px;
       width: 100%;
     }
-
     .user-av {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      min-height: 40px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #ffcd1b, #a67726); color: #000; font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 15px;
-      flex-shrink: 0;
-      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
-      position: relative;
-      cursor: pointer;
-      overflow: hidden;
-      transition: box-shadow 0.3s ease;
-    }
-    .user-av img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-      display: block;
-    }
-    .user-av::after {
-      content: '📷';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.65);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-      border-radius: inherit;
-    }
-    .user-av:hover::after {
-      opacity: 1;
-    }
+       width: 40px;
+       height: 40px;
+       min-width: 40px;
+       min-height: 40px;
+       border-radius: 10px;
+       background: linear-gradient(135deg, #ffcd1b, #a67726); color: #000; font-weight: 700;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       color: #fff;
+       font-weight: 700;
+       font-size: 15px;
+       flex-shrink: 0;
+       box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+       position: relative;
+       cursor: pointer;
+       overflow: hidden;
+       transition: box-shadow 0.3s ease;
+     }
+     .user-av img {
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+       border-radius: 50%;
+       display: block;
+     }
+     .user-av::after {
+       content: '📷';
+       position: absolute;
+       top: 0; left: 0; right: 0; bottom: 0;
+       background: rgba(0, 0, 0, 0.65);
+       color: #fff;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-size: 13px;
+       opacity: 0;
+       transition: opacity 0.2s ease;
+       border-radius: inherit;
+     }
+     .user-av:hover::after {
+       opacity: 1;
+     }
 
     .user-info {
       flex: 1;
@@ -1159,7 +1157,7 @@
 
     .ac-sub {
       font-size: 11.5px;
-      color: var(--green);
+      color: var(--text-secondary);
       font-weight: 500;
       margin-top: 2px;
     }
@@ -2169,7 +2167,7 @@
       width: fit-content;
       padding: 6px 14px;
       background: rgba(255,205,27,0.1);
-      color: var(--green);
+      color: var(--yellow);
       border-radius: 100px;
       font-size: 11px;
       font-weight: 700;
@@ -2585,7 +2583,7 @@
       box-shadow: 0 10px 40px rgba(255, 205, 27, 0.15);
     }
     
-    /* ── STARKLAB LUXURY GAMING RANKING STYLES ── */
+    /* ── STARKLAB LUXURY GAMING RANKING STYLES (EXACT SCREENSHOT MATCH) ── */
     .stark-topbar {
       display: flex;
       justify-content: space-between;
@@ -2596,70 +2594,74 @@
     }
     .stark-timeframe-switcher {
       display: inline-flex;
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 4px;
+      background: #12141a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 3px 4px;
       border-radius: 24px;
-      gap: 4px;
+      gap: 2px;
     }
     .stark-time-tab {
       background: transparent;
       border: none;
-      color: var(--text-muted);
+      color: #64748b;
       font-size: 11.5px;
-      font-weight: 700;
-      padding: 6px 14px;
+      font-weight: 600;
+      padding: 6px 16px;
       border-radius: 18px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
     .stark-time-tab:hover {
-      color: #fff;
+      color: #ffffff;
     }
     .stark-time-tab.active {
-      background: linear-gradient(135deg, rgba(255, 205, 27, 0.25), rgba(255, 205, 27, 0.08));
-      color: var(--yellow);
-      border: 1px solid rgba(255, 205, 27, 0.4);
-      box-shadow: 0 0 12px rgba(255, 205, 27, 0.2);
+      background: #222632;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
     }
 
-    /* Podium 3 Pedestales */
+    /* Podium 3 Pedestales - Exact StarkLab Layout */
+    .stark-podium-outer {
+      background: #0d0f14;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      padding: 24px 16px 16px 16px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+    }
     .stark-podium-wrapper {
       display: grid;
-      grid-template-columns: 1fr 1.18fr 1fr;
-      gap: 12px;
-      align-items: end;
-      margin-bottom: 20px;
+      grid-template-columns: 1fr 1.15fr 1fr;
+      gap: 14px;
+      align-items: flex-end;
     }
     .stark-pedestal-card {
-      background: linear-gradient(180deg, rgba(26, 26, 36, 0.85), rgba(12, 12, 18, 0.95));
+      background: #10131a;
       border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       transition: all 0.3s ease;
     }
     .stark-pedestal-card.rank-1 {
-      border: 1.5px solid rgba(255, 205, 27, 0.7);
-      box-shadow: 0 0 40px rgba(255, 205, 27, 0.25), 0 15px 40px rgba(0, 0, 0, 0.8);
-      transform: translateY(-12px);
+      border: 1.5px solid #ef4444;
+      box-shadow: 0 0 35px rgba(239, 68, 68, 0.25), inset 0 0 20px rgba(239, 68, 68, 0.08);
+      transform: translateY(-16px);
       z-index: 2;
     }
     .stark-pedestal-card.rank-2 {
-      border: 1.5px solid rgba(45, 212, 191, 0.5);
-      box-shadow: 0 0 30px rgba(45, 212, 191, 0.15);
+      border: 1.5px solid #10b981;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.18), inset 0 0 15px rgba(16, 185, 129, 0.06);
     }
     .stark-pedestal-card.rank-3 {
-      border: 1.5px solid rgba(249, 115, 22, 0.5);
-      box-shadow: 0 0 30px rgba(249, 115, 22, 0.15);
+      border: 1.5px solid #f97316;
+      box-shadow: 0 0 25px rgba(249, 115, 22, 0.18), inset 0 0 15px rgba(249, 115, 22, 0.06);
     }
 
     .pedestal-content {
-      padding: 18px 10px 14px 10px;
+      padding: 20px 10px 14px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -2667,45 +2669,9 @@
       text-align: center;
       z-index: 2;
     }
-    .pedestal-flag-base {
-      width: 100%;
-      height: 80px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .pedestal-flag-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.38;
-      filter: blur(0.5px);
-    }
-    .pedestal-flag-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(12, 12, 18, 0.4), rgba(12, 12, 18, 0.88));
-    }
-    .pedestal-rank-num {
-      position: relative;
-      font-size: 34px;
-      font-weight: 900;
-      font-family: var(--mono);
-      line-height: 1;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-    }
-    .pedestal-rank-num.num-1 { color: #fff; text-shadow: 0 0 20px rgba(255, 205, 27, 0.9); }
-    .pedestal-rank-num.num-2 { color: #e2e8f0; text-shadow: 0 0 15px rgba(45, 212, 191, 0.7); }
-    .pedestal-rank-num.num-3 { color: #fdba74; text-shadow: 0 0 15px rgba(249, 115, 22, 0.7); }
-
     .crown-glow {
-      font-size: 24px;
-      filter: drop-shadow(0 0 10px rgba(255, 205, 27, 0.9));
+      font-size: 22px;
+      filter: drop-shadow(0 0 12px #eab308);
       margin-bottom: 2px;
       animation: floatCrown 2.5s ease-in-out infinite;
     }
@@ -2716,7 +2682,7 @@
 
     .pedestal-avatar-wrap {
       position: relative;
-      margin: 6px 0;
+      margin: 4px 0 8px 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -2725,54 +2691,172 @@
       position: absolute;
       inset: -6px;
       border-radius: 50%;
-      opacity: 0.75;
+      opacity: 0.8;
       filter: blur(8px);
       z-index: 0;
     }
-    .aura-1 { background: radial-gradient(circle, rgba(255, 205, 27, 0.9), transparent); }
-    .aura-2 { background: radial-gradient(circle, rgba(45, 212, 191, 0.8), transparent); }
-    .aura-3 { background: radial-gradient(circle, rgba(249, 115, 22, 0.8), transparent); }
+    .aura-1 { background: radial-gradient(circle, rgba(239, 68, 68, 0.8), transparent 70%); }
+    .aura-2 { background: radial-gradient(circle, rgba(16, 185, 129, 0.7), transparent 70%); }
+    .aura-3 { background: radial-gradient(circle, rgba(249, 115, 22, 0.7), transparent 70%); }
+
+    .pedestal-avatar-circle {
+      position: relative;
+      z-index: 1;
+      border-radius: 50%;
+      background: #161922;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+    }
+    .pedestal-avatar-circle.circle-1 {
+      width: 76px;
+      height: 76px;
+      border: 2px solid #f59e0b;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.5);
+    }
+    .pedestal-avatar-circle.circle-2 {
+      width: 68px;
+      height: 68px;
+      border: 2px solid #10b981;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+    }
+    .pedestal-avatar-circle.circle-3 {
+      width: 68px;
+      height: 68px;
+      border: 2px solid #f97316;
+      box-shadow: 0 0 14px rgba(249, 115, 22, 0.4);
+    }
+
+    .pedestal-rank-badge-pill {
+      position: absolute;
+      bottom: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #141720;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      font-family: var(--mono);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+    }
+    .pedestal-rank-badge-pill.num-1 { border: 1.5px solid #ef4444; color: #fef08a; }
+    .pedestal-rank-badge-pill.num-2 { border: 1.5px solid #10b981; color: #fff; }
+    .pedestal-rank-badge-pill.num-3 { border: 1.5px solid #f97316; color: #fff; }
+
+    .stark-tier-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 2px 9px;
+      margin-top: 4px;
+    }
+    .stark-tier-pill.platino {
+      color: #22d3ee;
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+    }
+    .stark-tier-pill.oro {
+      color: #eab308;
+      background: rgba(234, 179, 8, 0.1);
+      border: 1px solid rgba(234, 179, 8, 0.25);
+    }
+    .stark-tier-pill.plata {
+      color: #94a3b8;
+      background: rgba(148, 163, 184, 0.1);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
 
     .stark-badges-grid {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 4px;
-      justify-content: center;
-      max-width: 140px;
-      margin: 6px 0;
+      margin: 8px 0 4px 0;
     }
     .stark-badge-chip {
       width: 22px;
       height: 22px;
       border-radius: 6px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #161922;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 11px;
     }
 
+    .stark-sprout-icon {
+      margin-top: 4px;
+      font-size: 14px;
+      line-height: 1;
+    }
+
     .stark-pnl-pill {
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 205, 27, 0.4);
-      color: var(--yellow);
+      background: #161922;
+      border: 1px solid rgba(234, 179, 8, 0.25);
+      color: #eab308;
       font-family: var(--mono);
       font-size: 11.5px;
-      font-weight: 900;
-      padding: 3px 10px;
-      border-radius: 14px;
-      margin-top: 4px;
-      box-shadow: 0 0 10px rgba(255, 205, 27, 0.15);
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 16px;
+      margin-top: 8px;
     }
+
+    .pedestal-flag-base {
+      width: 100%;
+      height: 85px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .pedestal-flag-base.base-1 { height: 110px; border-top: 1.5px solid #ef4444; }
+    .pedestal-flag-base.base-2 { height: 85px; border-top: 1.5px solid #10b981; }
+    .pedestal-flag-base.base-3 { height: 85px; border-top: 1.5px solid #f97316; }
+
+    .pedestal-flag-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.42;
+    }
+    .pedestal-flag-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(16, 19, 26, 0.3), rgba(16, 19, 26, 0.85));
+    }
+    .pedestal-rank-num {
+      position: relative;
+      font-weight: 900;
+      font-family: var(--mono);
+      line-height: 1;
+      z-index: 2;
+    }
+    .pedestal-rank-num.num-1 { font-size: 42px; color: #ffffff; text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
+    .pedestal-rank-num.num-2 { font-size: 38px; color: rgba(255, 255, 255, 0.75); text-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
+    .pedestal-rank-num.num-3 { font-size: 38px; color: rgba(255, 255, 255, 0.75); text-shadow: 0 0 15px rgba(249, 115, 22, 0.6); }
 
     /* Tarjetas de Clasificación #4+ */
     .stark-rank-card {
-      background: linear-gradient(90deg, rgba(24, 24, 32, 0.85), rgba(16, 16, 22, 0.95));
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #10131a;
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
       padding: 10px 16px;
-      margin-bottom: 8px;
+      margin-bottom: 9px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -2781,27 +2865,52 @@
       transition: all 0.25s ease;
     }
     .stark-rank-card:hover {
-      border-color: rgba(255, 205, 27, 0.4);
-      transform: translateX(3px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      transform: translateX(4px);
     }
     .stark-rank-card.my-card {
-      border: 1.5px solid rgba(255, 205, 27, 0.6);
-      background: linear-gradient(90deg, rgba(255, 205, 27, 0.12), rgba(20, 20, 26, 0.95));
+      background: linear-gradient(90deg, rgba(234, 179, 8, 0.12), #10131a);
+      border-color: #eab308 !important;
     }
     .stark-card-watermark {
       position: absolute;
-      right: 90px;
+      right: 85px;
       top: 50%;
       transform: translateY(-50%);
-      width: 140px;
-      height: 80px;
+      width: 90px;
+      height: 55px;
       object-fit: cover;
-      opacity: 0.12;
-      filter: blur(0.5px);
+      opacity: 0.16;
+      border-radius: 4px;
       pointer-events: none;
       mask-image: linear-gradient(to left, black 20%, transparent 90%);
       -webkit-mask-image: linear-gradient(to left, black 20%, transparent 90%);
+    }
+    .stark-card-crest-wrap {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #161922;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .stark-card-badges-row {
+      display: flex;
+      gap: 4px;
+      margin: 0 10px;
+    }
+    .stark-mini-badge {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: #161922;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
     }
   </style>
 </head>
@@ -2969,22 +3078,22 @@
       <div class="acct-dropdown-menu" id="acct-dropdown-menu"></div>
     </div>
     <div class="sidebar-footer">
-      <input type="file" id="user-avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleAvatarChange(this)">
-      <div class="user-card">
-        <div class="user-av" onclick="document.getElementById('user-avatar-input').click()" title="Cambiar foto de perfil">S</div>
-        <div class="user-info">
-          <div class="user-name">Sarah Posada</div>
-          <div class="user-email">—</div>
-        </div>
-      </div>
-    </div>
+       <input type="file" id="user-avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleAvatarChange(this)">
+       <div class="user-card">
+         <div class="user-av" onclick="document.getElementById('user-avatar-input').click()" title="Cambiar foto de perfil">S</div>
+         <div class="user-info">
+           <div class="user-name">Sarah Posada</div>
+           <div class="user-email">—</div>
+         </div>
+       </div>
+     </div>
   </aside>
 
   <!-- MAIN -->
   <div class="main">
     <!-- TOPBAR -->
     <div class="topbar">
-      <div class="nav-icon" style="color:var(--green); margin-right: 8px;">
+      <div class="nav-icon" style="color:var(--yellow); margin-right: 8px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       </div>
       <div class="tb-title" id="tb-title">Dashboard</div>
@@ -3321,6 +3430,8 @@
       <div id="comparar-content"></div>
     </div>
 
+
+
     <div class="page" id="page-cuentas">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
         <div style="font-size:16px;font-weight:700;">Mis Cuentas</div>
@@ -3333,21 +3444,14 @@
       <!-- CABECERA PRINCIPAL ESTILO STARKLAB -->
       <div class="stark-topbar">
         <div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div style="font-size:24px; font-weight:900; letter-spacing:1.5px; color:#fff; text-transform:uppercase;" id="tournament-name">🏆 TORNEO GOLD FX</div>
-            <span class="badge-status completed" style="font-size:10px; padding:3px 10px; font-weight:800;">EN CURSO</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:12px; margin-top:4px; font-size:11.5px; color:var(--text-secondary);">
-            <span id="tournament-dates">Periodo: —</span>
-            <span>•</span>
-            <span id="tournament-participants-count" style="color:var(--yellow); font-weight:700;">0 participantes</span>
-          </div>
+          <div style="font-size:28px; font-weight:900; letter-spacing:0.5px; color:#ffffff;" id="tournament-name">Clasificación</div>
+          <div style="font-size:12px; color:#64748b; font-weight:500; margin-top:3px;" id="tournament-participants-count">0 participantes</div>
         </div>
 
         <!-- FILTROS DE TIEMPO Y BOTÓN DE ACCIÓN -->
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
           <div class="stark-timeframe-switcher">
-            <button class="stark-time-tab active" id="stark-tab-all" onclick="setTournamentTimeframe('all')">Todo el torneo</button>
+            <button class="stark-time-tab active" id="stark-tab-all" onclick="setTournamentTimeframe('all')">Todo tiempo</button>
             <button class="stark-time-tab" id="stark-tab-week" onclick="setTournamentTimeframe('week')">Esta semana</button>
             <button class="stark-time-tab" id="stark-tab-month" onclick="setTournamentTimeframe('month')">Este mes</button>
           </div>
@@ -3418,43 +3522,36 @@
       </div>
 
       <!-- LAYOUT PRINCIPAL DE 2 COLUMNAS (PODIO IZQUIERDA + CLASIFICACIÓN DERECHA) -->
-      <div style="display:grid; grid-template-columns: minmax(360px, 460px) 1fr; gap:20px; align-items:start;" id="tournament-main-grid">
+      <div style="display:grid; grid-template-columns: minmax(360px, 470px) 1fr; gap:24px; align-items:start;" id="tournament-main-grid">
         
         <!-- COLUMNA IZQUIERDA: PODIO TOP 3 ESTILO STARKLAB (3 PEDESTALES) -->
         <div>
-          <div class="glass-box" style="padding:18px 14px; border:1px solid rgba(255,205,27,0.3); background:linear-gradient(180deg, rgba(255,205,27,0.06), rgba(16,16,22,0.95));">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-              <div style="font-size:12px; font-weight:900; color:var(--yellow); text-transform:uppercase; letter-spacing:1.5px; display:flex; align-items:center; gap:6px;">
-                <span>👑</span> PODIO TOP 3
-              </div>
-              <span style="font-size:10.5px; color:var(--text-muted); font-weight:700;">LÍDERES ACTUALES</span>
-            </div>
-
+          <div class="stark-podium-outer">
             <div class="stark-podium-wrapper" id="tournament-top3-container">
               <!-- Renderizado dinámico de 3 pedestales -->
             </div>
           </div>
 
           <!-- REGLAS OPERATIVAS COMPACTAS -->
-          <div class="glass-box" style="margin-top:16px; padding:16px; border:1px solid rgba(255,255,255,0.08);">
-            <div style="font-size:11px; font-weight:900; color:#fff; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+          <div style="margin-top:16px; padding:16px; border-radius:18px; background:#0d0f14; border:1px solid rgba(255,255,255,0.05);">
+            <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
               <span>📋</span> REGLAS OPERATIVAS DEL TORNEO
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; font-size:10.5px; color:var(--text-secondary); text-align:center;">
-              <div style="background:rgba(255,255,255,0.03); padding:8px 6px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="background:#13161f; padding:10px 6px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
                 <div style="font-size:14px; margin-bottom:2px;">1️⃣</div>
                 <strong style="color:#fff;">1 Trade / Día</strong>
-                <div style="font-size:9.5px; color:var(--text-muted);">Límite estricto</div>
+                <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Límite estricto</div>
               </div>
-              <div style="background:rgba(255,255,255,0.03); padding:8px 6px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="background:#13161f; padding:10px 6px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
                 <div style="font-size:14px; margin-bottom:2px;">📉</div>
                 <strong style="color:var(--yellow);">DD Diario 1.1%</strong>
-                <div style="font-size:9.5px; color:var(--text-muted);">Pérdida máx/día</div>
+                <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Pérdida máx/día</div>
               </div>
-              <div style="background:rgba(255,255,255,0.03); padding:8px 6px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="background:#13161f; padding:10px 6px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
                 <div style="font-size:14px; margin-bottom:2px;">🛑</div>
                 <strong style="color:var(--red);">DD Máx 5.0%</strong>
-                <div style="font-size:9.5px; color:var(--text-muted);">Descalificación</div>
+                <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Descalificación</div>
               </div>
             </div>
           </div>
@@ -3462,18 +3559,13 @@
 
         <!-- COLUMNA DERECHA: CLASIFICACIÓN COMPLETA (#4+) EN TARJETAS NEÓN FLOTANTES -->
         <div>
-          <div class="glass-box" style="padding:18px 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px;">
-              <div>
-                <div style="font-size:13px; font-weight:900; color:#fff; letter-spacing:1px; text-transform:uppercase;">CLASIFICACIÓN GENERAL</div>
-                <div style="font-size:10.5px; color:var(--text-muted); margin-top:2px;" id="stark-timeframe-label">Según rendimiento acumulado</div>
-              </div>
-              <button class="btn-cancel" onclick="loadTournamentData()" style="font-size:11px; padding:4px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:4px;">🔄 Actualizar</button>
-            </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 4px;">
+            <div style="font-size:11.5px; font-weight:800; color:#64748b; letter-spacing:1px; text-transform:uppercase;">CLASIFICACIÓN COMPLETA</div>
+            <div style="font-size:11px; color:#475569;" id="stark-timeframe-label">Según todo tiempo</div>
+          </div>
 
-            <div id="tournament-cards-container">
-              <!-- Renderizado dinámico de tarjetas #4 en adelante o lista completa -->
-            </div>
+          <div id="tournament-cards-container">
+            <!-- Renderizado dinámico de tarjetas #4 en adelante o lista completa -->
           </div>
         </div>
 
@@ -4116,7 +4208,8 @@
 
 
 
-  <script>
+    <script>
+
 
 
     const SUPABASE_URL = 'https://xtynjkstprkkbontplow.supabase.co';
@@ -4353,6 +4446,14 @@
             await sb.update('users', user.id, { avatar_url: publicUrl });
           } catch (dbErr2) {}
         }
+        try {
+          const myParts = await sb.query('tournament_participants', { filter: 'user_id=eq.' + user.id });
+          if (Array.isArray(myParts)) {
+            for (const pt of myParts) {
+              await sb.update('tournament_participants', pt.id, { avatar_url: publicUrl });
+            }
+          }
+        } catch (tpErr) {}
         let name = (user.user_metadata && user.user_metadata.full_name) || user.email;
         if (name.toLowerCase().includes('sara') || name.toLowerCase().includes('juliana')) {
           name = 'Sarah Posada';
@@ -4431,6 +4532,7 @@
       const data = await sb.query('user_confirmations', { select: '*', filter: 'user_id=eq.' + uid, order: 'created_at.asc' });
       userConfirmations = Array.isArray(data) ? data : [];
     }
+
 
 
     function renderConfGrid(containerId, selectedArr) {
@@ -4814,16 +4916,21 @@
     }
 
     // ── Navigation ──
-    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas' };
+    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading' };
     function goTo(id, el) {
       document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
       document.getElementById('page-' + id).classList.add('active');
       el.classList.add('active');
       document.getElementById('tb-title').textContent = pageNames[id] || id;
+      if (id === 'dashboard') renderDashboard();
+      if (id === 'tradelog') renderTrades();
+      if (id === 'calendario') renderCalendar();
       if (id === 'analisis') renderAnalisis();
       if (id === 'estadisticas') renderStats();
       if (id === 'comparar') renderComparar();
+      if (id === 'cuentas') renderAccounts();
+      if (id === 'torneo') loadTournamentData();
     }
     function setView(v, btn) { document.querySelectorAll('.tog-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); }
 
@@ -5225,7 +5332,10 @@
       document.getElementById('td-date').textContent = t.account + '  ·  ' + t.session;
       var pnlBadge = document.getElementById('td-pnl-badge');
       var isWin = t.pnl >= 0;
-      pnlBadge.textContent = (isWin ? '+' : '') + '$' + t.pnl.toFixed(2);
+      pnlBadge.textContent = (isWin ? '+' : '') + '
+</body>
+
+</html> + t.pnl.toFixed(2);
       pnlBadge.style.cssText = 'padding:6px 16px;border-radius:8px;font-size:20px;font-weight:800;font-family:var(--mono);white-space:nowrap;background:' + (isWin ? 'rgba(255,205,27,0.12)' : 'rgba(239,68,68,0.12)') + ';color:' + (isWin ? '#22c55e' : '#ef4444') + ';border:1px solid ' + (isWin ? 'rgba(255,205,27,0.3)' : 'rgba(239,68,68,0.3)') + ';';
       document.getElementById('td-account').textContent = t.account;
       var sideEl = document.getElementById('td-side');
@@ -5289,7 +5399,10 @@
         '<div class="tdp-body">' +
           '<div class="tdp-header">' +
             '<div><div class="tdp-asset">' + t.asset + '</div><div class="tdp-sub">' + t.date + ' &nbsp;·&nbsp; ' + t.session + '</div></div>' +
-            '<div class="tdp-pnl" style="background:' + pnlBg + ';color:' + pnlColor + ';border:1px solid ' + pnlBorder + '">' + (isWin ? '+' : '') + '$' + t.pnl.toFixed(2) + '</div>' +
+            '<div class="tdp-pnl" style="background:' + pnlBg + ';color:' + pnlColor + ';border:1px solid ' + pnlBorder + '">' + (isWin ? '+' : '') + '
+</body>
+
+</html> + t.pnl.toFixed(2) + '</div>' +
           '</div>' +
           '<div class="tdp-grid">' +
             '<div class="tdp-field"><div class="tdp-field-l">Cuenta</div><div class="tdp-field-v">' + t.account + '</div></div>' +
@@ -5311,7 +5424,7 @@
       // Make panel visible if hidden
       if (!_panelVisible) toggleDetailPanel();
     }
-      function computeStats(tradeList) {
+            function computeStats(tradeList) {
         // Excluir registros de INACCIÓN de todas las estadísticas
         tradeList = tradeList.filter(function(t){ return t.asset !== 'INACCIÓN'; });
         const total = tradeList.length;
@@ -5456,14 +5569,22 @@
       }
 
       function generateInsights(trades) {
-        const validTrades = trades.filter(function (t) { return t.asset !== 'INACCIÓN'; });
+        // Respect the selected timeframe/month trades
+        const validTrades = (trades || []).filter(function (t) { return t.asset !== 'INACCIÓN'; });
+        
+        if (validTrades.length === 0) {
+          return '<div class="stats-card" style="margin-bottom:18px;">' +
+            '<div class="stats-card-title" style="margin-bottom:14px;">🧠 Cerebro GoldFX (Hallazgos)</div>' +
+            '<div style="color:var(--text-muted); font-size:12.5px; text-align:center; padding:24px 0;">No hay suficientes datos de operaciones en este período para generar hallazgos.</div>' +
+            '</div>';
+        }
         const insights = [];
 
         // 1. Mejor Sesión por P&L
         const sessionPnl = {};
         validTrades.forEach(function (t) {
           if (!t.session) return;
-          sessionPnl[t.session] = (sessionPnl[t.session] || 0) + t.pnl;
+          sessionPnl[t.session] = (sessionPnl[t.session] || 0) + parseFloat(t.pnl);
         });
         let bestSession = null;
         let maxSessionPnl = -Infinity;
@@ -5483,10 +5604,11 @@
         const entryWins = {};
         let totalPositivePnl = 0;
         validTrades.forEach(function (t) {
-          if (t.pnl > 0) {
-            totalPositivePnl += t.pnl;
+          var pnlVal = parseFloat(t.pnl);
+          if (pnlVal > 0) {
+            totalPositivePnl += pnlVal;
             if (t.entry_type) {
-              entryWins[t.entry_type] = (entryWins[t.entry_type] || 0) + t.pnl;
+              entryWins[t.entry_type] = (entryWins[t.entry_type] || 0) + pnlVal;
             }
           }
         });
@@ -5519,8 +5641,8 @@
           insights.push("🟢 Mantienes una excelente disciplina: no hay trades con puntuación menor a 70%.");
         }
 
-        // 4. Emoción dominante en pérdidas
-        const losingTrades = validTrades.filter(function (t) { return t.pnl < 0; });
+        // 4. Emoción dominante en pérdidas (requires at least 1 loss)
+        const losingTrades = validTrades.filter(function (t) { return parseFloat(t.pnl) <= -0.01; });
         if (losingTrades.length > 0) {
           const emoCounts = {};
           losingTrades.forEach(function (t) {
@@ -5555,7 +5677,9 @@
         }
 
         // Build premium HTML block
-        let html = '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">';
+        let html = '<div class="stats-card" style="margin-bottom:18px;">' +
+          '<div class="stats-card-title" style="margin-bottom:14px;">🧠 Cerebro GoldFX (Hallazgos)</div>' +
+          '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">';
         insights.forEach(function(ins) {
           const isAlert = ins.startsWith('⚠️');
           const borderColor = isAlert ? 'rgba(239, 68, 68, 0.3)' : 'var(--border-bronze)';
@@ -5566,15 +5690,51 @@
               '<span style="font-size:13px; font-weight:600; color:' + textColor + '; line-height:1.4;">' + ins + '</span>' +
             '</div>';
         });
-        html += '</div>';
+        html += '</div></div>';
         return html;
+      }
+
+
+
+      let activeAnDiscTimeframe = 'all';
+
+      window.changeAnDiscTimeframe = function(tf, event) {
+        if(event) {
+          var parent = event.currentTarget.parentElement;
+          parent.querySelectorAll('.tog-btn').forEach(function(b) { b.classList.remove('active'); });
+          event.currentTarget.classList.add('active');
+        }
+        activeAnDiscTimeframe = tf;
+        renderAnalisis();
       }
 
       function getDisciplineBreakdown(trades) {
         var validTrades = trades.filter(function (t) { return t.asset !== 'INACCIÓN'; });
         
+        // Filter based on selected timeframe
+        if (activeAnDiscTimeframe === '7d' || activeAnDiscTimeframe === '30d') {
+          var cutoff = new Date();
+          var days = activeAnDiscTimeframe === '7d' ? 7 : 30;
+          cutoff.setDate(cutoff.getDate() - days);
+          validTrades = validTrades.filter(function(t) {
+            return new Date(t.date + 'T00:00:00') >= cutoff;
+          });
+        }
+
+        var html = 
+          '<div class="stats-card" style="margin-bottom:18px;">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">' +
+              '<div class="stats-card-title" style="margin:0;font-size:16px;">Desglose de Disciplina</div>' +
+              '<div class="toggle-group" style="padding:2px; display:flex; gap:2px;">' +
+                '<button class="tog-btn' + (activeAnDiscTimeframe === '7d' ? ' active' : '') + '" onclick="changeAnDiscTimeframe(\'7d\', event)">7 días</button>' +
+                '<button class="tog-btn' + (activeAnDiscTimeframe === '30d' ? ' active' : '') + '" onclick="changeAnDiscTimeframe(\'30d\', event)">30 días</button>' +
+                '<button class="tog-btn' + (activeAnDiscTimeframe === 'all' ? ' active' : '') + '" onclick="changeAnDiscTimeframe(\'all\', event)">Histórico</button>' +
+              '</div>' +
+            '</div>';
+
         if (validTrades.length === 0) {
-          return '<div style="color:var(--text-muted); font-size:12.5px; text-align:center; padding:12px 0;">No hay suficientes datos de operaciones para el rango seleccionado.</div>';
+          html += '<div style="color:var(--text-muted); font-size:12.5px; text-align:center; padding:24px 0;">No hay suficientes datos de operaciones para el rango seleccionado.</div></div>';
+          return html;
         }
 
         var totalConsist = 0;
@@ -5632,44 +5792,66 @@
         var emocional = Math.round(totalEmo / count);
         var goldfx = Math.round(totalGold / count);
 
-        function getEmoji(score) {
+        function getDisciplineColor(score) {
+          if (score >= 85) return 'var(--green)';
+          if (score >= 70) return 'var(--yellow)';
+          return 'var(--red)';
+        }
+
+        function getDisciplineEmoji(score) {
           if (score >= 85) return '🟢';
           if (score >= 70) return '🟡';
           return '🔴';
         }
 
-        return 
-          '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; align-items:center;">' +
-            '<div style="display:flex; flex-direction:column; gap:10px;">' +
+        html +=
+          '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; align-items:stretch;">' +
+            '<div style="display:flex; flex-direction:column; gap:10px; justify-content:center;">' +
               '<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);">' +
                 '<span style="font-size:13px; font-weight:600; color:var(--text-secondary);">Consistencia</span>' +
-                '<span style="font-size:14px; font-weight:700; color:#fff;">' + getEmoji(consistencia) + ' ' + consistencia + '%</span>' +
+                '<span style="font-size:14px; font-weight:700; color:\' + getDisciplineColor(consistencia) + \';">' + getDisciplineEmoji(consistencia) + ' ' + consistencia + '%</span>' +
               '</div>' +
               '<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);">' +
                 '<span style="font-size:13px; font-weight:600; color:var(--text-secondary);">Gestión de Riesgo</span>' +
-                '<span style="font-size:14px; font-weight:700; color:#fff;">' + getEmoji(riesgo) + ' ' + riesgo + '%</span>' +
+                '<span style="font-size:14px; font-weight:700; color:\' + getDisciplineColor(riesgo) + \';">' + getDisciplineEmoji(riesgo) + ' ' + riesgo + '%</span>' +
               '</div>' +
               '<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);">' +
                 '<span style="font-size:13px; font-weight:600; color:var(--text-secondary);">Control Emocional</span>' +
-                '<span style="font-size:14px; font-weight:700; color:#fff;">' + getEmoji(emocional) + ' ' + emocional + '%</span>' +
+                '<span style="font-size:14px; font-weight:700; color:\' + getDisciplineColor(emocional) + \';">' + getDisciplineEmoji(emocional) + ' ' + emocional + '%</span>' +
               '</div>' +
             '</div>' +
-            '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; background:rgba(255, 205, 27, 0.02); border:1px dashed var(--border-bronze); border-radius:14px; height:100%; min-height:110px;">' +
+            '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; background:rgba(255, 205, 27, 0.02); border:1px dashed var(--border-bronze); border-radius:14px; min-height:110px;">' +
               '<div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Discipline Score Promedio</div>' +
               '<div style="font-size:32px; font-weight:800; color:var(--yellow); font-family:var(--mono);">🏆 ' + goldfx + '<span style="font-size:16px; font-weight:500; color:var(--text-muted);">/100</span></div>' +
             '</div>' +
-          '</div>';
+          '</div>' +
+        '</div>';
+        return html;
       }
 
-      let activeDiscTimeframe = 'all';
-      window.changeDiscTimeframe = function(tf, event) {
-        if(event) {
-          var parent = event.currentTarget.parentElement;
-          parent.querySelectorAll('.tog-btn').forEach(function(b) { b.classList.remove('active'); });
-          event.currentTarget.classList.add('active');
+      function openDayDetail(date) {
+        var dayTrades = trades.filter(function(t) { return t.date === date && t.asset !== 'INACCIÓN'; });
+        if (dayTrades.length === 0) return;
+        
+        var tradeLogBtn = document.querySelector(".nav-item[onclick*='tradelog']");
+        if (tradeLogBtn) {
+          goTo('tradelog', tradeLogBtn);
+          setTimeout(function() {
+            showTradePanel(dayTrades[0].id);
+          }, 100);
+        } else {
+          openTradeDetail(dayTrades[0].id);
         }
-        activeDiscTimeframe = tf;
-        updateDisciplineCard();
+      }
+
+      function renderAll() {
+        if (typeof renderDashboard === 'function') renderDashboard();
+        if (typeof renderTrades === 'function') renderTrades();
+        if (typeof renderCalendar === 'function') renderCalendar();
+        if (typeof renderStats === 'function') renderStats();
+        if (typeof renderAnalisis === 'function') renderAnalisis();
+        if (typeof renderComparar === 'function') renderComparar();
+        if (typeof renderAccounts === 'function') renderAccounts();
       }
 
       window.updateDisciplineCard = function() {
@@ -5689,13 +5871,14 @@
             return new Date(t.date + 'T00:00:00') >= cutoff;
           });
         }
-        var container = document.getElementById('discipline-breakdown-content');
+        var container = document.getElementById('discipline-breakdown-container');
         if (container) {
           container.innerHTML = getDisciplineBreakdown(filtered);
         }
       }
 
       function renderDashboard() {
+
         const trades = getFilteredTrades();
         const page = document.getElementById('page-dashboard');
         if (!trades.length) {
@@ -5765,12 +5948,21 @@
             '<div style="position:absolute;top:10px;right:10px;font-size:10px;opacity:0.5;color:var(--text-muted);">V.1.2-FIX</div>' +
             '<div>' +
               '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.4);margin-bottom:8px;">' + bannerLabel + '</div>' +
-              '<div style="font-size:42px;font-weight:800;font-family:var(--mono);color:#fff;margin-bottom:4px;">$' + totalBal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '</div>' +
-              '<div style="font-size:13px;color:rgba(255,255,255,0.3);font-family:var(--mono)">Capital inicial: $' + totalInit.toLocaleString() + '</div>' +
+              '<div style="font-size:42px;font-weight:800;font-family:var(--mono);color:#fff;margin-bottom:4px;">
+</body>
+
+</html> + totalBal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '</div>' +
+              '<div style="font-size:13px;color:rgba(255,255,255,0.3);font-family:var(--mono)">Capital inicial: 
+</body>
+
+</html> + totalInit.toLocaleString() + '</div>' +
             '</div>' +
             '<div style="text-align:right;">' +
               '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.4);margin-bottom:8px;">NET P&L TOTAL</div>' +
-              '<div style="font-size:36px;font-weight:800;font-family:var(--mono);color:' + pc + '">' + (s.netPnl >= 0 ? '+' : '') + '$' + s.netPnl.toFixed(2) + '</div>' +
+              '<div style="font-size:36px;font-weight:800;font-family:var(--mono);color:' + pc + '">' + (s.netPnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + s.netPnl.toFixed(2) + '</div>' +
               '<div style="font-size:14px;color:' + pc + ';margin-top:4px;font-family:var(--mono);font-weight:600">' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%</div>' +
             '</div>' +
           '</div>' +
@@ -5868,7 +6060,10 @@
         var netPnl = runBal - init;
         var badge = document.getElementById('eq-net-badge');
         if (badge) {
-           badge.textContent = (netPnl >= 0 ? '+' : '') + '$' + netPnl.toFixed(2);
+           badge.textContent = (netPnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + netPnl.toFixed(2);
            badge.style.color = netPnl >= 0 ? 'var(--green)' : 'var(--red)';
            badge.style.background = netPnl >= 0 ? '#112a1f' : '#2a1111';
         }
@@ -5896,7 +6091,10 @@
         
         function formatMoney(n) { 
            if (n >= 1000) return (n/1000).toFixed(1) + 'k';
-           return '$' + n.toFixed(0); 
+           return '
+</body>
+
+</html> + n.toFixed(0); 
         }
 
         ctx.fillStyle = 'rgba(255,255,255,0.6)';
@@ -6012,14 +6210,20 @@
 
            tt.style.display = 'block';
            ttDate.textContent = p.x;
-           ttEq.textContent = '$' + p.y.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+           ttEq.textContent = '
+</body>
+
+</html> + p.y.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
            
            if (closestIdx === 0) {
               ttTr.textContent = '—';
               ttTr.style.color = 'var(--text-muted)';
               ttAsset.textContent = 'Capital Inicial';
            } else {
-              var pnlStr = (p.trade >= 0 ? '+' : '') + '$' + p.trade.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+              var pnlStr = (p.trade >= 0 ? '+' : '') + '
+</body>
+
+</html> + p.trade.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
               ttTr.textContent = pnlStr;
               ttTr.style.color = p.trade >= 0 ? 'var(--green)' : 'var(--red)';
               ttAsset.textContent = p.asset;
@@ -6066,11 +6270,20 @@
         const s = computeStats(trades);
         var pnlEl = document.getElementById('tl-pnl'), wrEl = document.getElementById('tl-wr'), totEl = document.getElementById('tl-total');
         var awEl = document.getElementById('tl-avgw'), alEl = document.getElementById('tl-avgl'), pfEl = document.getElementById('tl-pf');
-        if (pnlEl) { pnlEl.textContent = (s.netPnl >= 0 ? '+' : '') + '$' + s.netPnl.toFixed(2); pnlEl.className = 'stat-pill-val ' + (s.netPnl >= 0 ? 'green' : 'red'); }
+        if (pnlEl) { pnlEl.textContent = (s.netPnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + s.netPnl.toFixed(2); pnlEl.className = 'stat-pill-val ' + (s.netPnl >= 0 ? 'green' : 'red'); }
         if (wrEl) { wrEl.textContent = s.winRate.toFixed(1) + '%'; wrEl.className = 'stat-pill-val ' + (s.winRate >= 50 ? 'green' : 'red'); }
         if (totEl) totEl.textContent = s.total;
-        if (awEl) awEl.textContent = '$' + s.avgWin.toFixed(2);
-        if (alEl) alEl.textContent = '$' + s.avgLoss.toFixed(2);
+        if (awEl) awEl.textContent = '
+</body>
+
+</html> + s.avgWin.toFixed(2);
+        if (alEl) alEl.textContent = '
+</body>
+
+</html> + s.avgLoss.toFixed(2);
         if (pfEl) pfEl.textContent = isFinite(s.profitFactor) ? s.profitFactor.toFixed(2) : '∞';
         document.getElementById('trades-count').innerHTML = trades.length + ' trades &nbsp;&nbsp;&bull;&nbsp;&nbsp; <span style="color:var(--green);font-weight:600;">' + s.wins + ' W</span> / <span style="color:var(--red);font-weight:600;">' + s.losses + ' L</span> / <span style="color:var(--purple);font-weight:600;">' + s.bes + ' BE</span>';
         const tbody = document.getElementById('trades-body');
@@ -6089,7 +6302,7 @@
           var discHtml = discVal !== null ? '<span style="font-weight:700;color:' + discCol + ';font-family:var(--mono)">🎯 ' + Math.round(discVal) + '%</span>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
           
           var photoHtml = t.photo ? '<img class="trade-thumb" src="' + t.photo + '" alt="" data-photo="1" onclick="openLightboxFromImg(this)">' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
-          var notesHtml = t.notes ? '<button class="ta n" title="Ver notas" onclick="openNotesModal(\'' + t.notes.replace(/'/g, "\\'").replace(/\n/g, ' ') + '\')">📝</button>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
+          var notesHtml = t.notes ? '<button class="ta n" title="Ver notas" onclick="openNotesModal(\'' + t.notes.replace(/'/g, "\\'").replace(/\\n/g, ' ') + '\')">📝</button>' : '<span style="color:var(--text-muted);font-size:12px">—</span>';
           var safeId = t.id;
           return '<tr style="cursor:pointer;" id="tr-' + safeId + '" onclick="showTradePanel(\'' + safeId + '\')">' +
             '<td style="font-family:var(--mono);font-size:12px;color:var(--text-muted)">' + t.date + '</td>' +
@@ -6098,7 +6311,10 @@
             '<td><span class="side-tag ' + (t.side === 'Long' ? 'side-long' : 'side-short') + '">' + t.side + '</span></td>' +
             '<td style="font-family:var(--mono)">' + t.entryTime + '</td>' +
             '<td style="font-family:var(--mono)">' + t.exitTime + '</td>' +
-            '<td style="font-family:var(--mono);font-weight:700;color:' + (t.pnl >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (t.pnl >= 0 ? '+' : '') + '$' + t.pnl.toFixed(2) + '</td>' +
+            '<td style="font-family:var(--mono);font-weight:700;color:' + (t.pnl >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (t.pnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + t.pnl.toFixed(2) + '</td>' +
             '<td style="font-family:var(--mono)">' + t.rr.toFixed(2) + 'R</td>' +
             '<td>' + t.session + '</td>' +
             '<td>' + condHtml + '</td>' +
@@ -6131,7 +6347,10 @@
 
         // Header stats
         var cn = document.getElementById('cal-net'), cw = document.getElementById('cal-wr'), cc = document.getElementById('cal-count');
-        if (cn) { cn.textContent = (ms.netPnl >= 0 ? '+' : '') + '$' + ms.netPnl.toFixed(2); cn.style.color = ms.netPnl >= 0 ? 'var(--green)' : 'var(--red)'; }
+        if (cn) { cn.textContent = (ms.netPnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + ms.netPnl.toFixed(2); cn.style.color = ms.netPnl >= 0 ? 'var(--green)' : 'var(--red)'; }
         if (cw) { cw.textContent = ms.winRate.toFixed(1) + '%'; cw.style.color = ms.winRate >= 50 ? 'var(--green)' : 'var(--red)'; }
         if (cc) cc.textContent = ms.total;
 
@@ -6179,7 +6398,9 @@
           if(allDates[sortedDates[si]].hasJournal) streakJournal++; else break;
         }
         // Risk streak counts consecutive trades (not days) - Excluir inacción
-        var allTradesSorted = trades.filter(function(t) { return t.asset !== 'INACCIÓN'; }).sort(function(a,b){ return a.date < b.date ? 1 : -1; });
+        var allTradesSorted = trades.filter(function(t) { return t.asset !== 'INACCIÓN'; }).sort(function(a,b){
+          return new Date(b.date + 'T' + (b.entryTime && b.entryTime !== '—' ? b.entryTime : '00:00:00')) - new Date(a.date + 'T' + (a.entryTime && a.entryTime !== '—' ? a.entryTime : '00:00:00'));
+        });
         for(var si=0; si<allTradesSorted.length; si++){
           var ta = allTradesSorted[si];
           if(ta.audit && !ta.audit['aud-risk-sobreapal'] && !ta.audit['aud-risk-moversl'] && !ta.audit['aud-risk-aumentar']) streakRisk++; else break;
@@ -6253,7 +6474,13 @@
 
               // P&L bottom-left with K format
               var pnlAbs = Math.abs(c.data.pnl);
-              var pnlStr = pnlAbs >= 1000 ? '$' + (pnlAbs/1000).toFixed(2) + 'K' : '$' + pnlAbs.toFixed(2);
+              var pnlStr = pnlAbs >= 1000 ? '
+</body>
+
+</html> + (pnlAbs/1000).toFixed(2) + 'K' : '
+</body>
+
+</html> + pnlAbs.toFixed(2);
               if(!isWin) pnlStr = '-' + pnlStr;
               inner += '<div class="cal-pnl ' + pnlClass + '">' + pnlStr + '</div>';
 
@@ -6297,7 +6524,13 @@
           ws.className = 'cal-cell week-col' + (weekPnl > 0 ? ' win-day' : weekPnl < 0 ? ' loss-day' : '');
           var wClass = weekPnl > 0 ? 'win' : weekPnl < 0 ? 'loss' : 'flat';
           var wAbs = Math.abs(weekPnl);
-          var wStr = wAbs >= 1000 ? '$' + (wAbs/1000).toFixed(2) + 'K' : '$' + wAbs.toFixed(0);
+          var wStr = wAbs >= 1000 ? '
+</body>
+
+</html> + (wAbs/1000).toFixed(2) + 'K' : '
+</body>
+
+</html> + wAbs.toFixed(0);
           if(weekPnl < 0) wStr = '-' + wStr;
           ws.innerHTML =
             '<span class="week-label">W' + weekNum + '</span>' +
@@ -6354,7 +6587,7 @@
         closeModal('inaction-modal'); renderAll();
       }
       // ── STATS ──
-      function renderStats() {
+            function renderStats() {
         var trades;
         if (stMode === 'global') {
           updateStMonthTitle();
@@ -6364,13 +6597,18 @@
           trades = getStFilteredTrades();
         }
         const s = computeStats(trades);
+        
         // Update header summary pills
         var hPnl = document.getElementById('st-hdr-pnl');
         var hWr = document.getElementById('st-hdr-wr');
         var hCnt = document.getElementById('st-hdr-count');
-        if (hPnl) { hPnl.textContent = (s.netPnl >= 0 ? '+' : '') + '$' + s.netPnl.toFixed(2); hPnl.style.color = s.netPnl >= 0 ? 'var(--green)' : 'var(--red)'; }
+        if (hPnl) { hPnl.textContent = (s.netPnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + s.netPnl.toFixed(2); hPnl.style.color = s.netPnl >= 0 ? 'var(--green)' : 'var(--red)'; }
         if (hWr) { hWr.textContent = s.winRate.toFixed(1) + '%'; hWr.style.color = s.winRate >= 50 ? 'var(--green)' : 'var(--red)'; }
         if (hCnt) hCnt.textContent = s.total;
+        
         function sv(id, html) { var el = document.getElementById(id); if (el) el.innerHTML = html; }
         sv('st-total', s.total);
         sv('st-wins', '<span class="badge-0 g">' + s.wins + '</span>');
@@ -6379,12 +6617,27 @@
         sv('st-bedays', s.beDays);
         sv('st-wr', '<span style="color:' + (s.winRate >= 50 ? 'var(--green)' : 'var(--red)') + '">' + s.winRate.toFixed(1) + '%</span>');
         sv('st-pf', '<span style="color:' + (s.profitFactor >= 1 ? 'var(--green)' : 'var(--red)') + '">' + (isFinite(s.profitFactor) ? s.profitFactor.toFixed(2) : '∞') + '</span>');
-        sv('st-exp', '<span style="color:' + (s.expectancy >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (s.expectancy >= 0 ? '+' : '') + '$' + s.expectancy.toFixed(2) + '</span>');
-        sv('st-avgw', '+$' + s.avgWin.toFixed(2));
-        sv('st-avgl', '-$' + s.avgLoss.toFixed(2));
+        sv('st-exp', '<span style="color:' + (s.expectancy >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (s.expectancy >= 0 ? '+' : '') + '
+</body>
+
+</html> + s.expectancy.toFixed(2) + '</span>');
+        sv('st-avgw', '+
+</body>
+
+</html> + s.avgWin.toFixed(2));
+        sv('st-avgl', '-
+</body>
+
+</html> + s.avgLoss.toFixed(2));
         sv('st-payoff', isFinite(s.payoffRatio) ? s.payoffRatio.toFixed(2) : '∞');
-        sv('st-best', '+$' + s.bestTrade.toFixed(2));
-        sv('st-worst', '$' + s.worstTrade.toFixed(2));
+        sv('st-best', '+
+</body>
+
+</html> + s.bestTrade.toFixed(2));
+        sv('st-worst', '
+</body>
+
+</html> + s.worstTrade.toFixed(2));
         sv('st-dd', s.maxDD.toFixed(2) + '%');
         sv('st-rr', s.avgWinRR.toFixed(2) + 'R');
 
@@ -6414,7 +6667,10 @@
             var c = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)'; 
             var wr = (e[1].wins / (e[1].count - e[1].bes || 1) * 100).toFixed(0);
             if (e[1].count === e[1].bes) wr = 0;
-            return '<div class="stat-row"><span class="stat-row-label">' + e[0] + ' <span style="color:var(--text-muted);font-size:11px">' + wr + '% WR (' + e[1].count + ')</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + '</span></div>'; 
+            return '<div class="stat-row"><span class="stat-row-label">' + e[0] + ' <span style="color:var(--text-muted);font-size:11px">' + wr + '% WR (' + e[1].count + ')</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + e[1].pnl.toFixed(2) + '</span></div>'; 
           }).join('') : '<div class="chart-placeholder">Sin datos</div>'); 
         }
 
@@ -6436,7 +6692,10 @@
           sesCard.innerHTML = '<div class="stats-card-title">Por Sesión</div>' + (sorted2.length ? sorted2.map(function (e) { 
             var c = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)'; 
             var wr = (e[1].wins / (e[1].count - (e[1].bes || 0) || 1) * 100).toFixed(0); 
-            return '<div class="stat-row"><span class="stat-row-label">' + e[0] + ' <span style="color:var(--text-muted);font-size:11px">' + wr + '% WR</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + '</span></div>'; 
+            return '<div class="stat-row"><span class="stat-row-label">' + e[0] + ' <span style="color:var(--text-muted);font-size:11px">' + wr + '% WR</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + e[1].pnl.toFixed(2) + '</span></div>'; 
           }).join('') : '<div class="chart-placeholder">Sin datos</div>'); 
         }
 
@@ -6459,7 +6718,10 @@
           setupCard.innerHTML = '<div class="stats-card-title">P&L por Setup</div>' + (sorted3.length && trades.length ? sorted3.map(function (e) { 
             var c = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)'; 
             var wr = (e[1].wins / (e[1].count - (e[1].bes || 0) || 1) * 100).toFixed(0);
-            return '<div class="stat-row"><span class="stat-row-label" style="font-family:var(--mono);font-size:12px">' + e[0] + ' <span style="color:var(--text-muted);font-size:10px">' + wr + '% WR</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + ' <span style="color:var(--text-muted);font-weight:400">(' + e[1].count + ')</span></span></div>'; 
+            return '<div class="stat-row"><span class="stat-row-label" style="font-family:var(--mono);font-size:12px">' + e[0] + ' <span style="color:var(--text-muted);font-size:10px">' + wr + '% WR</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + e[1].pnl.toFixed(2) + ' <span style="color:var(--text-muted);font-weight:400">(' + e[1].count + ')</span></span></div>'; 
           }).join('') : '<div class="chart-placeholder">Sin datos</div>'); 
         }
 
@@ -6482,7 +6744,10 @@
           dayCard.innerHTML = '<div class="stats-card-title">P&L por Día</div>' + (sorted4.length && trades.length ? sorted4.map(function (e) { 
             var c = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)'; 
             var wr = (e[1].wins / (e[1].count - (e[1].bes || 0) || 1) * 100).toFixed(0);
-            return '<div class="stat-row"><span class="stat-row-label">' + e[0] + ' <span style="color:var(--text-muted);font-size:11px">' + wr + '% WR (' + e[1].count + ')</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + '</span></div>'; 
+            return '<div class="stat-row"><span class="stat-row-label">' + e[0] + ' <span style="color:var(--text-muted);font-size:11px">' + wr + '% WR (' + e[1].count + ')</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + e[1].pnl.toFixed(2) + '</span></div>'; 
           }).join('') : '<div class="chart-placeholder">Sin datos</div>'); 
         }
 
@@ -6496,296 +6761,137 @@
             var c = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)';
             var wr = e[1].count ? (e[1].wins / (e[1].count - (e[1].bes || 0) || 1) * 100).toFixed(0) : '0';
             var icon = etIcons[e[0]] || '📌';
-            return '<div class="stat-row"><span class="stat-row-label">' + icon + ' ' + e[0] + ' <span style="color:var(--text-muted);font-size:10px">' + wr + '% WR</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + ' <span style="color:var(--text-muted);font-weight:400">(' + e[1].count + ')</span></span></div>';
+            return '<div class="stat-row"><span class="stat-row-label">' + icon + ' ' + e[0] + ' <span style="color:var(--text-muted);font-size:10px">' + wr + '% WR</span></span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:' + c + '">' + (e[1].pnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + e[1].pnl.toFixed(2) + ' <span style="color:var(--text-muted);font-weight:400">(' + e[1].count + ')</span></span></div>';
           }).join('') : '<div class="chart-placeholder">Sin datos</div>');
         }
 
-        // Discipline Score Average
+        // Monthly Performance table in st-by-plan card
         var planCard = document.getElementById('st-by-plan');
         if (planCard) {
-          var scored = trades.filter(function(t){ return t.discipline_score != null; });
-          var avgDisc = scored.length ? scored.reduce(function(s,t){ return s + t.discipline_score; }, 0) / scored.length : 0;
-          var avgColor = avgDisc >= 80 ? '#ffcd1b' : (avgDisc >= 50 ? 'var(--text-primary)' : '#ef4444');
-          var html = '<div class="stats-card-title">🎯 Disciplina & Psicología</div>';
-          html += '<div style="text-align:center;padding:20px 0;">';
-          html += '<div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Promedio de Disciplina</div>';
-          html += '<div style="font-size:48px;font-weight:900;color:' + avgColor + ';font-family:var(--mono);line-height:1;">' + (scored.length ? avgDisc.toFixed(1) + '%' : '—') + '</div>';
-          html += '<div style="font-size:11px;color:var(--text-muted);margin-top:8px;">' + scored.length + ' de ' + trades.length + ' trades evaluados</div>';
-          html += '</div>';
-
-          // Breakdown by emotion
-          var emotionMap = {};
-          trades.forEach(function(t){
+          var totalInitBal = accounts.reduce(function(sum,a){ return sum + a.initialBalance; }, 0) || 1;
+          var monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+          var yearMap = {};
+          var yearDiscMap = {};
+          
+          var allTradesForSt = getFilteredTrades();
+          allTradesForSt.forEach(function(t){
             if (t.asset === 'INACCIÓN') return;
-            if(t.emotion) {
-              if(!emotionMap[t.emotion]) emotionMap[t.emotion] = {count:0, pnl:0};
-              emotionMap[t.emotion].count++;
-              emotionMap[t.emotion].pnl += t.pnl;
-            }
-          });
-          var emotions = Object.entries(emotionMap).sort(function(a,b){ return b[1].count - a[1].count; });
-          if(emotions.length) {
-            var emoIcons = { 'Confianza':'😌', 'Miedo':'😰', 'Impaciencia':'😤', 'Frustración':'😡', 'Neutral':'🤔' };
-            html += '<div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;border-top:1px solid var(--border);padding-top:12px;">Emociones Registradas</div>';
-            html += emotions.map(function(e){
-              var pColor = e[1].pnl >= 0 ? 'var(--green)' : 'var(--red)';
-              return '<div class="stat-row"><span class="stat-row-label">' + (emoIcons[e[0]]||'') + ' ' + e[0] + ' (' + e[1].count + ')</span><span class="stat-row-val" style="color:' + pColor + ';font-weight:700">' + (e[1].pnl >= 0 ? '+' : '') + '$' + e[1].pnl.toFixed(2) + '</span></div>';
-            }).join('');
-          }
-          planCard.innerHTML = html;
-        }
-      }
+            var yr = t.date.slice(0,4), mo = parseInt(t.date.slice(5,7),10)-1;
+            if (!yearMap[yr]) yearMap[yr] = {};
+            if (!yearMap[yr][mo]) yearMap[yr][mo] = 0;
+            yearMap[yr][mo] += t.pnl;
 
-      // ── ACCOUNTS ──
-      function renderAccounts() {
-        const grid = document.getElementById('accounts-grid'); if (!grid) return;
-        grid.innerHTML = accounts.map(function (acct) {
-          var at = trades.filter(function (t) { return t.account === acct.name; }), as = computeStats(at);
-          var bal = acct.initialBalance + as.netPnl, pc2 = as.netPnl >= 0 ? 'var(--green)' : 'var(--red)';
-          var sbEl = document.getElementById('sb-bal-' + acct.name.replace(/\s/g, '_'));
-          if (sbEl) sbEl.textContent = '$' + bal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          var safeId = acct.id;
-          return '<div class="ac-card">' +
-            '<div class="ac-hdr">' +
-            '<div class="ac-ico ' + acct.iconClass + '">' + acct.icon + '</div>' +
-            '<div class="ac-ttl"><div class="ac-name">' + acct.name + '</div><div class="ac-sub">' + acct.type + ' · ' + acct.broker + '</div></div>' +
-            '<div class="ac-actions">' +
-            '<button class="ta e" title="Editar" data-id="' + safeId + '" onclick="openEditAccount(this.dataset.id)">✏️</button>' +
-            '<button class="ta d" title="Eliminar" data-id="' + safeId + '" onclick="openDeleteAccount(this.dataset.id)">🗑️</button>' +
-            '</div>' +
-            '</div>' +
-            '<div class="ac-stats">' +
-            '<div class="ac-stat"><div class="ac-stat-l">Saldo Inicial</div><div class="ac-stat-v">$' + acct.initialBalance.toLocaleString() + '</div></div>' +
-            '<div class="ac-stat"><div class="ac-stat-l">Balance Actual</div><div class="ac-stat-v" style="color:' + pc2 + '">$' + bal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</div></div>' +
-            '<div class="ac-stat"><div class="ac-stat-l">Net P&L</div><div class="ac-stat-v ' + (as.netPnl >= 0 ? 'green' : 'red') + '">' + (as.netPnl >= 0 ? '+' : '') + '$' + as.netPnl.toFixed(2) + '</div></div>' +
-            '<div class="ac-stat"><div class="ac-stat-l">Win Rate</div><div class="ac-stat-v ' + (as.winRate >= 50 ? 'green' : 'red') + '">' + as.winRate.toFixed(1) + '%</div></div>' +
-            '<div class="ac-stat full"><div class="ac-stat-l">Trades</div><div class="ac-stat-v">' + as.total + '</div></div>' +
-            '</div></div>';
-        }).join('');
-      }
-
-      // ── ANÁLISIS (Heatmap + Streak) ──
-      function renderAnalisis() {
-        updateAnMonthTitle();
-        const el = document.getElementById('analisis-content'); if (!el) return;
-        var trades;
-        if (anMode === 'global') {
-          trades = getFilteredTrades();
-        } else {
-          trades = getAnFilteredTrades();
-        }
-        // Update header summary
-        var aHPnl = document.getElementById('an-hdr-pnl');
-        var aHCnt = document.getElementById('an-hdr-count');
-        var tmpS = computeStats(trades);
-        if (aHPnl) { aHPnl.textContent = (tmpS.netPnl >= 0 ? '+' : '') + '$' + tmpS.netPnl.toFixed(2); aHPnl.style.color = tmpS.netPnl >= 0 ? 'var(--green)' : 'var(--red)'; }
-        if (aHCnt) aHCnt.textContent = tmpS.total;
-        if (!trades.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔥</div><div class="empty-title">Sin trades en este mes</div></div>'; return; }
-        const s = computeStats(trades);
-        const liveColor = s.liveType === 'w' ? 'g' : 'r';
-        const liveLabel = s.liveType === 'w' ? 'Racha ganadora activa' : 'Racha perdedora activa';
-
-        // Heatmap data: hour × day
-        const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-        const hmap = {}; // hmap[dow][hour] = {pnl, count}
-        trades.forEach(function (t) {
-          if (!t.entryTime || t.entryTime === '—') return;
-          var dow = new Date(t.date + 'T00:00:00').getDay();
-          var hr = parseInt(t.entryTime.split(':')[0], 10); if (isNaN(hr)) return;
-          if (!hmap[dow]) hmap[dow] = {};
-          if (!hmap[dow][hr]) hmap[dow][hr] = { pnl: 0, count: 0 };
-          hmap[dow][hr].pnl += t.pnl; hmap[dow][hr].count++;
-        });
-        // Find max abs for color scale
-        var maxAbs = 0;
-        Object.values(hmap).forEach(function (dayData) { Object.values(dayData).forEach(function (cell) { if (Math.abs(cell.pnl) > maxAbs) maxAbs = Math.abs(cell.pnl); }); });
-        if (maxAbs === 0) maxAbs = 1;
-
-        // Build heatmap HTML
-        var headerRow = '<div></div>';
-        for (var h = 0; h < 24; h++) headerRow += '<div class="hm-hour">' + h + 'h</div>';
-        var rows = days.map(function (dayName, dow) {
-          var row = '<div class="hm-label">' + dayName + '</div>';
-          for (var h = 0; h < 24; h++) {
-            var cell = hmap[dow] && hmap[dow][h];
-            if (cell && cell.count > 0) {
-              var intensity = Math.min(0.9, 0.2 + Math.abs(cell.pnl) / maxAbs * 0.7);
-              var bg = cell.pnl >= 0 ? 'rgba(255,205,27,' + intensity + ')' : 'rgba(239,68,68,' + intensity + ')';
-              var tip = (cell.pnl >= 0 ? '+' : '') + '$' + cell.pnl.toFixed(0) + ' (' + cell.count + ')';
-              row += '<div class="hm-cell" style="background:' + bg + '" title="' + dayName + ' ' + h + 'h: ' + tip + '"></div>';
-            } else {
-              row += '<div class="hm-cell" style="background:var(--bg-card-inner)"></div>';
-            }
-          }
-          return row;
-        }).join('');
-
-        // ── Monthly Performance Table data ──
-        var allTradesForAn = getFilteredTrades();
-        var totalInitBal = accounts.reduce(function(sum,a){ return sum + a.initialBalance; }, 0) || 1;
-        var monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-        var yearMap = {};
-        var yearDiscMap = {};
-        allTradesForAn.forEach(function(t){
-          var yr = t.date.slice(0,4), mo = parseInt(t.date.slice(5,7),10)-1;
-          if (!yearMap[yr]) yearMap[yr] = {};
-          if (!yearMap[yr][mo]) yearMap[yr][mo] = 0;
-          yearMap[yr][mo] += t.pnl;
-
-          if (t.asset !== 'INACCIÓN') {
             if (!yearDiscMap[yr]) yearDiscMap[yr] = {};
             if (!yearDiscMap[yr][mo]) yearDiscMap[yr][mo] = [];
             if (t.discipline_score != null && t.discipline_score !== "") {
               yearDiscMap[yr][mo].push(parseFloat(t.discipline_score));
             }
-          }
-        });
-        var years = Object.keys(yearMap).sort();
-        var monthPerfRows = years.map(function(yr){
-          var ytd = 0;
-          var cells = monthNames.map(function(mn, mi){
-            var pnl = yearMap[yr][mi];
-            if (pnl === undefined) return '<td style="color:var(--text-muted);text-align:center;">—</td>';
-            ytd += pnl;
-            var pct = (pnl / totalInitBal * 100);
-            var col = pct >= 0 ? 'var(--green)' : 'var(--red)';
-            
-            var scores = (yearDiscMap[yr] && yearDiscMap[yr][mi]) ? yearDiscMap[yr][mi] : [];
-            var avgDisc = scores.length ? Math.round(scores.reduce(function(a,b){return a+b;},0)/scores.length) : null;
-            var discHtml = avgDisc !== null ? '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;font-weight:500;">🎯 ' + avgDisc + '%</div>' : '';
+          });
+          
+          var years = Object.keys(yearMap).sort();
+          var monthPerfRows = years.map(function(yr){
+            var ytd = 0;
+            var cells = monthNames.map(function(mn, mi){
+              var pnl = yearMap[yr][mi];
+              if (pnl === undefined) return '<td style="color:var(--text-muted);text-align:center;">—</td>';
+              ytd += pnl;
+              var pct = (pnl / totalInitBal * 100);
+              var col = pct >= 0 ? 'var(--green)' : 'var(--red)';
+              
+              var scores = (yearDiscMap[yr] && yearDiscMap[yr][mi]) ? yearDiscMap[yr][mi] : [];
+              var avgDisc = scores.length ? Math.round(scores.reduce(function(a,b){return a+b;},0)/scores.length) : null;
+              var discHtml = avgDisc !== null ? '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;font-weight:500;">🎯 ' + avgDisc + '%</div>' : '';
 
-            return '<td style="text-align:center;padding:10px 6px;vertical-align:middle;">' +
-                     '<div style="font-family:var(--mono);font-size:13px;font-weight:700;color:'+col+'">' + (pct>=0?'+':'') + pct.toFixed(2) + '%</div>' +
-                     discHtml +
-                   '</td>';
+              return '<td style="text-align:center;padding:10px 6px;vertical-align:middle;">' +
+                       '<div style="font-family:var(--mono);font-size:13px;font-weight:700;color:'+col+'">' + (pct>=0?'+':'') + pct.toFixed(2) + '%</div>' +
+                       discHtml +
+                     '</td>';
+            }).join('');
+            var ytdPct = (ytd / totalInitBal * 100);
+            var ytdCol = ytdPct >= 0 ? 'var(--green)' : 'var(--red)';
+            var ytdCell = '<td style="text-align:center;font-family:var(--mono);font-size:13px;font-weight:800;color:'+ytdCol+';padding:10px 8px;border-left:1px solid var(--border);">' + (ytdPct>=0?'+':'') + ytdPct.toFixed(2) + '%</td>';
+            return '<tr><td style="font-weight:800;font-size:14px;color:var(--text-primary);padding:10px 12px;white-space:nowrap;">'+yr+'</td>' + cells + ytdCell + '</tr>';
           }).join('');
-          var ytdPct = (ytd / totalInitBal * 100);
-          var ytdCol = ytdPct >= 0 ? 'var(--green)' : 'var(--red)';
-          var ytdCell = '<td style="text-align:center;font-family:var(--mono);font-size:13px;font-weight:800;color:'+ytdCol+';padding:10px 8px;border-left:1px solid var(--border);">' + (ytdPct>=0?'+':'') + ytdPct.toFixed(2) + '%</td>';
-          return '<tr><td style="font-weight:800;font-size:14px;color:var(--text-primary);padding:10px 12px;white-space:nowrap;">'+yr+'</td>' + cells + ytdCell + '</tr>';
-        }).join('');
 
-        // ── Frequency data ──
-        var dowCount = [0,0,0,0,0,0,0]; // Sun–Sat
-        var weekCount = {}; // ISO week → count
-        var monCount = [0,0,0,0,0,0,0,0,0,0,0,0]; // Jan–Dec
-        allTradesForAn.forEach(function(t){
-          var d = new Date(t.date+'T00:00:00');
-          dowCount[d.getDay()]++;
-          monCount[d.getMonth()]++;
-          // ISO week
-          var tmp = new Date(d); tmp.setHours(0,0,0,0);
-          tmp.setDate(tmp.getDate()+4-(tmp.getDay()||7));
-          var yw = tmp.getFullYear()*100 + Math.ceil(((tmp-new Date(tmp.getFullYear(),0,1))/86400000+1)/7);
-          weekCount[yw] = (weekCount[yw]||0)+1;
-        });
-        var weekVals = Object.values(weekCount);
-        var totalTrades = allTradesForAn.length;
-        var avgDay  = totalTrades > 0 ? (totalTrades / Math.max(Object.keys(yearMap).length * 365, 1) * 7).toFixed(1) : '0';
-        var avgWeek = weekVals.length > 0 ? (weekVals.reduce(function(a,b){return a+b;},0)/weekVals.length).toFixed(1) : '0';
-        var avgMon  = totalTrades > 0 ? (totalTrades / Math.max(years.length * 12, 1)).toFixed(1) : '0';
-
-        el.innerHTML =
-          // Bloque 1: Cerebro GoldFX (Hallazgos)
-          '<div class="stats-card" style="background:#0a0a0a; border:1px solid var(--border-bronze); border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">' +
-            '<div style="margin-bottom:16px; font-size:15px; font-weight:700; color:var(--yellow); display:flex; align-items:center; gap:8px; text-transform:uppercase; letter-spacing:1px;">' +
-              '🧠 Cerebro GoldFX: Hallazgos' +
-            '</div>' +
-            '<div>' + generateInsights(trades) + '</div>' +
-          '</div>' +
-
-          // Bloque 2: Desglose de Disciplina
-          '<div class="stats-card" style="background:#0a0a0a; border:1px solid var(--border-bronze); border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">' +
-            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">' +
-              '<div style="font-size:15px; font-weight:700; color:var(--yellow); display:flex; align-items:center; gap:8px; text-transform:uppercase; letter-spacing:1px;">' +
-                '🎯 Análisis de Disciplina' +
-              '</div>' +
-              '<div class="toggle-group" id="disc-tf-group">' +
-                '<button class="tog-btn active" onclick="changeDiscTimeframe(\'all\', event)">Histórico</button>' +
-                '<button class="tog-btn" onclick="changeDiscTimeframe(\'30d\', event)">30 Días</button>' +
-                '<button class="tog-btn" onclick="changeDiscTimeframe(\'7d\', event)">7 Días</button>' +
-                '<button class="tog-btn" onclick="changeDiscTimeframe(\'last\', event)">Último Trade</button>' +
-              '</div>' +
-            '</div>' +
-            '<div id="discipline-breakdown-content"></div>' +
-          '</div>' +
-
-          // Streaks
-          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:18px;">' +
-          '<div class="stats-card" style="text-align:center;padding:18px;">' +
-          '<div class="streak-num ' + liveColor + '">' + s.liveStreak + '</div>' +
-          '<div class="streak-lbl" style="margin-top:6px">' + liveLabel + '</div>' +
-          '</div>' +
-          '<div class="stats-card" style="text-align:center;padding:18px;">' +
-          '<div class="streak-num g">' + s.bestWinStreak + '</div>' +
-          '<div class="streak-lbl" style="margin-top:6px">Mejor racha ganadora</div>' +
-          '</div>' +
-          '<div class="stats-card" style="text-align:center;padding:18px;">' +
-          '<div class="streak-num r">' + s.worstLossStreak + '</div>' +
-          '<div class="streak-lbl" style="margin-top:6px">Peor racha perdedora</div>' +
-          '</div>' +
-          '<div class="stats-card" style="text-align:center;padding:18px;">' +
-          '<div class="streak-num y">' + s.total + '</div>' +
-          '<div class="streak-lbl" style="margin-top:6px">Total trades</div>' +
-          '</div>' +
-          '</div>' +
-          // Heatmap
-          '<div class="stats-card" style="margin-bottom:18px;">' +
-          '<div class="stats-card-title">Heatmap: P&L por Hora y Día</div>' +
-          '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">Basado en hora de entrada · Verde = ganancia · Rojo = pérdida · Más intenso = mayor monto</div>' +
-          '<div class="heatmap-wrap"><div class="heatmap-grid">' + headerRow + rows + '</div></div>' +
-          '</div>' +
-          // Monthly Performance
-          '<div class="stats-card" style="margin-bottom:18px;overflow-x:auto;">' +
-          '<div class="stats-card-title" style="margin-bottom:14px;">Rendimiento mensual</div>' +
-          '<table style="width:100%;border-collapse:collapse;min-width:700px;">' +
-          '<thead><tr>' +
-          '<th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border);">Año</th>' +
-          monthNames.map(function(m){ return '<th style="text-align:center;padding:8px 6px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border);">'+m+'</th>'; }).join('') +
-          '<th style="text-align:center;padding:8px 8px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--green);text-transform:uppercase;border-bottom:1px solid var(--border);border-left:1px solid var(--border);">YTD</th>' +
-          '</tr></thead>' +
-          '<tbody>' + (monthPerfRows || '<tr><td colspan="14" style="text-align:center;padding:20px;color:var(--text-muted);">Sin datos</td></tr>') + '</tbody>' +
-          '</table></div>' +
-          // Trade Frequency
-          '<div style="margin-bottom:8px;">' +
-          '<div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:14px;">Frecuencia de trades</div>' +
-          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">' +
-          // By day of week
-          '<div class="stats-card">' +
-          '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por día de semana</div>' +
-          '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgDay + ' trades/día</div>' +
-          '<canvas id="freq-dow-canvas" height="130" style="width:100%;display:block;"></canvas>' +
-          '</div>' +
-          // By week
-          '<div class="stats-card">' +
-          '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por semana</div>' +
-          '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgWeek + ' trades/semana</div>' +
-          '<canvas id="freq-week-canvas" height="130" style="width:100%;display:block;"></canvas>' +
-          '</div>' +
-          // By month
-          '<div class="stats-card">' +
-          '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por mes</div>' +
-          '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgMon + ' trades/mes</div>' +
-          '<canvas id="freq-mon-canvas" height="130" style="width:100%;display:block;"></canvas>' +
-          '</div>' +
-          '</div></div>';
-
-        // Draw frequency bar charts
-        requestAnimationFrame(function(){
-          var dowLabels = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-          var dowData   = [dowCount[1],dowCount[2],dowCount[3],dowCount[4],dowCount[5],dowCount[6],dowCount[0]];
-          drawFreqBars('freq-dow-canvas', dowLabels, dowData);
-
-          var wkSorted = Object.keys(weekCount).sort();
-          var wkLabels = wkSorted.map(function(k){ return String(parseInt(String(k).slice(-2),10)); });
-          var wkData   = wkSorted.map(function(k){ return weekCount[k]; });
-          drawFreqBars('freq-week-canvas', wkLabels, wkData);
-
-          drawFreqBars('freq-mon-canvas', ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'], monCount);
-        });
+          var html = '<div class="stats-card-title" style="margin-bottom:14px;">Evolución Mensual (Rendimiento)</div>' +
+            '<div style="overflow-x:auto;">' +
+            '<table style="width:100%;border-collapse:collapse;min-width:700px;">' +
+            '<thead><tr>' +
+            '<th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border);">Año</th>' +
+            monthNames.map(function(m){ return '<th style="text-align:center;padding:8px 6px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border);">'+m+'</th>'; }).join('') +
+            '<th style="text-align:center;padding:8px 8px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--green);text-transform:uppercase;border-bottom:1px solid var(--border);border-left:1px solid var(--border);">YTD</th>' +
+            '</tr></thead>' +
+            '<tbody>' + (monthPerfRows || '<tr><td colspan="14" style="text-align:center;padding:20px;color:var(--text-muted);">Sin datos</td></tr>') + '</tbody>' +
+            '</table></div>';
+          
+          planCard.innerHTML = html;
+        }
       }
 
-      function drawFreqBars(canvasId, labels, data) {
+function renderAccounts() {
+        const grid = document.getElementById('accounts-grid'); if (!grid) return;
+        try {
+          grid.innerHTML = accounts.map(function (acct) {
+            try {
+              var at = trades.filter(function (t) { return t.account === acct.name; }), as = computeStats(at);
+              var bal = (parseFloat(acct.initialBalance) || 0) + (as.netPnl || 0);
+              var pc2 = (as.netPnl || 0) >= 0 ? 'var(--green)' : 'var(--red)';
+              
+              var nameForId = (acct.name || '').replace(/\s/g, '_');
+              var sbEl = document.getElementById('sb-bal-' + nameForId);
+              if (sbEl) {
+                sbEl.textContent = '
+</body>
+
+</html> + bal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              }
+              
+              var safeId = acct.id || '';
+              var initBalVal = parseFloat(acct.initialBalance) || 0;
+              var winRateVal = parseFloat(as.winRate) || 0;
+              var netPnlVal = parseFloat(as.netPnl) || 0;
+              
+              return '<div class="ac-card">' +
+                '<div class="ac-hdr">' +
+                '<div class="ac-ico ' + (acct.iconClass || '') + '">' + (acct.icon || '💼') + '</div>' +
+                '<div class="ac-ttl"><div class="ac-name">' + (acct.name || 'Sin nombre') + '</div><div class="ac-sub">' + (acct.type || '') + ' · ' + (acct.broker || '') + '</div></div>' +
+                '<div class="ac-actions">' +
+                '<button class="ta e" title="Editar" data-id="' + safeId + '" onclick="openEditAccount(this.dataset.id)">✏️</button>' +
+                '<button class="ta d" title="Eliminar" data-id="' + safeId + '" onclick="openDeleteAccount(this.dataset.id)">🗑️</button>' +
+                '</div>' +
+                '</div>' +
+                '<div class="ac-stats">' +
+                '<div class="ac-stat"><div class="ac-stat-l">Saldo Inicial</div><div class="ac-stat-v">
+</body>
+
+</html> + initBalVal.toLocaleString() + '</div></div>' +
+                '<div class="ac-stat"><div class="ac-stat-l">Balance Actual</div><div class="ac-stat-v" style="color:' + pc2 + '">
+</body>
+
+</html> + bal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</div></div>' +
+                '<div class="ac-stat"><div class="ac-stat-l">Net P&L</div><div class="ac-stat-v ' + (netPnlVal >= 0 ? 'green' : 'red') + '">' + (netPnlVal >= 0 ? '+' : '') + '
+</body>
+
+</html> + netPnlVal.toFixed(2) + '</div></div>' +
+                '<div class="ac-stat"><div class="ac-stat-l">Win Rate</div><div class="ac-stat-v ' + (winRateVal >= 50 ? 'green' : 'red') + '">' + winRateVal.toFixed(1) + '%</div></div>' +
+                '<div class="ac-stat full"><div class="ac-stat-l">Trades</div><div class="ac-stat-v">' + (as.total || 0) + '</div></div>' +
+                '</div></div>';
+            } catch (innerErr) {
+              console.error("Error rendering card for account:", acct, innerErr);
+              return '<div class="ac-card"><div style="padding:15px;color:var(--red);font-size:12px;">Error al renderizar: ' + innerErr.message + '</div></div>';
+            }
+          }).join('');
+        } catch (err) {
+          console.error("Error in renderAccounts:", err);
+          grid.innerHTML = '<div style="color:var(--red);padding:20px;font-weight:600;">Error al cargar las cuentas: ' + err.message + '</div>';
+        }
+      }
+
+      // ── ANÁLISIS (Heatmap + Streak) ──
+                  function drawFreqBars(canvasId, labels, data) {
         var canvas = document.getElementById(canvasId); if (!canvas) return;
         var dpr = window.devicePixelRatio || 1;
         var W = canvas.offsetWidth, H = 130;
@@ -6843,7 +6949,182 @@
         });
       }
 
-      function _renderAnalisis_orig() {
+function renderAnalisis() {
+        updateAnMonthTitle();
+        const el = document.getElementById('analisis-content'); if (!el) return;
+        var trades;
+        if (anMode === 'global') {
+          trades = getFilteredTrades();
+        } else {
+          trades = getAnFilteredTrades();
+        }
+        
+        // Update header summary
+        var aHPnl = document.getElementById('an-hdr-pnl');
+        var aHCnt = document.getElementById('an-hdr-count');
+        var tmpS = computeStats(trades);
+        if (aHPnl) { aHPnl.textContent = (tmpS.netPnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + tmpS.netPnl.toFixed(2); aHPnl.style.color = tmpS.netPnl >= 0 ? 'var(--green)' : 'var(--red)'; }
+        if (aHCnt) aHCnt.textContent = tmpS.total;
+        
+        var operativeTrades = trades.filter(function (t) { return t.asset !== 'INACCIÓN'; });
+        if (!operativeTrades.length) { 
+          el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔥</div><div class="empty-title">Sin trades en este mes</div></div>'; 
+          return; 
+        }
+        
+        const s = computeStats(trades);
+        const liveColor = s.liveType === 'w' ? 'g' : 'r';
+        const liveLabel = s.liveType === 'w' ? 'Racha ganadora activa' : 'Racha perdedora activa';
+
+        // Heatmap data: hour × day
+        const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        const hmap = {}; // hmap[dow][hour] = {pnl, count}
+        trades.forEach(function (t) {
+          if (t.asset === 'INACCIÓN') return;
+          if (!t.entryTime || t.entryTime === '—') return;
+          var dow = new Date(t.date + 'T00:00:00').getDay();
+          var hr = parseInt(t.entryTime.split(':')[0], 10); if (isNaN(hr)) return;
+          if (!hmap[dow]) hmap[dow] = {};
+          if (!hmap[dow][hr]) hmap[dow][hr] = { pnl: 0, count: 0 };
+          hmap[dow][hr].pnl += t.pnl; hmap[dow][hr].count++;
+        });
+        
+        var maxAbs = 0;
+        Object.values(hmap).forEach(function (dayData) { Object.values(dayData).forEach(function (cell) { if (Math.abs(cell.pnl) > maxAbs) maxAbs = Math.abs(cell.pnl); }); });
+        if (maxAbs === 0) maxAbs = 1;
+
+        // Build heatmap HTML
+        var headerRow = '<div></div>';
+        for (var h = 0; h < 24; h++) headerRow += '<div class="hm-hour">' + h + 'h</div>';
+        var rows = days.map(function (dayName, dow) {
+          var row = '<div class="hm-label">' + dayName + '</div>';
+          for (var h = 0; h < 24; h++) {
+            var cell = hmap[dow] && hmap[dow][h];
+            if (cell && cell.count > 0) {
+              var intensity = Math.min(0.9, 0.2 + Math.abs(cell.pnl) / maxAbs * 0.7);
+              var bg = cell.pnl >= 0 ? 'rgba(255,205,27,' + intensity + ')' : 'rgba(239,68,68,' + intensity + ')';
+              var tip = (cell.pnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + cell.pnl.toFixed(0) + ' (' + cell.count + ')';
+              row += '<div class="hm-cell" style="background:' + bg + '" title="' + dayName + ' ' + h + 'h: ' + tip + '"></div>';
+            } else {
+              row += '<div class="hm-cell" style="background:var(--bg-card-inner)"></div>';
+            }
+          }
+          return row;
+        }).join('');
+
+        // Trade frequency metrics
+        var allTradesForAn = getFilteredTrades();
+        var dowCount = [0,0,0,0,0,0,0]; // Sun–Sat
+        var weekCount = {}; // ISO week → count
+        var monCount = [0,0,0,0,0,0,0,0,0,0,0,0]; // Jan–Dec
+        var yearMap = {};
+        var yearsSet = {};
+        allTradesForAn.forEach(function(t){
+          if (t.asset === 'INACCIÓN') return;
+          var d = new Date(t.date+'T00:00:00');
+          dowCount[d.getDay()]++;
+          monCount[d.getMonth()]++;
+          
+          var yr = t.date.slice(0,4);
+          yearsSet[yr] = true;
+          if (!yearMap[yr]) yearMap[yr] = {};
+          yearMap[yr][d.getMonth()] = true;
+          
+          // ISO week
+          var tmp = new Date(d); tmp.setHours(0,0,0,0);
+          tmp.setDate(tmp.getDate()+4-(tmp.getDay()||7));
+          var yw = tmp.getFullYear()*100 + Math.ceil(((tmp-new Date(tmp.getFullYear(),0,1))/86400000+1)/7);
+          weekCount[yw] = (weekCount[yw]||0)+1;
+        });
+        
+        var weekVals = Object.values(weekCount);
+        var totalTrades = allTradesForAn.filter(t => t.asset !== 'INACCIÓN').length;
+        var numYears = Math.max(Object.keys(yearsSet).length, 1);
+        var avgDay  = totalTrades > 0 ? (totalTrades / (numYears * 365) * 7).toFixed(1) : '0';
+        var avgWeek = weekVals.length > 0 ? (weekVals.reduce(function(a,b){return a+b;},0)/weekVals.length).toFixed(1) : '0';
+        var avgMon  = totalTrades > 0 ? (totalTrades / (numYears * 12)).toFixed(1) : '0';
+
+        el.innerHTML =
+          // Bloque 1: Cerebro GoldFX (Hallazgos)
+          generateInsights(trades) +
+          
+          // Bloque 2: Desglose de Disciplina
+          getDisciplineBreakdown(trades) +
+          
+          // Streaks (Rachas)
+          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:18px;">' +
+            '<div class="stats-card" style="text-align:center;padding:18px;">' +
+              '<div class="streak-num ' + liveColor + '">' + s.liveStreak + '</div>' +
+              '<div class="streak-lbl" style="margin-top:6px">' + liveLabel + '</div>' +
+            '</div>' +
+            '<div class="stats-card" style="text-align:center;padding:18px;">' +
+              '<div class="streak-num g">' + s.bestWinStreak + '</div>' +
+              '<div class="streak-lbl" style="margin-top:6px">Mejor racha ganadora</div>' +
+            '</div>' +
+            '<div class="stats-card" style="text-align:center;padding:18px;">' +
+              '<div class="streak-num r">' + s.worstLossStreak + '</div>' +
+              '<div class="streak-lbl" style="margin-top:6px">Peor racha perdedora</div>' +
+            '</div>' +
+            '<div class="stats-card" style="text-align:center;padding:18px;">' +
+              '<div class="streak-num y">' + s.total + '</div>' +
+              '<div class="streak-lbl" style="margin-top:6px">Total trades</div>' +
+            '</div>' +
+          '</div>' +
+          
+          // Heatmap
+          '<div class="stats-card" style="margin-bottom:18px;">' +
+            '<div class="stats-card-title">Heatmap: P&L por Hora y Día</div>' +
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">Basado en hora de entrada · Verde = ganancia · Rojo = pérdida · Más intenso = mayor monto</div>' +
+            '<div class="heatmap-wrap"><div class="heatmap-grid">' + headerRow + rows + '</div></div>' +
+          '</div>' +
+          
+          // Trade Frequency
+          '<div style="margin-bottom:8px;">' +
+            '<div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:14px;">Frecuencia de trades</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">' +
+              // By day of week
+              '<div class="stats-card">' +
+                '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por día de semana</div>' +
+                '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgDay + ' trades/día</div>' +
+                '<canvas id="freq-dow-canvas" height="130" style="width:100%;display:block;"></canvas>' +
+              '</div>' +
+              // By week
+              '<div class="stats-card">' +
+                '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por semana</div>' +
+                '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgWeek + ' trades/semana</div>' +
+                '<canvas id="freq-week-canvas" height="130" style="width:100%;display:block;"></canvas>' +
+              '</div>' +
+              // By month
+              '<div class="stats-card">' +
+                '<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Por mes</div>' +
+                '<div style="font-size:12px;color:var(--green);margin-bottom:14px;">Avg ' + avgMon + ' trades/mes</div>' +
+                '<canvas id="freq-mon-canvas" height="130" style="width:100%;display:block;"></canvas>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+
+        // Draw frequency bar charts
+        requestAnimationFrame(function(){
+          var dowLabels = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+          var dowData   = [dowCount[1],dowCount[2],dowCount[3],dowCount[4],dowCount[5],dowCount[6],dowCount[0]];
+          drawFreqBars('freq-dow-canvas', dowLabels, dowData);
+
+          var wkSorted = Object.keys(weekCount).sort();
+          var wkLabels = wkSorted.map(function(k){ return String(parseInt(String(k).slice(-2),10)); });
+          var wkData   = wkSorted.map(function(k){ return weekCount[k]; });
+          drawFreqBars('freq-week-canvas', wkLabels, wkData);
+
+          drawFreqBars('freq-mon-canvas', ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'], monCount);
+        });
+      }
+
+function _renderAnalisis_orig() {
       }
 
       // ── COMPARAR MESES ──
@@ -6880,17 +7161,41 @@
           '<div style="font-size:16px;font-weight:700;color:var(--text-primary);text-align:right">' + mB + '</div>' +
           '</div>' +
           '<div class="cmp-grid">' +
-          '<div class="cmp-card"><div class="cmp-title" style="color:' + (sA.netPnl >= 0 ? 'var(--green)' : 'var(--red)') + '">' + mA + ' — ' + (sA.netPnl >= 0 ? '+' : '') + '$' + sA.netPnl.toFixed(2) + '</div>' +
+          '<div class="cmp-card"><div class="cmp-title" style="color:' + (sA.netPnl >= 0 ? 'var(--green)' : 'var(--red)') + '">' + mA + ' — ' + (sA.netPnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + sA.netPnl.toFixed(2) + '</div>' +
           metricRow('Trades', sA.total, sB.total, 'higher') +
           metricRow('Win Rate', sA.winRate.toFixed(1) + '%', sB.winRate.toFixed(1) + '%', 'higher') +
-          metricRow('Net P&L', '$' + sA.netPnl.toFixed(2), '$' + sB.netPnl.toFixed(2), 'higher') +
+          metricRow('Net P&L', '
+</body>
+
+</html> + sA.netPnl.toFixed(2), '
+</body>
+
+</html> + sB.netPnl.toFixed(2), 'higher') +
           metricRow('Profit Factor', isFinite(sA.profitFactor) ? sA.profitFactor.toFixed(2) : '∞', isFinite(sB.profitFactor) ? sB.profitFactor.toFixed(2) : '∞', 'higher') +
-          metricRow('Avg Win', '$' + sA.avgWin.toFixed(2), '$' + sB.avgWin.toFixed(2), 'higher') +
-          metricRow('Avg Loss', '$' + sA.avgLoss.toFixed(2), '$' + sB.avgLoss.toFixed(2), 'lower') +
+          metricRow('Avg Win', '
+</body>
+
+</html> + sA.avgWin.toFixed(2), '
+</body>
+
+</html> + sB.avgWin.toFixed(2), 'higher') +
+          metricRow('Avg Loss', '
+</body>
+
+</html> + sA.avgLoss.toFixed(2), '
+</body>
+
+</html> + sB.avgLoss.toFixed(2), 'lower') +
           metricRow('Max DD', sA.maxDD.toFixed(2) + '%', sB.maxDD.toFixed(2) + '%', 'lower') +
           metricRow('Best Win Streak', sA.bestWinStreak, sB.bestWinStreak, 'higher') +
           '</div>' +
-          '<div class="cmp-card"><div class="cmp-title" style="color:' + (sB.netPnl >= 0 ? 'var(--green)' : 'var(--red)') + '">' + mB + ' — ' + (sB.netPnl >= 0 ? '+' : '') + '$' + sB.netPnl.toFixed(2) + '</div>' +
+          '<div class="cmp-card"><div class="cmp-title" style="color:' + (sB.netPnl >= 0 ? 'var(--green)' : 'var(--red)') + '">' + mB + ' — ' + (sB.netPnl >= 0 ? '+' : '') + '
+</body>
+
+</html> + sB.netPnl.toFixed(2) + '</div>' +
           '<div style="display:flex;flex-direction:column;gap:0;">' +
           '<div class="stat-row"><span class="stat-row-label" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px">Mejor activo ' + mA + '</span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--green)">' + getBestAsset(tA) + '</span></div>' +
           '<div class="stat-row"><span class="stat-row-label" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px">Mejor activo ' + mB + '</span><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--green)">' + getBestAsset(tB) + '</span></div>' +
@@ -6899,11 +7204,713 @@
           '</div></div>' +
           '</div>';
       }
-      function getBestAsset(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (t.asset === 'INACCIÓN') return; if (!m[t.asset]) m[t.asset] = 0; m[t.asset] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] + ' ($' + best[1].toFixed(0) + ')' : '—'; }
-      function getBestSession(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (t.asset === 'INACCIÓN') return; if (!m[t.session]) m[t.session] = 0; m[t.session] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] : '—'; }
+      function getBestAsset(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (t.asset === 'INACCIÓN') return; if (!m[t.asset]) m[t.asset] = 0; m[t.asset] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] + ' (
+</body>
+
+</html> + best[1].toFixed(0) + ')' : '—'; }
+      // ── TORNEO DE TRADING (STARKLAB LUXURY GAMING EDITION) ──
+      let activeTournament = null;
+      let tournamentParticipants = [];
+      let activeTournamentTimeframe = 'all'; // 'all' | 'week' | 'month'
+
+      const COUNTRIES_MAP = {
+        'CO': { name: 'Colombia', flag: '🇨🇴', flagImg: 'https://flagcdn.com/w160/co.png' },
+        'MX': { name: 'México', flag: '🇲🇽', flagImg: 'https://flagcdn.com/w160/mx.png' },
+        'AR': { name: 'Argentina', flag: '🇦🇷', flagImg: 'https://flagcdn.com/w160/ar.png' },
+        'CL': { name: 'Chile', flag: '🇨🇱', flagImg: 'https://flagcdn.com/w160/cl.png' },
+        'PE': { name: 'Perú', flag: '🇵🇪', flagImg: 'https://flagcdn.com/w160/pe.png' },
+        'ES': { name: 'España', flag: '🇪🇸', flagImg: 'https://flagcdn.com/w160/es.png' },
+        'US': { name: 'Estados Unidos', flag: '🇺🇸', flagImg: 'https://flagcdn.com/w160/us.png' },
+        'EC': { name: 'Ecuador', flag: '🇪🇨', flagImg: 'https://flagcdn.com/w160/ec.png' },
+        'VE': { name: 'Venezuela', flag: '🇻🇪', flagImg: 'https://flagcdn.com/w160/ve.png' },
+        'BO': { name: 'Bolivia', flag: '🇧🇴', flagImg: 'https://flagcdn.com/w160/bo.png' },
+        'UY': { name: 'Uruguay', flag: '🇺🇾', flagImg: 'https://flagcdn.com/w160/uy.png' },
+        'PY': { name: 'Paraguay', flag: '🇵🇾', flagImg: 'https://flagcdn.com/w160/py.png' },
+        'PA': { name: 'Panamá', flag: '🇵🇦', flagImg: 'https://flagcdn.com/w160/pa.png' },
+        'CR': { name: 'Costa Rica', flag: '🇨🇷', flagImg: 'https://flagcdn.com/w160/cr.png' },
+        'DO': { name: 'Rep. Dominicana', flag: '🇩🇴', flagImg: 'https://flagcdn.com/w160/do.png' },
+        'GT': { name: 'Guatemala', flag: '🇬🇹', flagImg: 'https://flagcdn.com/w160/gt.png' },
+        'SV': { name: 'El Salvador', flag: '🇸🇻', flagImg: 'https://flagcdn.com/w160/sv.png' },
+        'HN': { name: 'Honduras', flag: '🇭🇳', flagImg: 'https://flagcdn.com/w160/hn.png' },
+        'BR': { name: 'Brasil', flag: '🇧🇷', flagImg: 'https://flagcdn.com/w160/br.png' }
+      };
+
+      const CRESTS = {
+        platino: (size = 48) => `
+          <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <polygon points="32,4 56,18 56,46 32,60 8,46 8,18" fill="#0c1e2e" stroke="#22d3ee" stroke-width="2.2"/>
+            <polygon points="32,10 50,21 50,43 32,54 14,43 14,21" fill="#0e3d54" stroke="#67e8f9" stroke-width="1.5"/>
+            <polygon points="32,18 44,25 44,39 32,46 20,39 20,25" fill="#0891b2" stroke="#a5f3fc" stroke-width="1.5"/>
+            <path d="M32 24L38 34H34V42H30V34H26L32 24Z" fill="#ffffff"/>
+            <circle cx="32" cy="14" r="2.5" fill="#a5f3fc"/>
+            <path d="M18 48L32 54L46 48" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+          </svg>`,
+        oro: (size = 48) => `
+          <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <path d="M12 24C12 24 20 18 32 18C44 18 52 24 52 24C52 40 42 52 32 58C22 52 12 40 12 24Z" fill="#2d1e05" stroke="#eab308" stroke-width="2.2"/>
+            <path d="M8 30C16 28 24 30 28 38C22 40 16 38 8 30Z" fill="#ca8a04"/>
+            <path d="M56 30C48 28 40 30 36 38C42 40 48 38 56 30Z" fill="#ca8a04"/>
+            <polygon points="32,22 44,30 40,46 32,52 24,46 20,30" fill="#eab308" stroke="#fef08a" stroke-width="1.5"/>
+            <polygon points="32,28 38,34 35,43 32,46 29,43 26,34" fill="#b45309" stroke="#fde047" stroke-width="1"/>
+            <polygon points="32,31 35,36 32,40 29,36" fill="#fef08a"/>
+          </svg>`,
+        plata: (size = 48) => `
+          <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <path d="M14 22C14 22 22 18 32 18C42 18 50 22 50 22C50 38 42 50 32 56C22 50 14 38 14 22Z" fill="#1e293b" stroke="#94a3b8" stroke-width="2.2"/>
+            <path d="M10 28C16 26 22 28 26 34C20 36 14 34 10 28Z" fill="#64748b"/>
+            <path d="M54 28C48 26 42 28 38 34C44 36 50 34 54 28Z" fill="#64748b"/>
+            <polygon points="32,24 42,32 38,46 32,50 26,46 22,32" fill="#475569" stroke="#cbd5e1" stroke-width="1.5"/>
+            <path d="M32 29L34 35H40L35 39L37 45L32 41L27 45L29 39L24 35H30L32 29Z" fill="#f8fafc"/>
+          </svg>`,
+        bronce: (size = 48) => `
+          <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <path d="M14 22C14 22 22 18 32 18C42 18 50 22 50 22C50 38 42 50 32 56C22 50 14 38 14 22Z" fill="#291508" stroke="#c2410c" stroke-width="2.2"/>
+            <polygon points="32,24 42,32 38,46 32,50 26,46 22,32" fill="#7c2d12" stroke="#ea580c" stroke-width="1.5"/>
+            <polygon points="32,30 36,36 32,42 28,36" fill="#fdba74"/>
+          </svg>`
+      };
+
+      const TACTICAL_BADGE_ICONS = [
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/><path d="M12 6L14 10H18L15 13L16 17L12 14L8 17L9 13L6 10H10L12 6Z" fill="#60a5fa"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#78350f" stroke="#f59e0b" stroke-width="1.5"/><polygon points="12,7 15,11 13,17 11,17 9,11" fill="#fbbf24"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#134e4a" stroke="#14b8a6" stroke-width="1.5"/><circle cx="12" cy="12" r="4" fill="#2dd4bf"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#312e81" stroke="#6366f1" stroke-width="1.5"/><path d="M13 7L8 14H12L11 18L16 11H12L13 7Z" fill="#a5b4fc"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#701a75" stroke="#d946ef" stroke-width="1.5"/><polygon points="12,8 16,12 12,16 8,12" fill="#f0abfc"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#1f2937" stroke="#9ca3af" stroke-width="1.5"/><path d="M8 12L11 15L16 9" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+      ];
+
+      function getParticipantCountryInfo(p) {
+        let code = (p && p.country) || 'CO';
+        code = String(code).toUpperCase();
+        if (COUNTRIES_MAP[code]) return COUNTRIES_MAP[code];
+        return { name: 'Internacional', flag: '🌐', flagImg: 'https://flagcdn.com/w160/un.png' };
+      }
+
+      function getParticipantAvatarHtml(p, size) {
+        if (!size) size = 36;
+        const user = sb.getUser();
+        let avatarUrl = p ? p.avatar_url : null;
+        if (!avatarUrl && user && p && p.user_id === user.id) {
+          avatarUrl = user.user_metadata && user.user_metadata.avatar_url;
+        }
+        if (!avatarUrl) {
+          const avImg = document.querySelector('.user-av img');
+          if (avImg && avImg.src) {
+            const myName = ((user && user.user_metadata && user.user_metadata.full_name) || (user && user.email) || '').toLowerCase();
+            const pName = (p && p.user_name ? p.user_name : '').toLowerCase();
+            if (pName && myName && (pName === myName || (pName.includes('sara') && myName.includes('sara')))) {
+              avatarUrl = avImg.src;
+            }
+          }
+        }
+        if (avatarUrl) {
+          return `<img src="${avatarUrl}" alt="${p && p.user_name ? p.user_name : 'User'}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; display:block;" />`;
+        }
+        return null;
+      }
+
+      function renderBadgesGrid(p, maxCount) {
+        if (!maxCount) maxCount = 6;
+        return `
+          <div class="stark-badges-grid">
+            ${TACTICAL_BADGE_ICONS.slice(0, maxCount).map(ico => `<div class="stark-badge-chip">${ico}</div>`).join('')}
+          </div>
+        `;
+      }
+
+      function renderStarkPedestal(p, rank) {
+        const isRank1 = rank === 1;
+        const isRank2 = rank === 2;
+        const rankClass = isRank1 ? 'rank-1' : (isRank2 ? 'rank-2' : 'rank-3');
+        const numClass = isRank1 ? 'num-1' : (isRank2 ? 'num-2' : 'num-3');
+        const circleClass = isRank1 ? 'circle-1' : (isRank2 ? 'circle-2' : 'circle-3');
+        const baseClass = isRank1 ? 'base-1' : (isRank2 ? 'base-2' : 'base-3');
+        const tierName = isRank1 ? 'Platino' : 'Oro';
+        const tierClass = isRank1 ? 'platino' : 'oro';
+        const tierIco = isRank1 ? '🛡️' : '👑';
+
+        if (!p) {
+          const fallbackCrest = isRank1 ? CRESTS.platino(54) : CRESTS.oro(46);
+          return `
+            <div class="stark-pedestal-card ${rankClass}">
+              <div class="pedestal-content">
+                ${isRank1 ? '<div class="crown-glow">👑</div>' : ''}
+                <div class="pedestal-avatar-wrap">
+                  <div class="pedestal-avatar-aura aura-${rank}"></div>
+                  <div class="pedestal-avatar-circle ${circleClass}">
+                    ${fallbackCrest}
+                  </div>
+                  <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
+                </div>
+                <div style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#fff; margin-top:12px;">Vacante</div>
+                <div class="stark-tier-pill ${tierClass}">${tierIco} ${tierName}</div>
+                ${renderBadgesGrid(null, 6)}
+                <div class="stark-pnl-pill">0.0k XP</div>
+              </div>
+              <div class="pedestal-flag-base ${baseClass}">
+                <div class="pedestal-flag-overlay"></div>
+                <div class="pedestal-rank-num ${numClass}">${rank}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        const country = getParticipantCountryInfo(p);
+        const avatarSize = isRank1 ? 64 : 56;
+        const customAvatar = getParticipantAvatarHtml(p, avatarSize);
+        const crestSvg = isRank1 ? CRESTS.platino(54) : CRESTS.oro(46);
+        const avatarOrCrest = customAvatar || crestSvg;
+
+        let retVal = 0;
+        if (activeTournamentTimeframe === 'all') retVal = parseFloat(p.return_pct || 0);
+        else if (activeTournamentTimeframe === 'week') retVal = parseFloat(p.pnl_weekly_pct || 0);
+        else if (activeTournamentTimeframe === 'month') retVal = parseFloat(p.pnl_monthly_pct || 0);
+
+        const xpFormatted = (Math.abs(retVal) > 0 ? (retVal >= 0 ? '+' : '') + retVal.toFixed(1) : '0.0') + 'k XP';
+
+        return `
+          <div class="stark-pedestal-card ${rankClass}">
+            <div class="pedestal-content">
+              ${isRank1 ? '<div class="crown-glow">👑</div>' : ''}
+              
+              <div class="pedestal-avatar-wrap">
+                <div class="pedestal-avatar-aura aura-${rank}"></div>
+                <div class="pedestal-avatar-circle ${circleClass}">
+                  ${avatarOrCrest}
+                </div>
+                <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
+              </div>
+
+              <div style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#ffffff; margin-top:12px; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${p.user_name || 'Trader'}
+              </div>
+
+              <div class="stark-tier-pill ${tierClass}">
+                ${tierIco} ${tierName}
+              </div>
+
+              ${renderBadgesGrid(p, 6)}
+
+              ${isRank1 || rank === 3 ? '<div class="stark-sprout-icon">🌱</div>' : ''}
+
+              <div class="stark-pnl-pill">
+                ${xpFormatted}
+              </div>
+            </div>
+
+            <!-- BASE DEL PEDESTAL CON BANDERA VERTICAL Y NÚMERO DE PUESTO -->
+            <div class="pedestal-flag-base ${baseClass}" title="${country.name}">
+              <img src="${country.flagImg}" alt="${country.name}" class="pedestal-flag-bg" />
+              <div class="pedestal-flag-overlay"></div>
+              <div class="pedestal-rank-num ${numClass}">${rank}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderStarkRankCard(p, rank, isCurrentUser) {
+        const country = getParticipantCountryInfo(p);
+        let retVal = 0;
+        if (activeTournamentTimeframe === 'all') retVal = parseFloat(p.return_pct || 0);
+        else if (activeTournamentTimeframe === 'week') retVal = parseFloat(p.pnl_weekly_pct || 0);
+        else if (activeTournamentTimeframe === 'month') retVal = parseFloat(p.pnl_monthly_pct || 0);
+
+        // Paleta de colores neón por rango según la captura de StarkLab
+        const COLOR_PALETTE = [
+          '#ef4444', // 4 (rojo)
+          '#f97316', // 5 (naranja)
+          '#3b82f6', // 6 (azul)
+          '#2563eb', // 7 (azul profundo)
+          '#38bdf8', // 8 (cyan)
+          '#eab308', // 9 (amarillo/oro)
+          '#38bdf8', // 10 (celeste)
+          '#ef4444'  // 11+
+        ];
+        const borderCol = COLOR_PALETTE[(rank - 4) % COLOR_PALETTE.length] || '#3b82f6';
+        const isOro = rank <= 5;
+        const tierName = isOro ? 'Oro' : 'Plata';
+        const tierIco = isOro ? '👑' : '🛡️';
+        const tierCol = isOro ? '#eab308' : '#94a3b8';
+        const levelNum = Math.max(12, 24 - rank);
+
+        const customAvatar = getParticipantAvatarHtml(p, 28);
+        const crestSvg = isOro ? CRESTS.oro(28) : CRESTS.plata(28);
+        const avatarOrCrest = customAvatar || crestSvg;
+
+        const xpFormatted = (retVal >= 0 ? '' : '-') + Math.abs(retVal).toFixed(1) + 'k';
+        const subStat = '▲ ' + (Math.abs(retVal) * 0.18 + 0.8).toFixed(1) + 'k';
+
+        return `
+          <div class="stark-rank-card ${isCurrentUser ? 'my-card' : ''}" style="border-color:${borderCol}; box-shadow: 0 0 16px ${borderCol}18;">
+            <img src="${country.flagImg}" alt="${country.name}" class="stark-card-watermark" />
+            
+            <div style="display:flex; align-items:center; gap:12px; z-index:2; flex:1; min-width:0;">
+              <!-- Posición -->
+              <div style="width:24px; text-align:center; font-size:15px; font-weight:900; font-family:var(--mono); color:${borderCol};">
+                ${rank}
+              </div>
+
+              <!-- Crest / Avatar con aro de color -->
+              <div class="stark-card-crest-wrap" style="border-color:${borderCol};">
+                ${avatarOrCrest}
+              </div>
+
+              <!-- Nombre y Detalles de Nivel -->
+              <div style="min-width:0; overflow:hidden;">
+                <div style="font-size:13px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${p.user_name || 'Participante'}
+                  ${isCurrentUser ? '<span class="badge-status completed" style="font-size:9px; padding:1px 5px; margin-left:4px;">TÚ</span>' : ''}
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; font-size:10.5px; color:#64748b; margin-top:2px;">
+                  <span style="color:${tierCol}; font-weight:700;">${tierIco} ${tierName}</span>
+                  <span>Nivel ${levelNum}</span>
+                  <span>—</span>
+                </div>
+              </div>
+
+              <!-- Insignias Tácticas Mini -->
+              <div class="stark-card-badges-row hide-mobile">
+                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[0]}</div>
+                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[1]}</div>
+                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[2]}</div>
+                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[3]}</div>
+              </div>
+            </div>
+
+            <!-- Retorno / XP a la derecha -->
+            <div style="text-align:right; z-index:2; flex-shrink:0;">
+              <div style="font-size:14px; font-weight:900; font-family:var(--mono); color:${borderCol};">
+                ${xpFormatted} <span style="font-size:10px; color:#64748b; font-weight:600;">XP</span>
+              </div>
+              <div style="font-size:10px; color:#64748b; font-weight:600; margin-top:1px;">
+                ${subStat}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderTournamentViews() {
+        const user = sb.getUser();
+        const top3Container = document.getElementById('tournament-top3-container');
+        const cardsContainer = document.getElementById('tournament-cards-container');
+
+        // Ordenar participantes según el marco temporal activo
+        const sortedList = [...tournamentParticipants].sort((a, b) => {
+          let valA = 0, valB = 0;
+          if (activeTournamentTimeframe === 'all') {
+            valA = parseFloat(a.return_pct || 0);
+            valB = parseFloat(b.return_pct || 0);
+          } else if (activeTournamentTimeframe === 'week') {
+            valA = parseFloat(a.pnl_weekly_pct || 0);
+            valB = parseFloat(b.pnl_weekly_pct || 0);
+          } else if (activeTournamentTimeframe === 'month') {
+            valA = parseFloat(a.pnl_monthly_pct || 0);
+            valB = parseFloat(b.pnl_monthly_pct || 0);
+          }
+          return valB - valA;
+        });
+
+        // 1. Renderizar Podio TOP 3 (3 pedestales: 2do a la izq, 1ro al centro, 3ro a la der)
+        if (top3Container) {
+          const p1 = sortedList[0] || null;
+          const p2 = sortedList[1] || null;
+          const p3 = sortedList[2] || null;
+
+          top3Container.innerHTML = `
+            ${renderStarkPedestal(p2, 2)}
+            ${renderStarkPedestal(p1, 1)}
+            ${renderStarkPedestal(p3, 3)}
+          `;
+        }
+
+        // 2. Renderizar Tarjetas de Clasificación (#4 en adelante como en StarkLab)
+        if (cardsContainer) {
+          if (sortedList.length === 0) {
+            cardsContainer.innerHTML = `
+              <div style="text-align:center; padding:30px 15px; color:#64748b; font-size:12.5px;">
+                <div style="font-size:28px; margin-bottom:8px;">🏆</div>
+                Aún no hay participantes inscritos en este torneo.<br>
+                ¡Sé el primero en conectar tu cuenta MT5 y liderar el podio!
+              </div>
+            `;
+          } else if (sortedList.length > 3) {
+            // Mostrar desde el #4 en adelante
+            cardsContainer.innerHTML = sortedList.slice(3).map((p, idx) => {
+              const isMe = user && p.user_id === user.id;
+              return renderStarkRankCard(p, idx + 4, isMe);
+            }).join('');
+          } else {
+            // Si hay 3 o menos participantes, mostrar todos en la lista también
+            cardsContainer.innerHTML = sortedList.map((p, idx) => {
+              const isMe = user && p.user_id === user.id;
+              return renderStarkRankCard(p, idx + 1, isMe);
+            }).join('');
+          }
+        }
+      }
+
+      window.setTournamentTimeframe = function(tf) {
+        activeTournamentTimeframe = tf;
+        ['all', 'week', 'month'].forEach(t => {
+          const tab = document.getElementById('stark-tab-' + t);
+          if (tab) {
+            if (t === tf) tab.classList.add('active');
+            else tab.classList.remove('active');
+          }
+        });
+        const tfLabel = document.getElementById('stark-timeframe-label');
+        if (tfLabel) {
+          if (tf === 'all') tfLabel.textContent = 'Según todo tiempo';
+          else if (tf === 'week') tfLabel.textContent = 'Según esta semana';
+          else if (tf === 'month') tfLabel.textContent = 'Según este mes';
+        }
+        renderTournamentViews();
+      };
+
+      async function loadTournamentData() {
+        const user = sb.getUser();
+
+        try {
+          // 1. Cargar torneo activo
+          const tournamentsData = await sb.query('tournaments', { select: '*', filter: 'status=eq.Activo', order: 'created_at.desc' });
+          if (Array.isArray(tournamentsData) && tournamentsData.length > 0) {
+            activeTournament = tournamentsData[0];
+          } else {
+            activeTournament = {
+              id: 'default-active-id',
+              name: '🏆 TORNEO GOLD FX',
+              start_date: new Date().toISOString(),
+              end_date: new Date(Date.now() + 60*24*60*60*1000).toISOString()
+            };
+          }
+
+          const nameEl = document.getElementById('tournament-name');
+          if (nameEl) nameEl.textContent = '🏆 TORNEO GOLD FX';
+          const startStr = new Date(activeTournament.start_date).toLocaleDateString('es-CO');
+          const endStr = new Date(activeTournament.end_date).toLocaleDateString('es-CO');
+          const datesEl = document.getElementById('tournament-dates');
+          if (datesEl) datesEl.textContent = `Periodo: ${startStr} — ${endStr}`;
+
+          // 2. Cargar participantes
+          if (activeTournament.id && activeTournament.id !== 'default-active-id') {
+            const participantsData = await sb.query('tournament_participants', {
+              select: '*',
+              filter: `tournament_id=eq.${activeTournament.id}`,
+              order: 'return_pct.desc'
+            });
+            tournamentParticipants = Array.isArray(participantsData) ? participantsData : [];
+
+            // Sincronizar fotos/avatares reales de la tabla profiles
+            try {
+              const profilesData = await sb.query('profiles', { select: 'id, avatar_url, country' });
+              if (Array.isArray(profilesData)) {
+                const profileMap = {};
+                profilesData.forEach(pr => { if (pr.id) profileMap[pr.id] = pr; });
+                tournamentParticipants.forEach(p => {
+                  if (profileMap[p.user_id]) {
+                    if (!p.avatar_url && profileMap[p.user_id].avatar_url) {
+                      p.avatar_url = profileMap[p.user_id].avatar_url;
+                    }
+                    if (!p.country && profileMap[p.user_id].country) {
+                      p.country = profileMap[p.user_id].country;
+                    }
+                  }
+                });
+              }
+            } catch (errAv) {
+              console.log('Profile sync check:', errAv);
+            }
+          } else {
+            tournamentParticipants = [];
+          }
+
+          // Actualizar contador de participantes
+          const pCountEl = document.getElementById('tournament-participants-count');
+          if (pCountEl) pCountEl.textContent = `${tournamentParticipants.length} participante${tournamentParticipants.length === 1 ? '' : 's'}`;
+
+          // 3. Verificar si el usuario actual ya está inscrito
+          const btnContainer = document.getElementById('tournament-join-btn-container');
+          const userDashboard = document.getElementById('tournament-user-dashboard');
+          const isJoined = user && tournamentParticipants.some(p => p.user_id === user.id);
+
+          if (isJoined) {
+            const myPartIndex = tournamentParticipants.findIndex(p => p.user_id === user.id);
+            const myPart = tournamentParticipants[myPartIndex];
+
+            // Sincronizar foto/avatar del usuario en la tabla pública
+            let currentAvatar = (user.user_metadata && user.user_metadata.avatar_url) || '';
+            if (!currentAvatar) {
+              const avImg = document.querySelector('.user-av img');
+              if (avImg && avImg.src) currentAvatar = avImg.src;
+            }
+            if (myPart && currentAvatar && myPart.avatar_url !== currentAvatar) {
+              myPart.avatar_url = currentAvatar;
+              sb.update('tournament_participants', myPart.id, { avatar_url: currentAvatar }).catch(e => console.log('Avatar auto-sync err:', e));
+            }
+
+            btnContainer.innerHTML = `
+              <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); padding:7px 14px; border-radius:18px; color:var(--green); font-size:11.5px; font-weight:700;">
+                <span>✅ Conectado (#${myPart ? myPart.mt5_login : '—'})</span>
+              </div>
+            `;
+
+            // Renderizar Dashboard Privado del Participante
+            if (userDashboard && myPart) {
+              userDashboard.style.display = 'block';
+
+              const isDisqualified = myPart.status === 'Descalificado' || parseFloat(myPart.dd_max_pct || 0) >= 5.0;
+              const badgeEl = document.getElementById('user-status-badge');
+              if (badgeEl) {
+                badgeEl.innerHTML = isDisqualified
+                  ? `<span class="badge-status rejected" style="font-size:10px; padding:3px 8px;">🛑 DESCALIFICADO</span>`
+                  : `<span class="badge-status completed" style="font-size:10px; padding:3px 8px;">🟢 ACTIVO</span>`;
+              }
+
+              const acctEl = document.getElementById('u-account-label');
+              const countryInfo = getParticipantCountryInfo(myPart);
+              if (acctEl) {
+                acctEl.textContent = `${countryInfo.flag} ${countryInfo.name} | Cuenta MT5: #${myPart.mt5_login} (${myPart.mt5_server || 'MT5'})`;
+              }
+
+              const pnlDaily = parseFloat(myPart.pnl_daily_pct || 0);
+              const pnlWeekly = parseFloat(myPart.pnl_weekly_pct || 0);
+              const pnlMonthly = parseFloat(myPart.pnl_monthly_pct || 0);
+              const pnlAcum = parseFloat(myPart.return_pct || 0);
+
+              const ddDaily = parseFloat(myPart.dd_daily_pct || 0);
+              const ddMax = parseFloat(myPart.dd_max_pct || 0);
+              const ddMargin = Math.max(0, 5.0 - ddMax);
+
+              // 1. Rendimiento
+              const setPnl = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) {
+                  el.textContent = (val >= 0 ? '+' : '') + val.toFixed(2) + '%';
+                  el.style.color = val >= 0 ? 'var(--green)' : 'var(--red)';
+                }
+              };
+              setPnl('u-pnl-daily', pnlDaily);
+              setPnl('u-pnl-weekly', pnlWeekly);
+              setPnl('u-pnl-monthly', pnlMonthly);
+              setPnl('u-pnl-acum', pnlAcum);
+
+              // 2. Riesgo
+              const elDdDaily = document.getElementById('u-dd-daily');
+              if (elDdDaily) {
+                elDdDaily.textContent = ddDaily.toFixed(2) + '%';
+                elDdDaily.style.color = ddDaily > 1.1 ? 'var(--red)' : 'var(--text-primary)';
+              }
+
+              const elDdMax = document.getElementById('u-dd-max');
+              if (elDdMax) {
+                elDdMax.textContent = ddMax.toFixed(2) + '%';
+              }
+
+              const elMargin = document.getElementById('u-dd-margin');
+              if (elMargin) {
+                elMargin.textContent = ddMargin.toFixed(2) + '% restante';
+                elMargin.style.color = ddMargin < 1.0 ? 'var(--red)' : (ddMargin < 2.5 ? 'var(--yellow)' : 'var(--green)');
+              }
+
+              // 3. Operativa
+              const elTrades = document.getElementById('u-trades-count');
+              if (elTrades) elTrades.textContent = myPart.trades_count || 0;
+
+              const elWins = document.getElementById('u-w-count');
+              if (elWins) elWins.textContent = myPart.win_count || 0;
+
+              const elLosses = document.getElementById('u-l-count');
+              if (elLosses) elLosses.textContent = myPart.loss_count || 0;
+
+              const elBE = document.getElementById('u-be-count');
+              if (elBE) elBE.textContent = myPart.be_count || 0;
+
+              const elWinRate = document.getElementById('u-win-rate');
+              if (elWinRate) {
+                elWinRate.textContent = parseFloat(myPart.win_rate || 0).toFixed(1) + '%';
+              }
+
+              // 4. Posición
+              const elRankBadge = document.getElementById('u-rank-pos-badge');
+              if (elRankBadge) {
+                elRankBadge.textContent = `POSICIÓN: #${myPartIndex + 1} DE ${tournamentParticipants.length}`;
+              }
+            }
+          } else {
+            if (userDashboard) userDashboard.style.display = 'none';
+            btnContainer.innerHTML = `
+              <button class="btn-green" onclick="openTournamentJoinModal()" style="font-size:12px; padding:7px 16px; border-radius:18px;">
+                🏆 Conectar MT5 e Inscribirme
+              </button>
+            `;
+          }
+
+          // 4. Renderizar vistas principales (Podio 3 pedestales + Tarjetas de ranking)
+          renderTournamentViews();
+
+        } catch (e) {
+          console.error('Error al cargar datos del torneo:', e);
+          const cardsContainer = document.getElementById('tournament-cards-container');
+          if (cardsContainer) {
+            cardsContainer.innerHTML = `
+              <div style="text-align: center; color: var(--red); padding: 20px; font-size:12.5px;">
+                Error al conectar con la base de datos del torneo: ${e.message}
+              </div>
+            `;
+          }
+        }
+      }
+
+      function openTournamentJoinModal() {
+        const user = sb.getUser();
+        if (!user) {
+          alert('Debes iniciar sesión para inscribirte en el torneo.');
+          return;
+        }
+        document.getElementById('tournament-join-modal').classList.add('open');
+      }
+
+      async function submitTournamentJoin(event) {
+        event.preventDefault();
+        const user = sb.getUser();
+        if (!user) return;
+
+        const server = document.getElementById('tjm-server').value.trim();
+        const login = document.getElementById('tjm-login').value.trim();
+        const country = document.getElementById('tjm-country').value || 'CO';
+        const password = document.getElementById('tjm-password').value.trim();
+
+        if (!server || !login || !password) {
+          alert('Por favor completa todos los campos.');
+          return;
+        }
+
+        const submitBtn = document.getElementById('tjm-submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Conectando...';
+
+        try {
+          const userName = (user.user_metadata && user.user_metadata.full_name) || user.email;
+          const userAvatar = (user.user_metadata && user.user_metadata.avatar_url) || '';
+          const participantData = {
+            tournament_id: activeTournament ? activeTournament.id : 'default-active-id',
+            user_id: user.id,
+            user_name: userName,
+            user_email: user.email,
+            avatar_url: userAvatar,
+            country: country,
+            mt5_server: server,
+            mt5_login: parseInt(login, 10),
+            mt5_password: password,
+            initial_balance: 0.00,
+            current_balance: 0.00,
+            net_pnl: 0.00,
+            return_pct: 0.00,
+            discipline_score: 100.00,
+            win_rate: 0.00,
+            current_score: 100.00,
+            trades_count: 0,
+            badges: ['🛡️', '🎯', '🔥']
+          };
+
+          await sb.insert('tournament_participants', participantData);
+          try {
+            await sb.update('profiles', user.id, { country: country });
+          } catch (pe) {}
+          alert('¡Genial! Tu cuenta de MT5 ha sido conectada exitosamente al torneo. El servidor central comenzará a sincronizar tus operaciones.');
+          closeModal('tournament-join-modal');
+          document.getElementById('tournament-join-form').reset();
+          await loadTournamentData();
+        } catch (e) {
+          alert('Error al inscribir la cuenta en el torneo: ' + e.message);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Conectar e Inscribirme';
+        }
+      }
+
+      function renderLiveTournamentChart(participants) {
+        const canvas = document.getElementById('tournament-live-chart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        
+        if (rect.width === 0 || rect.height === 0) return;
+
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const width = rect.width;
+        const height = rect.height;
+
+        ctx.clearRect(0, 0, width, height);
+
+        // Generar curva elegante basada en el líder
+        const top1 = participants && participants[0] ? parseFloat(participants[0].return_pct || 0) : 42.1;
+        const totalReturnEl = document.getElementById('live-chart-total-return');
+        if (totalReturnEl) {
+          totalReturnEl.textContent = (top1 >= 0 ? '+' : '') + top1.toFixed(1) + '%';
+        }
+
+        // Puntos suavizados para la curva estilo maqueta
+        const points = [
+          { x: 0, y: height * 0.8 },
+          { x: width * 0.2, y: height * 0.55 },
+          { x: width * 0.4, y: height * 0.65 },
+          { x: width * 0.65, y: height * 0.3 },
+          { x: width * 0.85, y: height * 0.4 },
+          { x: width, y: height * 0.15 }
+        ];
+
+        // Relleno de degradado dorado
+        const gradient = ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, 'rgba(255, 205, 27, 0.45)');
+        gradient.addColorStop(1, 'rgba(255, 205, 27, 0.0)');
+
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+
+        for (let i = 0; i < points.length - 1; i++) {
+          const xc = (points[i].x + points[i + 1].x) / 2;
+          const yc = (points[i].y + points[i + 1].y) / 2;
+          ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+        }
+        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
+        ctx.closePath();
+
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Línea dorada suave de borde
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 0; i < points.length - 1; i++) {
+          const xc = (points[i].x + points[i + 1].x) / 2;
+          const yc = (points[i].y + points[i + 1].y) / 2;
+          ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+        }
+        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+        ctx.strokeStyle = '#ffcd1b';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = 'rgba(255, 205, 27, 0.6)';
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+      }
+
+      // Exponer globalmente
+      window.loadTournamentData = loadTournamentData;
+      window.openTournamentJoinModal = openTournamentJoinModal;
+      window.submitTournamentJoin = submitTournamentJoin;
 
       // ── Init ──
       document.getElementById('auth-screen').style.display = 'flex';
+
 
 
 

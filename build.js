@@ -58,6 +58,7 @@ async function run() {
   // 4. Obfuscate app.js
   console.log('Obfuscating app.js...');
   const appJsSrcPath = path.join(SRC_DIR, 'app.js');
+  let obfuscatedResult;
   if (fs.existsSync(appJsSrcPath)) {
     let appJsContent = fs.readFileSync(appJsSrcPath, 'utf8');
 
@@ -68,7 +69,7 @@ async function run() {
     appJsContent = appJsContent.replace('https://xtynjkstprkkbontplow.supabase.co', supabaseUrl);
     appJsContent = appJsContent.replace('sb_publishable_aoQyXV5JAq7Pvkh4cTIxow_df9AyT_D', supabaseKey);
 
-    const obfuscatedResult = JavaScriptObfuscator.obfuscate(appJsContent, obfuscationOptions);
+    obfuscatedResult = JavaScriptObfuscator.obfuscate(appJsContent, obfuscationOptions);
     fs.writeFileSync(path.join(DIST_DIR, 'app.js'), obfuscatedResult.getObfuscatedCode(), 'utf8');
     console.log('Successfully obfuscated app.js!');
   } else {
@@ -78,43 +79,25 @@ async function run() {
 
   // 5. Process syntracker-fx.html (desktop single-file version)
   console.log('Processing syntracker-fx.html (desktop version)...');
-  const desktopSrcPath = path.join(SRC_DIR, 'syntracker-fx.html');
-  if (fs.existsSync(desktopSrcPath)) {
-    const desktopContent = fs.readFileSync(desktopSrcPath, 'utf8');
-    const startMarker = '  <script>';
-    const endMarker = '  </script>';
+  const indexHtmlContent = fs.readFileSync(path.join(SRC_DIR, 'index.html'), 'utf8');
+  const rawAppJs = fs.readFileSync(path.join(SRC_DIR, 'app.js'), 'utf8');
+  
+  const newDesktopContent = indexHtmlContent.replace(
+    '<script src="app.js"></script>',
+    '  <script>\n' + obfuscatedResult.getObfuscatedCode() + '\n  </script>'
+  );
 
-    const startIndex = desktopContent.indexOf(startMarker);
-    const endIndex = desktopContent.indexOf(endMarker, startIndex);
+  // Sync raw single-file to src/syntracker-fx.html for dev reference
+  fs.writeFileSync(
+    path.join(SRC_DIR, 'syntracker-fx.html'),
+    indexHtmlContent.replace('<script src="app.js"></script>', '  <script>\n' + rawAppJs + '\n  </script>'),
+    'utf8'
+  );
 
-    if (startIndex !== -1 && endIndex !== -1) {
-      let inlineJs = desktopContent.substring(startIndex + startMarker.length, endIndex);
-      console.log('Obfuscating inline JS for desktop version...');
-
-      // Replace Supabase credentials with environment variables if available
-      const supabaseUrl = process.env.SUPABASE_URL || 'https://xtynjkstprkkbontplow.supabase.co';
-      const supabaseKey = process.env.SUPABASE_KEY || 'sb_publishable_aoQyXV5JAq7Pvkh4cTIxow_df9AyT_D';
-
-      inlineJs = inlineJs.replace('https://xtynjkstprkkbontplow.supabase.co', supabaseUrl);
-      inlineJs = inlineJs.replace('sb_publishable_aoQyXV5JAq7Pvkh4cTIxow_df9AyT_D', supabaseKey);
-
-      const obfuscatedInlineJs = JavaScriptObfuscator.obfuscate(inlineJs, obfuscationOptions);
-      
-      const newDesktopContent = desktopContent.substring(0, startIndex) + 
-        '  <script>\n' + obfuscatedInlineJs.getObfuscatedCode() + '\n  </script>' + 
-        desktopContent.substring(endIndex + endMarker.length);
-      
-      // Save in dist/
-      fs.writeFileSync(path.join(DIST_DIR, 'syntracker-fx.html'), newDesktopContent, 'utf8');
-      // Save in root for double-click convenience
-      fs.writeFileSync(path.join(__dirname, 'syntracker-fx.html'), newDesktopContent, 'utf8');
-      console.log('Successfully processed syntracker-fx.html!');
-    } else {
-      console.warn('Warning: Could not find script tags in src/syntracker-fx.html!');
-    }
-  } else {
-    console.warn('Warning: src/syntracker-fx.html not found!');
-  }
+  // Save obfuscated version in dist/ and root
+  fs.writeFileSync(path.join(DIST_DIR, 'syntracker-fx.html'), newDesktopContent, 'utf8');
+  fs.writeFileSync(path.join(__dirname, 'syntracker-fx.html'), newDesktopContent, 'utf8');
+  console.log('Successfully processed syntracker-fx.html!');
 
   console.log('--- Build Completed Successfully! ---');
 }

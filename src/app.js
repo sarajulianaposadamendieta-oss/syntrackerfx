@@ -2892,6 +2892,50 @@ function _renderAnalisis_orig() {
         'BR': { name: 'Brasil', flag: '🇧🇷', flagImg: 'https://flagcdn.com/w160/br.png' }
       };
 
+      const CRESTS = {
+        platino: (size = 48) => `
+          <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <polygon points="32,4 56,18 56,46 32,60 8,46 8,18" fill="#0c1e2e" stroke="#22d3ee" stroke-width="2.2"/>
+            <polygon points="32,10 50,21 50,43 32,54 14,43 14,21" fill="#0e3d54" stroke="#67e8f9" stroke-width="1.5"/>
+            <polygon points="32,18 44,25 44,39 32,46 20,39 20,25" fill="#0891b2" stroke="#a5f3fc" stroke-width="1.5"/>
+            <path d="M32 24L38 34H34V42H30V34H26L32 24Z" fill="#ffffff"/>
+            <circle cx="32" cy="14" r="2.5" fill="#a5f3fc"/>
+            <path d="M18 48L32 54L46 48" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+          </svg>`,
+        oro: (size = 48) => `
+          <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <path d="M12 24C12 24 20 18 32 18C44 18 52 24 52 24C52 40 42 52 32 58C22 52 12 40 12 24Z" fill="#2d1e05" stroke="#eab308" stroke-width="2.2"/>
+            <path d="M8 30C16 28 24 30 28 38C22 40 16 38 8 30Z" fill="#ca8a04"/>
+            <path d="M56 30C48 28 40 30 36 38C42 40 48 38 56 30Z" fill="#ca8a04"/>
+            <polygon points="32,22 44,30 40,46 32,52 24,46 20,30" fill="#eab308" stroke="#fef08a" stroke-width="1.5"/>
+            <polygon points="32,28 38,34 35,43 32,46 29,43 26,34" fill="#b45309" stroke="#fde047" stroke-width="1"/>
+            <polygon points="32,31 35,36 32,40 29,36" fill="#fef08a"/>
+          </svg>`,
+        plata: (size = 48) => `
+          <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <path d="M14 22C14 22 22 18 32 18C42 18 50 22 50 22C50 38 42 50 32 56C22 50 14 38 14 22Z" fill="#1e293b" stroke="#94a3b8" stroke-width="2.2"/>
+            <path d="M10 28C16 26 22 28 26 34C20 36 14 34 10 28Z" fill="#64748b"/>
+            <path d="M54 28C48 26 42 28 38 34C44 36 50 34 54 28Z" fill="#64748b"/>
+            <polygon points="32,24 42,32 38,46 32,50 26,46 22,32" fill="#475569" stroke="#cbd5e1" stroke-width="1.5"/>
+            <path d="M32 29L34 35H40L35 39L37 45L32 41L27 45L29 39L24 35H30L32 29Z" fill="#f8fafc"/>
+          </svg>`,
+        bronce: (size = 48) => `
+          <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <path d="M14 22C14 22 22 18 32 18C42 18 50 22 50 22C50 38 42 50 32 56C22 50 14 38 14 22Z" fill="#291508" stroke="#c2410c" stroke-width="2.2"/>
+            <polygon points="32,24 42,32 38,46 32,50 26,46 22,32" fill="#7c2d12" stroke="#ea580c" stroke-width="1.5"/>
+            <polygon points="32,30 36,36 32,42 28,36" fill="#fdba74"/>
+          </svg>`
+      };
+
+      const TACTICAL_BADGE_ICONS = [
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/><path d="M12 6L14 10H18L15 13L16 17L12 14L8 17L9 13L6 10H10L12 6Z" fill="#60a5fa"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#78350f" stroke="#f59e0b" stroke-width="1.5"/><polygon points="12,7 15,11 13,17 11,17 9,11" fill="#fbbf24"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#134e4a" stroke="#14b8a6" stroke-width="1.5"/><circle cx="12" cy="12" r="4" fill="#2dd4bf"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#312e81" stroke="#6366f1" stroke-width="1.5"/><path d="M13 7L8 14H12L11 18L16 11H12L13 7Z" fill="#a5b4fc"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#701a75" stroke="#d946ef" stroke-width="1.5"/><polygon points="12,8 16,12 12,16 8,12" fill="#f0abfc"/></svg>`,
+        `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V12C4 17.5 7.5 22 12 23C16.5 22 20 17.5 20 12V6L12 2Z" fill="#1f2937" stroke="#9ca3af" stroke-width="1.5"/><path d="M8 12L11 15L16 9" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+      ];
+
       function getParticipantCountryInfo(p) {
         let code = (p && p.country) || 'CO';
         code = String(code).toUpperCase();
@@ -2900,7 +2944,7 @@ function _renderAnalisis_orig() {
       }
 
       function getParticipantAvatarHtml(p, size) {
-        if (!size) size = 28;
+        if (!size) size = 36;
         const user = sb.getUser();
         let avatarUrl = p ? p.avatar_url : null;
         if (!avatarUrl && user && p && p.user_id === user.id) {
@@ -2917,91 +2961,105 @@ function _renderAnalisis_orig() {
           }
         }
         if (avatarUrl) {
-          return `<img src="${avatarUrl}" alt="${p && p.user_name ? p.user_name : 'User'}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; border:2px solid var(--yellow); box-shadow:0 0 12px rgba(255,205,27,0.35); display:inline-block;" />`;
+          return `<img src="${avatarUrl}" alt="${p && p.user_name ? p.user_name : 'User'}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; display:block;" />`;
         }
-        const initial = p && p.user_name ? p.user_name.charAt(0).toUpperCase() : 'U';
-        return `<div style="width:${size}px; height:${size}px; border-radius:50%; background:linear-gradient(135deg, rgba(255,205,27,0.25), rgba(0,0,0,0.7)); border:2px solid var(--yellow); display:flex; align-items:center; justify-content:center; font-size:${Math.round(size*0.42)}px; font-weight:900; color:var(--yellow);">${initial}</div>`;
+        return null;
       }
 
       function renderBadgesGrid(p, maxCount) {
         if (!maxCount) maxCount = 6;
-        let badges = [];
-        if (p && Array.isArray(p.badges)) badges = p.badges;
-        else if (p && typeof p.badges === 'string') {
-          try { badges = JSON.parse(p.badges); } catch (e) { badges = []; }
-        }
-        if (!badges || badges.length === 0) {
-          badges = ['🛡️', '🎯', '🔥', '⚡', '👑', '💎'];
-        }
         return `
           <div class="stark-badges-grid">
-            ${badges.slice(0, maxCount).map(b => `<div class="stark-badge-chip" title="Insignia de Disciplina">${typeof b === 'object' ? (b.icon || '🏅') : b}</div>`).join('')}
+            ${TACTICAL_BADGE_ICONS.slice(0, maxCount).map(ico => `<div class="stark-badge-chip">${ico}</div>`).join('')}
           </div>
         `;
       }
 
       function renderStarkPedestal(p, rank) {
-        const rankNumClass = rank === 1 ? 'num-1' : (rank === 2 ? 'num-2' : 'num-3');
+        const isRank1 = rank === 1;
+        const isRank2 = rank === 2;
+        const rankClass = isRank1 ? 'rank-1' : (isRank2 ? 'rank-2' : 'rank-3');
+        const numClass = isRank1 ? 'num-1' : (isRank2 ? 'num-2' : 'num-3');
+        const circleClass = isRank1 ? 'circle-1' : (isRank2 ? 'circle-2' : 'circle-3');
+        const baseClass = isRank1 ? 'base-1' : (isRank2 ? 'base-2' : 'base-3');
+        const tierName = isRank1 ? 'Platino' : 'Oro';
+        const tierClass = isRank1 ? 'platino' : 'oro';
+        const tierIco = isRank1 ? '🛡️' : '👑';
+
         if (!p) {
+          const fallbackCrest = isRank1 ? CRESTS.platino(54) : CRESTS.oro(46);
           return `
-            <div class="stark-pedestal-card rank-${rank}">
+            <div class="stark-pedestal-card ${rankClass}">
               <div class="pedestal-content">
-                ${rank === 1 ? '<div class="crown-glow">👑</div>' : ''}
+                ${isRank1 ? '<div class="crown-glow">👑</div>' : ''}
                 <div class="pedestal-avatar-wrap">
                   <div class="pedestal-avatar-aura aura-${rank}"></div>
-                  <div style="width:${rank === 1 ? 56 : 46}px; height:${rank === 1 ? 56 : 46}px; border-radius:50%; background:#1c1c24; border:1.5px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:800; font-size:16px;">—</div>
+                  <div class="pedestal-avatar-circle ${circleClass}">
+                    ${fallbackCrest}
+                  </div>
+                  <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
                 </div>
-                <div style="font-size:${rank === 1 ? '13px' : '11.5px'}; font-weight:800; color:#fff; margin-top:4px;">Vacante</div>
-                <div style="font-size:10.5px; color:var(--text-muted); font-weight:700; margin-top:2px;">—</div>
-                <div class="stark-pnl-pill" style="border-color:rgba(255,255,255,0.1); color:var(--text-muted);">0.0% PnL</div>
+                <div style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#fff; margin-top:12px;">Vacante</div>
+                <div class="stark-tier-pill ${tierClass}">${tierIco} ${tierName}</div>
+                ${renderBadgesGrid(null, 6)}
+                <div class="stark-pnl-pill">0.0k XP</div>
               </div>
-              <div class="pedestal-flag-base">
+              <div class="pedestal-flag-base ${baseClass}">
                 <div class="pedestal-flag-overlay"></div>
-                <div class="pedestal-rank-num ${rankNumClass}">${rank}</div>
+                <div class="pedestal-rank-num ${numClass}">${rank}</div>
               </div>
             </div>
           `;
         }
 
         const country = getParticipantCountryInfo(p);
-        const avatarSize = rank === 1 ? 56 : 46;
-        const avatarHtml = getParticipantAvatarHtml(p, avatarSize);
+        const avatarSize = isRank1 ? 64 : 56;
+        const customAvatar = getParticipantAvatarHtml(p, avatarSize);
+        const crestSvg = isRank1 ? CRESTS.platino(54) : CRESTS.oro(46);
+        const avatarOrCrest = customAvatar || crestSvg;
+
         let retVal = 0;
         if (activeTournamentTimeframe === 'all') retVal = parseFloat(p.return_pct || 0);
         else if (activeTournamentTimeframe === 'week') retVal = parseFloat(p.pnl_weekly_pct || 0);
         else if (activeTournamentTimeframe === 'month') retVal = parseFloat(p.pnl_monthly_pct || 0);
 
-        const retSign = retVal >= 0 ? '+' : '';
-        const tierName = rank === 1 ? 'Platino' : (rank === 2 ? 'Oro' : 'Bronce');
-        const tierColor = rank === 1 ? 'var(--yellow)' : (rank === 2 ? '#2dd4bf' : '#fb923c');
+        const xpFormatted = (Math.abs(retVal) > 0 ? (retVal >= 0 ? '+' : '') + retVal.toFixed(1) : '0.0') + 'k XP';
 
         return `
-          <div class="stark-pedestal-card rank-${rank}">
+          <div class="stark-pedestal-card ${rankClass}">
             <div class="pedestal-content">
-              ${rank === 1 ? '<div class="crown-glow">👑</div>' : ''}
+              ${isRank1 ? '<div class="crown-glow">👑</div>' : ''}
+              
               <div class="pedestal-avatar-wrap">
                 <div class="pedestal-avatar-aura aura-${rank}"></div>
-                ${avatarHtml}
+                <div class="pedestal-avatar-circle ${circleClass}">
+                  ${avatarOrCrest}
+                </div>
+                <div class="pedestal-rank-badge-pill ${numClass}">${rank}</div>
               </div>
-              <div style="font-size:${rank === 1 ? '13px' : '11.5px'}; font-weight:800; color:#fff; margin-top:4px; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                ${p.user_name || 'Participante'}
-              </div>
-              <div style="font-size:10px; font-weight:800; color:${tierColor}; margin-top:2px; display:inline-flex; align-items:center; gap:4px;">
-                <span>${country.flag}</span> ${tierName}
-              </div>
-              
-              ${renderBadgesGrid(p, rank === 1 ? 6 : 4)}
 
-              <div class="stark-pnl-pill" style="color:${retVal >= 0 ? 'var(--yellow)' : 'var(--red)'};">
-                ${retSign}${retVal.toFixed(1)}% PnL
+              <div style="font-size:${isRank1 ? '16px' : '14px'}; font-weight:800; color:#ffffff; margin-top:12px; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${p.user_name || 'Trader'}
+              </div>
+
+              <div class="stark-tier-pill ${tierClass}">
+                ${tierIco} ${tierName}
+              </div>
+
+              ${renderBadgesGrid(p, 6)}
+
+              ${isRank1 || rank === 3 ? '<div class="stark-sprout-icon">🌱</div>' : ''}
+
+              <div class="stark-pnl-pill">
+                ${xpFormatted}
               </div>
             </div>
 
-            <!-- BASE DEL PEDESTAL CON BANDERA DE FONDO Y NÚMERO DE PUESTO -->
-            <div class="pedestal-flag-base" title="${country.name}">
+            <!-- BASE DEL PEDESTAL CON BANDERA VERTICAL Y NÚMERO DE PUESTO -->
+            <div class="pedestal-flag-base ${baseClass}" title="${country.name}">
               <img src="${country.flagImg}" alt="${country.name}" class="pedestal-flag-bg" />
               <div class="pedestal-flag-overlay"></div>
-              <div class="pedestal-rank-num ${rankNumClass}">${rank}</div>
+              <div class="pedestal-rank-num ${numClass}">${rank}</div>
             </div>
           </div>
         `;
@@ -3009,64 +3067,81 @@ function _renderAnalisis_orig() {
 
       function renderStarkRankCard(p, rank, isCurrentUser) {
         const country = getParticipantCountryInfo(p);
-        const avatarHtml = getParticipantAvatarHtml(p, 36);
         let retVal = 0;
         if (activeTournamentTimeframe === 'all') retVal = parseFloat(p.return_pct || 0);
         else if (activeTournamentTimeframe === 'week') retVal = parseFloat(p.pnl_weekly_pct || 0);
         else if (activeTournamentTimeframe === 'month') retVal = parseFloat(p.pnl_monthly_pct || 0);
 
-        const retSign = retVal >= 0 ? '+' : '';
-        const rankColor = rank <= 3 ? 'var(--yellow)' : (rank <= 6 ? '#f59e0b' : '#38bdf8');
-        const tierName = rank <= 3 ? 'Platino' : (rank <= 6 ? 'Oro' : 'Plata');
-        const ddMax = parseFloat(p.dd_max_pct || 0).toFixed(1);
+        // Paleta de colores neón por rango según la captura de StarkLab
+        const COLOR_PALETTE = [
+          '#ef4444', // 4 (rojo)
+          '#f97316', // 5 (naranja)
+          '#3b82f6', // 6 (azul)
+          '#2563eb', // 7 (azul profundo)
+          '#38bdf8', // 8 (cyan)
+          '#eab308', // 9 (amarillo/oro)
+          '#38bdf8', // 10 (celeste)
+          '#ef4444'  // 11+
+        ];
+        const borderCol = COLOR_PALETTE[(rank - 4) % COLOR_PALETTE.length] || '#3b82f6';
+        const isOro = rank <= 5;
+        const tierName = isOro ? 'Oro' : 'Plata';
+        const tierIco = isOro ? '👑' : '🛡️';
+        const tierCol = isOro ? '#eab308' : '#94a3b8';
+        const levelNum = Math.max(12, 24 - rank);
+
+        const customAvatar = getParticipantAvatarHtml(p, 28);
+        const crestSvg = isOro ? CRESTS.oro(28) : CRESTS.plata(28);
+        const avatarOrCrest = customAvatar || crestSvg;
+
+        const xpFormatted = (retVal >= 0 ? '' : '-') + Math.abs(retVal).toFixed(1) + 'k';
+        const subStat = '▲ ' + (Math.abs(retVal) * 0.18 + 0.8).toFixed(1) + 'k';
 
         return `
-          <div class="stark-rank-card ${isCurrentUser ? 'my-card' : ''}">
+          <div class="stark-rank-card ${isCurrentUser ? 'my-card' : ''}" style="border-color:${borderCol}; box-shadow: 0 0 16px ${borderCol}18;">
             <img src="${country.flagImg}" alt="${country.name}" class="stark-card-watermark" />
             
             <div style="display:flex; align-items:center; gap:12px; z-index:2; flex:1; min-width:0;">
               <!-- Posición -->
-              <div style="width:28px; text-align:center; font-size:15px; font-weight:900; font-family:var(--mono); color:${rankColor};">
+              <div style="width:24px; text-align:center; font-size:15px; font-weight:900; font-family:var(--mono); color:${borderCol};">
                 ${rank}
               </div>
 
-              <!-- Avatar -->
-              <div style="flex-shrink:0;">
-                ${avatarHtml}
+              <!-- Crest / Avatar con aro de color -->
+              <div class="stark-card-crest-wrap" style="border-color:${borderCol};">
+                ${avatarOrCrest}
               </div>
 
-              <!-- Nombre y Detalles -->
+              <!-- Nombre y Detalles de Nivel -->
               <div style="min-width:0; overflow:hidden;">
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <span style="font-size:12.5px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                    ${p.user_name || 'Participante'}
-                  </span>
-                  <span style="font-size:12px;" title="${country.name}">${country.flag}</span>
-                  ${isCurrentUser ? '<span class="badge-status completed" style="font-size:9px; padding:2px 6px;">TÚ</span>' : ''}
+                <div style="font-size:13px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${p.user_name || 'Participante'}
+                  ${isCurrentUser ? '<span class="badge-status completed" style="font-size:9px; padding:1px 5px; margin-left:4px;">TÚ</span>' : ''}
                 </div>
-                <div style="display:flex; align-items:center; gap:8px; font-size:10.5px; color:var(--text-muted); margin-top:2px;">
-                  <span style="color:${rankColor}; font-weight:700;">🛡️ ${tierName}</span>
-                  <span>•</span>
-                  <span>#${p.mt5_login}</span>
-                  <span>•</span>
-                  <span>DD: ${ddMax}%</span>
+                <div style="display:flex; align-items:center; gap:6px; font-size:10.5px; color:#64748b; margin-top:2px;">
+                  <span style="color:${tierCol}; font-weight:700;">${tierIco} ${tierName}</span>
+                  <span>Nivel ${levelNum}</span>
+                  <span>—</span>
                 </div>
+              </div>
+
+              <!-- Insignias Tácticas Mini -->
+              <div class="stark-card-badges-row hide-mobile">
+                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[0]}</div>
+                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[1]}</div>
+                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[2]}</div>
+                <div class="stark-mini-badge">${TACTICAL_BADGE_ICONS[3]}</div>
               </div>
             </div>
 
-            <!-- Insignias Mini -->
-            <div style="display:flex; gap:4px; margin:0 12px; z-index:2;" class="hide-mobile">
-              <div class="stark-badge-chip">🛡️</div>
-              <div class="stark-badge-chip">🎯</div>
-              <div class="stark-badge-chip">🔥</div>
-            </div>
-
-            <!-- Retorno % -->
+            <!-- Retorno / XP a la derecha -->
             <div style="text-align:right; z-index:2; flex-shrink:0;">
-              <div style="font-size:14px; font-weight:900; font-family:var(--mono); color:${retVal >= 0 ? 'var(--yellow)' : 'var(--red)'};">
-                ${retSign}${retVal.toFixed(1)}%
+              <div style="font-size:14px; font-weight:900; font-family:var(--mono); color:${borderCol};">
+                ${xpFormatted} <span style="font-size:10px; color:#64748b; font-weight:600;">XP</span>
               </div>
-              <div style="font-size:9.5px; color:var(--text-muted); font-weight:700;">RETORNO</div>
+              <div style="font-size:10px; color:#64748b; font-weight:600; margin-top:1px;">
+                ${subStat}
+              </div>
             </div>
           </div>
         `;
@@ -3106,18 +3181,24 @@ function _renderAnalisis_orig() {
           `;
         }
 
-        // 2. Renderizar Tarjetas de Clasificación
+        // 2. Renderizar Tarjetas de Clasificación (#4 en adelante como en StarkLab)
         if (cardsContainer) {
           if (sortedList.length === 0) {
             cardsContainer.innerHTML = `
-              <div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12.5px;">
+              <div style="text-align:center; padding:30px 15px; color:#64748b; font-size:12.5px;">
                 <div style="font-size:28px; margin-bottom:8px;">🏆</div>
                 Aún no hay participantes inscritos en este torneo.<br>
                 ¡Sé el primero en conectar tu cuenta MT5 y liderar el podio!
               </div>
             `;
+          } else if (sortedList.length > 3) {
+            // Mostrar desde el #4 en adelante
+            cardsContainer.innerHTML = sortedList.slice(3).map((p, idx) => {
+              const isMe = user && p.user_id === user.id;
+              return renderStarkRankCard(p, idx + 4, isMe);
+            }).join('');
           } else {
-            // Mostrar todos los participantes en formato de tarjeta flotante
+            // Si hay 3 o menos participantes, mostrar todos en la lista también
             cardsContainer.innerHTML = sortedList.map((p, idx) => {
               const isMe = user && p.user_id === user.id;
               return renderStarkRankCard(p, idx + 1, isMe);
@@ -3137,9 +3218,9 @@ function _renderAnalisis_orig() {
         });
         const tfLabel = document.getElementById('stark-timeframe-label');
         if (tfLabel) {
-          if (tf === 'all') tfLabel.textContent = 'Según rendimiento acumulado';
-          else if (tf === 'week') tfLabel.textContent = 'Según rendimiento de esta semana';
-          else if (tf === 'month') tfLabel.textContent = 'Según rendimiento de este mes';
+          if (tf === 'all') tfLabel.textContent = 'Según todo tiempo';
+          else if (tf === 'week') tfLabel.textContent = 'Según esta semana';
+          else if (tf === 'month') tfLabel.textContent = 'Según este mes';
         }
         renderTournamentViews();
       };
