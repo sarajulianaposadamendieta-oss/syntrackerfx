@@ -3411,15 +3411,21 @@
       <div class="acct-dropdown-menu" id="acct-dropdown-menu"></div>
     </div>
     <div class="sidebar-footer">
-       <input type="file" id="user-avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleAvatarChange(this)">
-       <div class="user-card">
-         <div class="user-av" onclick="document.getElementById('user-avatar-input').click()" title="Cambiar foto de perfil">S</div>
-         <div class="user-info">
-           <div class="user-name">Sarah Posada</div>
-           <div class="user-email">—</div>
-         </div>
-       </div>
-     </div>
+      <input type="file" id="user-avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleAvatarChange(this)">
+      <div class="user-card" onclick="openProfileModal()" style="cursor:pointer;" title="Personalizar Mi Perfil">
+        <div class="user-av" onclick="event.stopPropagation(); document.getElementById('user-avatar-input').click()" title="Cambiar foto de perfil">S</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-user-name" style="display:flex;align-items:center;gap:6px;">
+            <span class="user-name-text">Sarah Posada</span>
+            <span id="sidebar-user-flag" style="font-size:14px;">🇨🇴</span>
+          </div>
+          <div class="user-email" id="sidebar-user-handle">—</div>
+        </div>
+        <button class="ftr-btn" onclick="event.stopPropagation(); openProfileModal()" title="Personalizar Perfil" style="margin-left:auto;flex-shrink:0;">
+          ⚙️
+        </button>
+      </div>
+    </div>
   </aside>
 
   <!-- MAIN -->
@@ -4428,6 +4434,87 @@
     </div>
   </div>
 
+  <!-- MODAL: Personalizar Perfil -->
+  <div class="overlay" id="profile-modal" onclick="closeOnBg(event,'profile-modal')">
+    <div class="modal" style="width:440px;max-width:95vw;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="modal-title" style="margin-bottom:0;display:flex;align-items:center;gap:8px;">
+          <span>👤</span> Mi Perfil de Trader
+        </div>
+        <button class="btn-cancel" onclick="closeModal('profile-modal')" style="padding:4px 10px;font-size:13px;">✕</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:18px;line-height:1.4;">
+        Personaliza tu nombre, nombre de usuario y tu país con su bandera oficial.
+      </div>
+
+      <!-- Avatar preview & change -->
+      <div style="display:flex;align-items:center;gap:16px;background:var(--bg-card-inner);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:18px;">
+        <div class="user-av" id="prof-avatar-preview" onclick="document.getElementById('user-avatar-input').click()" style="width:54px;height:54px;min-width:54px;min-height:54px;font-size:18px;cursor:pointer;position:relative;" title="Haz clic para cambiar foto">
+          S
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">Foto de Perfil</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Formatos: JPG, PNG o WebP (Máx 2MB)</div>
+          <button type="button" class="btn-cancel" onclick="document.getElementById('user-avatar-input').click()" style="padding:4px 10px;font-size:11.5px;display:inline-flex;align-items:center;gap:5px;">📷 Subir Foto</button>
+        </div>
+      </div>
+
+      <div class="form-g" style="margin-bottom:14px;">
+        <label class="form-l">Nombre Completo</label>
+        <input class="form-i" id="prof-name" type="text" placeholder="Ej: Sarah Posada" required>
+      </div>
+
+      <div class="form-g" style="margin-bottom:14px;">
+        <label class="form-l">Nombre de Usuario (@)</label>
+        <div style="position:relative;">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--yellow);font-weight:700;font-size:13px;">@</span>
+          <input class="form-i" id="prof-username" type="text" placeholder="usuario_trader" style="padding-left:28px;">
+        </div>
+      </div>
+
+      <div class="form-g" style="margin-bottom:14px;">
+        <label class="form-l">País de Representación 🌍</label>
+        <select class="form-i" id="prof-country" required>
+          <option value="CO">🇨🇴 Colombia</option>
+          <option value="MX">🇲🇽 México</option>
+          <option value="AR">🇦🇷 Argentina</option>
+          <option value="CL">🇨🇱 Chile</option>
+          <option value="PE">🇵🇪 Perú</option>
+          <option value="ES">🇪🇸 España</option>
+          <option value="US">🇺🇸 Estados Unidos</option>
+          <option value="EC">🇪🇨 Ecuador</option>
+          <option value="VE">🇻🇪 Venezuela</option>
+          <option value="BO">🇧🇴 Bolivia</option>
+          <option value="UY">🇺🇾 Uruguay</option>
+          <option value="PY">🇵🇾 Paraguay</option>
+          <option value="PA">🇵🇦 Panamá</option>
+          <option value="CR">🇨🇷 Costa Rica</option>
+          <option value="DO">🇩🇴 Rep. Dominicana</option>
+          <option value="GT">🇬🇹 Guatemala</option>
+          <option value="SV">🇸🇻 El Salvador</option>
+          <option value="HN">🇭🇳 Honduras</option>
+          <option value="BR">🇧🇷 Brasil</option>
+          <option value="CA">🇨🇦 Canadá</option>
+          <option value="UK">🇬🇧 Reino Unido</option>
+          <option value="DE">🇩🇪 Alemania</option>
+          <option value="FR">🇫🇷 Francia</option>
+          <option value="IT">🇮🇹 Italia</option>
+          <option value="OTHER">🌐 Internacional / Otro</option>
+        </select>
+      </div>
+
+      <div class="form-g" style="margin-bottom:18px;">
+        <label class="form-l">Correo Electrónico (Cuenta)</label>
+        <input class="form-i" id="prof-email" type="email" readonly style="opacity:0.6;cursor:not-allowed;background:rgba(255,255,255,0.03);">
+      </div>
+
+      <div class="modal-foot" style="margin-top:20px;display:flex;gap:10px;">
+        <button class="btn-cancel" onclick="closeModal('profile-modal')" style="flex:1;">Cancelar</button>
+        <button class="btn-green" id="prof-save-btn" onclick="saveUserProfile()" style="flex:1.5;">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: Registrar Break Even -->
   <div class="overlay" id="be-calc-modal" onclick="closeOnBg(event,'be-calc-modal')">
     <div class="modal" style="width:380px;">
@@ -4979,10 +5066,71 @@
       };
     }
 
+    // ── Global Countries & Flags Data ──
+    const COUNTRIES_LIST = [
+      { code: 'CO', name: 'Colombia', flag: '🇨🇴', flagImg: 'https://flagcdn.com/w160/co.png' },
+      { code: 'MX', name: 'México', flag: '🇲🇽', flagImg: 'https://flagcdn.com/w160/mx.png' },
+      { code: 'AR', name: 'Argentina', flag: '🇦🇷', flagImg: 'https://flagcdn.com/w160/ar.png' },
+      { code: 'CL', name: 'Chile', flag: '🇨🇱', flagImg: 'https://flagcdn.com/w160/cl.png' },
+      { code: 'PE', name: 'Perú', flag: '🇵🇪', flagImg: 'https://flagcdn.com/w160/pe.png' },
+      { code: 'ES', name: 'España', flag: '🇪🇸', flagImg: 'https://flagcdn.com/w160/es.png' },
+      { code: 'US', name: 'Estados Unidos', flag: '🇺🇸', flagImg: 'https://flagcdn.com/w160/us.png' },
+      { code: 'EC', name: 'Ecuador', flag: '🇪🇨', flagImg: 'https://flagcdn.com/w160/ec.png' },
+      { code: 'VE', name: 'Venezuela', flag: '🇻🇪', flagImg: 'https://flagcdn.com/w160/ve.png' },
+      { code: 'BO', name: 'Bolivia', flag: '🇧🇴', flagImg: 'https://flagcdn.com/w160/bo.png' },
+      { code: 'UY', name: 'Uruguay', flag: '🇺🇾', flagImg: 'https://flagcdn.com/w160/uy.png' },
+      { code: 'PY', name: 'Paraguay', flag: '🇵🇾', flagImg: 'https://flagcdn.com/w160/py.png' },
+      { code: 'PA', name: 'Panamá', flag: '🇵🇦', flagImg: 'https://flagcdn.com/w160/pa.png' },
+      { code: 'CR', name: 'Costa Rica', flag: '🇨🇷', flagImg: 'https://flagcdn.com/w160/cr.png' },
+      { code: 'DO', name: 'Rep. Dominicana', flag: '🇩🇴', flagImg: 'https://flagcdn.com/w160/do.png' },
+      { code: 'GT', name: 'Guatemala', flag: '🇬🇹', flagImg: 'https://flagcdn.com/w160/gt.png' },
+      { code: 'SV', name: 'El Salvador', flag: '🇸🇻', flagImg: 'https://flagcdn.com/w160/sv.png' },
+      { code: 'HN', name: 'Honduras', flag: '🇭🇳', flagImg: 'https://flagcdn.com/w160/hn.png' },
+      { code: 'BR', name: 'Brasil', flag: '🇧🇷', flagImg: 'https://flagcdn.com/w160/br.png' },
+      { code: 'CA', name: 'Canadá', flag: '🇨🇦', flagImg: 'https://flagcdn.com/w160/ca.png' },
+      { code: 'UK', name: 'Reino Unido', flag: '🇬🇧', flagImg: 'https://flagcdn.com/w160/gb.png' },
+      { code: 'DE', name: 'Alemania', flag: '🇩🇪', flagImg: 'https://flagcdn.com/w160/de.png' },
+      { code: 'FR', name: 'Francia', flag: '🇫🇷', flagImg: 'https://flagcdn.com/w160/fr.png' },
+      { code: 'IT', name: 'Italia', flag: '🇮🇹', flagImg: 'https://flagcdn.com/w160/it.png' },
+      { code: 'OTHER', name: 'Internacional', flag: '🌐', flagImg: 'https://flagcdn.com/w160/un.png' }
+    ];
+
+    const COUNTRIES_MAP = {};
+    COUNTRIES_LIST.forEach(function (c) {
+      COUNTRIES_MAP[c.code] = c;
+    });
+
+    function getUserCountryInfo(code) {
+      let c = (code || 'CO').toUpperCase();
+      if (COUNTRIES_MAP[c]) return COUNTRIES_MAP[c];
+      return { code: 'OTHER', name: 'Internacional', flag: '🌐', flagImg: 'https://flagcdn.com/w160/un.png' };
+    }
+
+    function getUserProfileData(user) {
+      if (!user) user = sb.getUser();
+      if (!user) return { name: 'Sarah Posada', username: '', country: 'CO', email: '', avatarUrl: null };
+      
+      const meta = user.user_metadata || {};
+      let name = meta.full_name || meta.name || user.email || 'Sarah Posada';
+      let username = meta.username || '';
+      let country = meta.country || 'CO';
+      let avatarUrl = meta.avatar_url || null;
+
+      if (username.startsWith('@')) username = username.substring(1);
+
+      return {
+        name: name,
+        username: username,
+        country: country,
+        email: user.email || '',
+        avatarUrl: avatarUrl
+      };
+    }
+
     function renderUserAvatar(user, name) {
       const avs = document.querySelectorAll('.user-av');
       if (!avs.length) return;
-      let avatarUrl = user.user_metadata && user.user_metadata.avatar_url;
+      let avatarUrl = user && user.user_metadata && user.user_metadata.avatar_url;
       avs.forEach(av => {
         if (avatarUrl) {
           av.innerHTML = `<img src="${avatarUrl}" alt="Avatar" />`;
@@ -4990,12 +5138,125 @@
           av.style.background = 'none';
           av.style.borderRadius = '50%';
         } else {
-          av.textContent = name ? name[0].toUpperCase() : '?';
+          const letter = (name && name.trim()) ? name.trim()[0].toUpperCase() : 'S';
+          av.textContent = letter;
           av.style.border = 'none';
           av.style.background = 'linear-gradient(135deg, #ffcd1b, #a67726)';
           av.style.borderRadius = '10px';
         }
       });
+    }
+
+    function renderUserProfile(user) {
+      if (!user) user = sb.getUser();
+      if (!user) return;
+      const data = getUserProfileData(user);
+      const cInfo = getUserCountryInfo(data.country);
+
+      // Sidebar items
+      const nameEl = document.querySelector('#sidebar-user-name .user-name-text') || document.querySelector('.user-name');
+      const flagEl = document.getElementById('sidebar-user-flag');
+      const handleEl = document.getElementById('sidebar-user-handle') || document.querySelector('.user-email');
+
+      if (nameEl) nameEl.textContent = data.name;
+      if (flagEl) {
+        flagEl.textContent = cInfo.flag;
+        flagEl.title = cInfo.name;
+      }
+      if (handleEl) {
+        handleEl.textContent = data.username ? ('@' + data.username) : (data.email || '—');
+      }
+
+      renderUserAvatar(user, data.name);
+    }
+
+    function openProfileModal() {
+      const user = sb.getUser();
+      if (!user) return;
+      const data = getUserProfileData(user);
+
+      const nameInput = document.getElementById('prof-name');
+      const userInput = document.getElementById('prof-username');
+      const countryInput = document.getElementById('prof-country');
+      const emailInput = document.getElementById('prof-email');
+
+      if (nameInput) nameInput.value = data.name;
+      if (userInput) userInput.value = data.username;
+      if (countryInput) countryInput.value = data.country || 'CO';
+      if (emailInput) emailInput.value = data.email;
+
+      renderUserAvatar(user, data.name);
+      document.getElementById('profile-modal').classList.add('open');
+    }
+
+    async function saveUserProfile() {
+      const user = sb.getUser();
+      if (!user) return;
+
+      const name = (document.getElementById('prof-name').value || '').trim();
+      let username = (document.getElementById('prof-username').value || '').trim();
+      if (username.startsWith('@')) username = username.substring(1).trim();
+      const country = document.getElementById('prof-country').value || 'CO';
+
+      if (!name) {
+        alert('Por favor ingresa tu nombre completo.');
+        return;
+      }
+
+      showLoading(true);
+      try {
+        const updateData = {
+          full_name: name,
+          username: username,
+          country: country
+        };
+
+        // 1. Update auth user metadata
+        await sb.updateUser({ data: updateData });
+        if (!user.user_metadata) user.user_metadata = {};
+        user.user_metadata.full_name = name;
+        user.user_metadata.username = username;
+        user.user_metadata.country = country;
+
+        // 2. Update profiles table
+        try {
+          await sb.update('profiles', user.id, {
+            full_name: name,
+            username: username,
+            country: country
+          });
+        } catch (pe) {
+          try {
+            await sb.update('users', user.id, {
+              full_name: name,
+              username: username,
+              country: country
+            });
+          } catch (pe2) {}
+        }
+
+        // 3. Update tournament participants table if registered
+        try {
+          const myParts = await sb.query('tournament_participants', { filter: 'user_id=eq.' + user.id });
+          if (Array.isArray(myParts)) {
+            for (const pt of myParts) {
+              await sb.update('tournament_participants', pt.id, {
+                user_name: name + (username ? ` (@${username})` : ''),
+                country: country
+              });
+            }
+          }
+        } catch (tpErr) {}
+
+        renderUserProfile(user);
+        closeModal('profile-modal');
+        alert('¡Perfil actualizado con éxito!');
+      } catch (err) {
+        console.error('Error al guardar el perfil:', err);
+        alert('Error al guardar el perfil: ' + (err.message || err));
+      } finally {
+        showLoading(false);
+      }
     }
 
     async function handleAvatarChange(input) {
@@ -5020,6 +5281,9 @@
         const fileName = `${user.id}_${Date.now()}.${ext}`;
         const publicUrl = await sb.uploadFile('Avatars', fileName, file);
         await sb.updateUser({ data: { avatar_url: publicUrl } });
+        if (!user.user_metadata) user.user_metadata = {};
+        user.user_metadata.avatar_url = publicUrl;
+
         try {
           await sb.update('profiles', user.id, { avatar_url: publicUrl });
         } catch (dbErr) {
@@ -5035,11 +5299,8 @@
             }
           }
         } catch (tpErr) {}
-        let name = (user.user_metadata && user.user_metadata.full_name) || user.email;
-        if (name.toLowerCase().includes('sara') || name.toLowerCase().includes('juliana')) {
-          name = 'Sarah Posada';
-        }
-        renderUserAvatar(sb.getUser(), name);
+        
+        renderUserProfile(user);
         alert("Foto de perfil actualizada con éxito.");
       } catch (err) {
         console.error("Error al actualizar la foto de perfil:", err);
@@ -5053,33 +5314,33 @@
     async function initApp() {
       const user = sb.getUser(); if (!user) return;
       document.getElementById('auth-screen').style.display = 'none';
-      let name = (user.user_metadata && user.user_metadata.full_name) || user.email;
-      if (name.toLowerCase().includes('sara') || name.toLowerCase().includes('juliana')) {
-        name = 'Sarah Posada';
-      }
-      const av = document.querySelector('.user-av'), nm = document.querySelector('.user-name'), em = document.querySelector('.user-email');
-      if (nm) nm.textContent = name;
-      if (em) em.textContent = user.email;
 
-      let avatarUrl = user.user_metadata && user.user_metadata.avatar_url;
+      // Load profile info from Supabase profiles table if available
       try {
         const profileData = await sb.query('profiles', { filter: 'id=eq.' + user.id });
-        if (profileData && profileData.length > 0 && profileData[0].avatar_url) {
-          avatarUrl = profileData[0].avatar_url;
+        if (profileData && profileData.length > 0) {
+          const pr = profileData[0];
+          if (!user.user_metadata) user.user_metadata = {};
+          if (pr.full_name) user.user_metadata.full_name = pr.full_name;
+          if (pr.username) user.user_metadata.username = pr.username;
+          if (pr.country) user.user_metadata.country = pr.country;
+          if (pr.avatar_url) user.user_metadata.avatar_url = pr.avatar_url;
         }
       } catch (e) {
         try {
           const userData = await sb.query('users', { filter: 'id=eq.' + user.id });
-          if (userData && userData.length > 0 && userData[0].avatar_url) {
-            avatarUrl = userData[0].avatar_url;
+          if (userData && userData.length > 0) {
+            const ur = userData[0];
+            if (!user.user_metadata) user.user_metadata = {};
+            if (ur.full_name) user.user_metadata.full_name = ur.full_name;
+            if (ur.username) user.user_metadata.username = ur.username;
+            if (ur.country) user.user_metadata.country = ur.country;
+            if (ur.avatar_url) user.user_metadata.avatar_url = ur.avatar_url;
           }
         } catch (e2) {}
       }
-      if (avatarUrl) {
-        if (!user.user_metadata) user.user_metadata = {};
-        user.user_metadata.avatar_url = avatarUrl;
-      }
-      renderUserAvatar(user, name);
+
+      renderUserProfile(user);
 
       document.getElementById('date-pill').textContent = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
       showLoading(true);
@@ -7531,13 +7792,8 @@
 
         // User Profile Data
         const u = sb.getUser();
-        let userName = 'Sarah Posada';
-        if (u) {
-          userName = (u.user_metadata && u.user_metadata.full_name) || u.email || 'Sarah Posada';
-          if (userName.toLowerCase().includes('sara') || userName.toLowerCase().includes('juliana')) {
-            userName = 'Sarah Posada';
-          }
-        }
+        const pData = getUserProfileData(u);
+        let userName = pData.name || 'Sarah Posada';
         const userAvEl = document.querySelector('.user-av');
         let avatarImgSrc = null;
         if (userAvEl) {
@@ -8475,28 +8731,6 @@ function _renderAnalisis_orig() {
       let tournamentParticipants = [];
       let activeTournamentTimeframe = 'all'; // 'all' | 'week' | 'month'
 
-      const COUNTRIES_MAP = {
-        'CO': { name: 'Colombia', flag: '🇨🇴', flagImg: 'https://flagcdn.com/w160/co.png' },
-        'MX': { name: 'México', flag: '🇲🇽', flagImg: 'https://flagcdn.com/w160/mx.png' },
-        'AR': { name: 'Argentina', flag: '🇦🇷', flagImg: 'https://flagcdn.com/w160/ar.png' },
-        'CL': { name: 'Chile', flag: '🇨🇱', flagImg: 'https://flagcdn.com/w160/cl.png' },
-        'PE': { name: 'Perú', flag: '🇵🇪', flagImg: 'https://flagcdn.com/w160/pe.png' },
-        'ES': { name: 'España', flag: '🇪🇸', flagImg: 'https://flagcdn.com/w160/es.png' },
-        'US': { name: 'Estados Unidos', flag: '🇺🇸', flagImg: 'https://flagcdn.com/w160/us.png' },
-        'EC': { name: 'Ecuador', flag: '🇪🇨', flagImg: 'https://flagcdn.com/w160/ec.png' },
-        'VE': { name: 'Venezuela', flag: '🇻🇪', flagImg: 'https://flagcdn.com/w160/ve.png' },
-        'BO': { name: 'Bolivia', flag: '🇧🇴', flagImg: 'https://flagcdn.com/w160/bo.png' },
-        'UY': { name: 'Uruguay', flag: '🇺🇾', flagImg: 'https://flagcdn.com/w160/uy.png' },
-        'PY': { name: 'Paraguay', flag: '🇵🇾', flagImg: 'https://flagcdn.com/w160/py.png' },
-        'PA': { name: 'Panamá', flag: '🇵🇦', flagImg: 'https://flagcdn.com/w160/pa.png' },
-        'CR': { name: 'Costa Rica', flag: '🇨🇷', flagImg: 'https://flagcdn.com/w160/cr.png' },
-        'DO': { name: 'Rep. Dominicana', flag: '🇩🇴', flagImg: 'https://flagcdn.com/w160/do.png' },
-        'GT': { name: 'Guatemala', flag: '🇬🇹', flagImg: 'https://flagcdn.com/w160/gt.png' },
-        'SV': { name: 'El Salvador', flag: '🇸🇻', flagImg: 'https://flagcdn.com/w160/sv.png' },
-        'HN': { name: 'Honduras', flag: '🇭🇳', flagImg: 'https://flagcdn.com/w160/hn.png' },
-        'BR': { name: 'Brasil', flag: '🇧🇷', flagImg: 'https://flagcdn.com/w160/br.png' }
-      };
-
       const CRESTS = {
         platino: (size = 48) => `
           <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
@@ -9348,6 +9582,10 @@ function _renderAnalisis_orig() {
       window.submitDeposit = submitDeposit;
       window.openEditAccount = openEditAccount;
       window.openDeleteAccount = openDeleteAccount;
+
+      window.openProfileModal = openProfileModal;
+      window.saveUserProfile = saveUserProfile;
+      window.handleAvatarChange = handleAvatarChange;
 
       // ── Init ──
       document.getElementById('auth-screen').style.display = 'flex';

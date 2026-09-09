@@ -3411,15 +3411,21 @@
       <div class="acct-dropdown-menu" id="acct-dropdown-menu"></div>
     </div>
     <div class="sidebar-footer">
-       <input type="file" id="user-avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleAvatarChange(this)">
-       <div class="user-card">
-         <div class="user-av" onclick="document.getElementById('user-avatar-input').click()" title="Cambiar foto de perfil">S</div>
-         <div class="user-info">
-           <div class="user-name">Sarah Posada</div>
-           <div class="user-email">—</div>
-         </div>
-       </div>
-     </div>
+      <input type="file" id="user-avatar-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleAvatarChange(this)">
+      <div class="user-card" onclick="openProfileModal()" style="cursor:pointer;" title="Personalizar Mi Perfil">
+        <div class="user-av" onclick="event.stopPropagation(); document.getElementById('user-avatar-input').click()" title="Cambiar foto de perfil">S</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-user-name" style="display:flex;align-items:center;gap:6px;">
+            <span class="user-name-text">Sarah Posada</span>
+            <span id="sidebar-user-flag" style="font-size:14px;">🇨🇴</span>
+          </div>
+          <div class="user-email" id="sidebar-user-handle">—</div>
+        </div>
+        <button class="ftr-btn" onclick="event.stopPropagation(); openProfileModal()" title="Personalizar Perfil" style="margin-left:auto;flex-shrink:0;">
+          ⚙️
+        </button>
+      </div>
+    </div>
   </aside>
 
   <!-- MAIN -->
@@ -4424,6 +4430,87 @@
       <div class="modal-foot" style="margin-top:20px;display:flex;gap:10px;">
         <button class="btn-cancel" onclick="closeModal('deposit-modal')" style="flex:1;">Cancelar</button>
         <button class="btn-green" id="dep-submit-btn" onclick="submitDeposit()" style="flex:1.5;">Confirmar Depósito</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Personalizar Perfil -->
+  <div class="overlay" id="profile-modal" onclick="closeOnBg(event,'profile-modal')">
+    <div class="modal" style="width:440px;max-width:95vw;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="modal-title" style="margin-bottom:0;display:flex;align-items:center;gap:8px;">
+          <span>👤</span> Mi Perfil de Trader
+        </div>
+        <button class="btn-cancel" onclick="closeModal('profile-modal')" style="padding:4px 10px;font-size:13px;">✕</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:18px;line-height:1.4;">
+        Personaliza tu nombre, nombre de usuario y tu país con su bandera oficial.
+      </div>
+
+      <!-- Avatar preview & change -->
+      <div style="display:flex;align-items:center;gap:16px;background:var(--bg-card-inner);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:18px;">
+        <div class="user-av" id="prof-avatar-preview" onclick="document.getElementById('user-avatar-input').click()" style="width:54px;height:54px;min-width:54px;min-height:54px;font-size:18px;cursor:pointer;position:relative;" title="Haz clic para cambiar foto">
+          S
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">Foto de Perfil</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Formatos: JPG, PNG o WebP (Máx 2MB)</div>
+          <button type="button" class="btn-cancel" onclick="document.getElementById('user-avatar-input').click()" style="padding:4px 10px;font-size:11.5px;display:inline-flex;align-items:center;gap:5px;">📷 Subir Foto</button>
+        </div>
+      </div>
+
+      <div class="form-g" style="margin-bottom:14px;">
+        <label class="form-l">Nombre Completo</label>
+        <input class="form-i" id="prof-name" type="text" placeholder="Ej: Sarah Posada" required>
+      </div>
+
+      <div class="form-g" style="margin-bottom:14px;">
+        <label class="form-l">Nombre de Usuario (@)</label>
+        <div style="position:relative;">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--yellow);font-weight:700;font-size:13px;">@</span>
+          <input class="form-i" id="prof-username" type="text" placeholder="usuario_trader" style="padding-left:28px;">
+        </div>
+      </div>
+
+      <div class="form-g" style="margin-bottom:14px;">
+        <label class="form-l">País de Representación 🌍</label>
+        <select class="form-i" id="prof-country" required>
+          <option value="CO">🇨🇴 Colombia</option>
+          <option value="MX">🇲🇽 México</option>
+          <option value="AR">🇦🇷 Argentina</option>
+          <option value="CL">🇨🇱 Chile</option>
+          <option value="PE">🇵🇪 Perú</option>
+          <option value="ES">🇪🇸 España</option>
+          <option value="US">🇺🇸 Estados Unidos</option>
+          <option value="EC">🇪🇨 Ecuador</option>
+          <option value="VE">🇻🇪 Venezuela</option>
+          <option value="BO">🇧🇴 Bolivia</option>
+          <option value="UY">🇺🇾 Uruguay</option>
+          <option value="PY">🇵🇾 Paraguay</option>
+          <option value="PA">🇵🇦 Panamá</option>
+          <option value="CR">🇨🇷 Costa Rica</option>
+          <option value="DO">🇩🇴 Rep. Dominicana</option>
+          <option value="GT">🇬🇹 Guatemala</option>
+          <option value="SV">🇸🇻 El Salvador</option>
+          <option value="HN">🇭🇳 Honduras</option>
+          <option value="BR">🇧🇷 Brasil</option>
+          <option value="CA">🇨🇦 Canadá</option>
+          <option value="UK">🇬🇧 Reino Unido</option>
+          <option value="DE">🇩🇪 Alemania</option>
+          <option value="FR">🇫🇷 Francia</option>
+          <option value="IT">🇮🇹 Italia</option>
+          <option value="OTHER">🌐 Internacional / Otro</option>
+        </select>
+      </div>
+
+      <div class="form-g" style="margin-bottom:18px;">
+        <label class="form-l">Correo Electrónico (Cuenta)</label>
+        <input class="form-i" id="prof-email" type="email" readonly style="opacity:0.6;cursor:not-allowed;background:rgba(255,255,255,0.03);">
+      </div>
+
+      <div class="modal-foot" style="margin-top:20px;display:flex;gap:10px;">
+        <button class="btn-cancel" onclick="closeModal('profile-modal')" style="flex:1;">Cancelar</button>
+        <button class="btn-green" id="prof-save-btn" onclick="saveUserProfile()" style="flex:1.5;">Guardar Cambios</button>
       </div>
     </div>
   </div>
