@@ -4564,22 +4564,22 @@
 
   <!-- MODAL: Exportar Calendario -->
   <div class="overlay" id="cal-export-modal" onclick="closeOnBg(event,'cal-export-modal')">
-    <div class="modal" style="width:960px;max-width:96vw;max-height:94vh;display:flex;flex-direction:column;padding:22px;border:1px solid rgba(255,205,27,0.35);box-shadow:0 25px 70px rgba(0,0,0,0.95), 0 0 35px rgba(255,205,27,0.12);">
+    <div class="modal" style="width:620px;max-width:96vw;max-height:94vh;display:flex;flex-direction:column;padding:20px;border:1px solid rgba(255,205,27,0.35);box-shadow:0 25px 70px rgba(0,0,0,0.95), 0 0 35px rgba(255,205,27,0.12);">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <div>
           <div class="modal-title" style="margin-bottom:2px;display:flex;align-items:center;gap:8px;font-size:17px;">
-            <span>📸</span> Vista Previa de Tarjeta Mensual
+            <span>📸</span> Tarjeta Instagram Story (9:16)
           </div>
-          <div style="font-size:12px;color:var(--text-secondary);">Genera una captura en alta resolución con tus estadísticas y firma de trader</div>
+          <div style="font-size:12px;color:var(--text-secondary);">Formato vertical 9:16 optimizado para Instagram Stories, TikTok y Telegram</div>
         </div>
         <button class="btn-cancel" onclick="closeModal('cal-export-modal')" style="padding:4px 10px;font-size:14px;">✕</button>
       </div>
 
       <!-- Scrollable preview wrapper -->
-      <div style="flex:1;overflow:auto;background:#050505;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;display:flex;justify-content:center;align-items:flex-start;">
+      <div style="flex:1;overflow:auto;background:#050505;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 12px;display:flex;justify-content:center;align-items:flex-start;">
         <div id="cal-export-card-wrapper" style="transform-origin:top center;transition:transform 0.2s;">
-          <!-- Dynamic Render Card -->
-          <div id="cal-export-card" style="width:840px;background:#070709;border:1.5px solid rgba(255,205,27,0.4);border-radius:24px;padding:28px 30px;box-shadow:0 20px 60px rgba(0,0,0,0.95), inset 0 0 30px rgba(255,205,27,0.03);color:#fff;font-family:'Inter', sans-serif;box-sizing:border-box;position:relative;overflow:hidden;">
+          <!-- Dynamic Render Card in 9:16 (540x960 px -> 1080x1920 UHD) -->
+          <div id="cal-export-card" style="width:540px;min-height:960px;background:radial-gradient(circle at 50% 0%, rgba(255, 205, 27, 0.12) 0%, transparent 40%), linear-gradient(180deg, #0f0f14 0%, #060608 50%, #0a0a0f 100%);border:1.5px solid rgba(255,205,27,0.4);border-radius:28px;padding:32px 24px 26px;box-shadow:0 25px 80px rgba(0,0,0,0.95), inset 0 0 30px rgba(255,205,27,0.04);color:#fff;font-family:'Inter', sans-serif;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;">
           </div>
         </div>
       </div>
@@ -4620,7 +4620,7 @@
 
 
 
-  <script src="app.js?v=1788990331028"></script>
+  <script src="app.js?v=1788990896862"></script>
 </body>
 
 </html>
