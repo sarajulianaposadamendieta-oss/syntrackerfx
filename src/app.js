@@ -1010,9 +1010,24 @@
     function goTo(id, el) {
       document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
-      document.getElementById('page-' + id).classList.add('active');
-      el.classList.add('active');
-      document.getElementById('tb-title').textContent = pageNames[id] || id;
+      document.querySelectorAll('.mob-nav-item').forEach(function (m) { m.classList.remove('active'); });
+
+      const targetPage = document.getElementById('page-' + id);
+      if (targetPage) targetPage.classList.add('active');
+
+      // Highlight sidebar nav item
+      const sideNavMatch = document.querySelector(`.nav-item[onclick*="'${id}'"]`);
+      if (sideNavMatch) sideNavMatch.classList.add('active');
+
+      // Highlight mobile bottom nav item
+      const mobNavMatch = document.querySelector(`.mob-nav-item[data-page="${id}"]`);
+      if (mobNavMatch) mobNavMatch.classList.add('active');
+
+      const tbTitle = document.getElementById('tb-title');
+      if (tbTitle) tbTitle.textContent = pageNames[id] || id;
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       if (id === 'dashboard') renderDashboard();
       if (id === 'tradelog') renderTrades();
       if (id === 'calendario') renderCalendar();
@@ -1022,6 +1037,7 @@
       if (id === 'cuentas') renderAccounts();
       if (id === 'torneo') loadTournamentData();
     }
+    window.goTo = goTo;
     function setView(v, btn) { document.querySelectorAll('.tog-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); }
 
     // ── Account state ──
