@@ -1967,7 +1967,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top: 1px solid rgba(255, 205, 27, 0.18);
-      z-index: 1000;
+      z-index: 99999;
       justify-content: space-around;
       align-items: center;
       padding: 0 4px;
@@ -4909,47 +4909,49 @@
       <div class="lb-counter" id="lb-counter">Foto 1 de 1</div>
       <div class="lb-thumbs" id="lb-thumbs"></div>
     </div>
+  </div>
+
   <!-- MOBILE BOTTOM NAVIGATION (NATIVE APP EXPERIENCE) -->
   <nav class="mobile-bottom-bar" id="mobile-bottom-nav">
     <div class="mob-nav-item active" data-page="dashboard" onclick="goTo('dashboard', this)">
       <div class="mob-nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
       </div>
       <span>Dashboard</span>
     </div>
     <div class="mob-nav-item" data-page="tradelog" onclick="goTo('tradelog', this)">
       <div class="mob-nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
       </div>
       <span>Trades</span>
     </div>
     <div class="mob-nav-item" data-page="calendario" onclick="goTo('calendario', this)">
       <div class="mob-nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
       </div>
       <span>Calendario</span>
     </div>
     <div class="mob-nav-item" data-page="estadisticas" onclick="goTo('estadisticas', this)">
       <div class="mob-nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
       </div>
       <span>Stats</span>
     </div>
     <div class="mob-nav-item" data-page="cuentas" onclick="goTo('cuentas', this)">
       <div class="mob-nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       </div>
       <span>Cuentas</span>
     </div>
     <div class="mob-nav-item" data-page="torneo" onclick="goTo('torneo', this)">
       <div class="mob-nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-.98 1.2A3.5 3.5 0 0 0 7 21.5h10a3.5 3.5 0 0 0-2.02-3.3c-.53-.2-.98-.65-.98-1.2v-2.34"/><path d="M6 4h12v5a6 6 0 0 1-12 0V4z"/></svg>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-.98 1.2A3.5 3.5 0 0 0 7 21.5h10a3.5 3.5 0 0 0-2.02-3.3c-.53-.2-.98-.65-.98-1.2v-2.34"/><path d="M6 4h12v5a6 6 0 0 1-12 0V4z"/></svg>
       </div>
       <span>Torneo</span>
     </div>
   </nav>
 
-  <script src="app.js?v=1788993009323"></script>
+  <script src="app.js?v=1788993281503"></script>
 </body>
 
 </html>
