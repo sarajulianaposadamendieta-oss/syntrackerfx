@@ -2154,31 +2154,85 @@
         min-width: 720px;
       }
 
-      /* Calendario */
-      .cal-days-header,
-      .cal-body {
-        grid-template-columns: repeat(7, 1fr) !important;
-        gap: 3px !important;
+      /* Calendario Móvil */
+      .cal-grid-wrap {
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        border: 1px solid var(--border) !important;
+        background: #0d0d10 !important;
       }
-      .cal-weekly-col,
-      .cal-weekly-header {
+      .cal-days-header {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        background: var(--bg-card-inner) !important;
+        border-bottom: 1px solid var(--border) !important;
+      }
+      .cal-body {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        background: #09090b !important;
+        gap: 0px !important;
+      }
+      .cal-day-name.semana,
+      .cal-cell.week-col {
         display: none !important;
       }
-
+      .cal-day-name {
+        padding: 8px 2px !important;
+        font-size: 10.5px !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        color: var(--text-muted) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
+      }
+      .cal-day-name:last-child {
+        border-right: none !important;
+      }
       .cal-cell {
-        min-height: 48px !important;
-        padding: 4px 2px !important;
-        font-size: 10px !important;
-        border-radius: 6px !important;
+        min-height: 60px !important;
+        padding: 5px 4px !important;
+        background: #0d0d10 !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        aspect-ratio: auto !important;
+        border-radius: 0 !important;
       }
-      .cal-cell-day {
+      .cal-cell:nth-child(7n) {
+        border-right: none !important;
+      }
+      .cal-cell.other-month {
+        opacity: 0.18 !important;
+        background: transparent !important;
+      }
+      .cal-cell.win-day {
+        background: rgba(34, 197, 94, 0.12) !important;
+        border-left: 2.5px solid #22c55e !important;
+      }
+      .cal-cell.loss-day {
+        background: rgba(239, 68, 68, 0.12) !important;
+        border-left: 2.5px solid #ef4444 !important;
+      }
+      .cal-cell.today {
+        box-shadow: inset 0 0 0 1.5px var(--yellow) !important;
+      }
+      .cal-num {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: rgba(255, 255, 255, 0.75) !important;
+      }
+      .cal-trades {
+        display: none !important;
+      }
+      .cal-pnl {
         font-size: 9.5px !important;
-      }
-      .cal-cell-pnl {
-        font-size: 10px !important;
-      }
-      .cal-cell-trades {
-        font-size: 8px !important;
+        font-weight: 800 !important;
+        font-family: var(--mono) !important;
+        line-height: 1 !important;
+        margin-top: auto !important;
+        white-space: nowrap !important;
       }
 
       /* Modals as Touch-friendly Sheets */
@@ -4951,7 +5005,7 @@
     </div>
   </nav>
 
-  <script src="app.js?v=1788993281503"></script>
+  <script src="app.js?v=1788993420491"></script>
 </body>
 
 </html>
