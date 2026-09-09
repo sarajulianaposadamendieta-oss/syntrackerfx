@@ -4386,6 +4386,48 @@
     </div>
   </div>
 
+  <!-- MODAL: Añadir Depósito / Retiro de Capital -->
+  <div class="overlay" id="deposit-modal" onclick="closeOnBg(event,'deposit-modal')">
+    <div class="modal" style="width:410px;">
+      <div class="modal-title" style="display:flex;align-items:center;gap:8px;">
+        <span>💵</span> Añadir Depósito a Cuenta
+      </div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px;line-height:1.4;">
+        Inyecta capital a tu cuenta. Este monto sumará al balance total sin alterar tu Net P&amp;L ni tus estadísticas de trading.
+      </div>
+      <input type="hidden" id="dep-acct-id">
+      
+      <div class="form-g">
+        <label class="form-l">Cuenta</label>
+        <input class="form-i" id="dep-acct-name" type="text" readonly style="opacity:0.85;cursor:not-allowed;background:rgba(255,255,255,0.03);font-weight:600;">
+      </div>
+
+      <div class="form-row2" style="margin-bottom:14px;">
+        <div class="form-g" style="margin-bottom:0;">
+          <label class="form-l">Tipo</label>
+          <select class="form-i" id="dep-type" onchange="updateDepositModalLabels()">
+            <option value="deposit">➕ Depósito (Fondeo)</option>
+            <option value="withdrawal">➖ Retiro (Extracción)</option>
+          </select>
+        </div>
+        <div class="form-g" style="margin-bottom:0;">
+          <label class="form-l" id="dep-amount-label">Monto ($)</label>
+          <input class="form-i" id="dep-amount" type="number" step="0.01" min="0.01" placeholder="Ej: 50.00" required>
+        </div>
+      </div>
+
+      <div class="form-g">
+        <label class="form-l">Nota / Motivo (Opcional)</label>
+        <input class="form-i" id="dep-note" type="text" placeholder="Ej: Recarga de balance, depósito extra...">
+      </div>
+
+      <div class="modal-foot" style="margin-top:20px;display:flex;gap:10px;">
+        <button class="btn-cancel" onclick="closeModal('deposit-modal')" style="flex:1;">Cancelar</button>
+        <button class="btn-green" id="dep-submit-btn" onclick="submitDeposit()" style="flex:1.5;">Confirmar Depósito</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: Registrar Break Even -->
   <div class="overlay" id="be-calc-modal" onclick="closeOnBg(event,'be-calc-modal')">
     <div class="modal" style="width:380px;">
@@ -5725,6 +5767,96 @@
       } catch (e) { console.error(e); alert('Error al eliminar cuenta'); }
       finally { showLoading(false); }
       closeModal('del-acct-modal');
+    }
+
+    // ── Deposit / Withdrawal Management ──
+    function openDepositModal(id) {
+      var a = accounts.find(function (x) { return x.id === id; });
+      if (!a) return;
+      document.getElementById('dep-acct-id').value = a.id;
+      document.getElementById('dep-acct-name').value = a.name + ' (' + (a.type || 'Cuenta') + ')';
+      document.getElementById('dep-amount').value = '';
+      document.getElementById('dep-note').value = '';
+      document.getElementById('dep-type').value = 'deposit';
+      updateDepositModalLabels();
+      document.getElementById('deposit-modal').classList.add('open');
+      setTimeout(function() {
+        var el = document.getElementById('dep-amount');
+        if (el) el.focus();
+      }, 100);
+    }
+
+    function updateDepositModalLabels() {
+      var type = document.getElementById('dep-type').value;
+      var btn = document.getElementById('dep-submit-btn');
+      var lbl = document.getElementById('dep-amount-label');
+      if (type === 'deposit') {
+        if (btn) {
+          btn.textContent = 'Confirmar Depósito';
+          btn.className = 'btn-green';
+        }
+        if (lbl) lbl.textContent = 'Monto a Depositar ($)';
+      } else {
+        if (btn) {
+          btn.textContent = 'Confirmar Retiro';
+          btn.className = 'btn-cancel';
+          btn.style.background = 'var(--red)';
+          btn.style.color = '#fff';
+        }
+        if (lbl) lbl.textContent = 'Monto a Retirar ($)';
+      }
+    }
+
+    async function submitDeposit() {
+      var id = document.getElementById('dep-acct-id').value;
+      var type = document.getElementById('dep-type').value;
+      var amount = parseFloat(document.getElementById('dep-amount').value);
+      var note = (document.getElementById('dep-note').value || '').trim();
+
+      if (!amount || isNaN(amount) || amount <= 0) {
+        alert('Por favor ingresa un monto válido mayor a 0.');
+        return;
+      }
+
+      var a = accounts.find(function (x) { return x.id === id; });
+      if (!a) return;
+
+      var currentBal = parseFloat(a.initialBalance) || 0;
+      var newBalance = currentBal;
+
+      if (type === 'deposit') {
+        newBalance = currentBal + amount;
+      } else {
+        if (amount > currentBal) {
+          if (!confirm('El monto a retirar (
+</body>
+
+</html> + amount.toFixed(2) + ') supera el capital base de la cuenta (
+</body>
+
+</html> + currentBal.toFixed(2) + '). ¿Deseas continuar?')) {
+            return;
+          }
+        }
+        newBalance = Math.max(0, currentBal - amount);
+      }
+
+      showLoading(true);
+      try {
+        await sb.update('accounts', id, { initial_balance: newBalance });
+        a.initialBalance = newBalance;
+        
+        refreshAccountSelects();
+        buildAccountFilter();
+        renderAll();
+
+        closeModal('deposit-modal');
+      } catch (e) {
+        console.error('Error al registrar movimiento de capital:', e);
+        alert('Error al registrar el movimiento en la cuenta.');
+      } finally {
+        showLoading(false);
+      }
     }
 
     function openTradeModal() { renderConfGrid('tm-confirmations', []); document.getElementById('trade-modal').classList.add('open'); }
@@ -7988,25 +8120,26 @@ function renderAccounts() {
                 '<div class="ac-ico ' + (acct.iconClass || '') + '">' + (acct.icon || '💼') + '</div>' +
                 '<div class="ac-ttl"><div class="ac-name">' + (acct.name || 'Sin nombre') + '</div><div class="ac-sub">' + (acct.type || '') + ' · ' + (acct.broker || '') + '</div></div>' +
                 '<div class="ac-actions">' +
+                '<button class="ta" title="Añadir Depósito o Retiro" data-id="' + safeId + '" onclick="openDepositModal(this.dataset.id)" style="font-size:11px;font-weight:700;color:#ffcd1b;background:rgba(255,205,27,0.12);border:1px solid rgba(255,205,27,0.3);border-radius:6px;padding:4px 8px;display:inline-flex;align-items:center;gap:4px;cursor:pointer;">💵 + Depósito</button>' +
                 '<button class="ta e" title="Editar" data-id="' + safeId + '" onclick="openEditAccount(this.dataset.id)">✏️</button>' +
                 '<button class="ta d" title="Eliminar" data-id="' + safeId + '" onclick="openDeleteAccount(this.dataset.id)">🗑️</button>' +
                 '</div>' +
                 '</div>' +
                 '<div class="ac-stats">' +
-                '<div class="ac-stat"><div class="ac-stat-l">Saldo Inicial</div><div class="ac-stat-v">
+                '<div class="ac-stat"><div class="ac-stat-l">Capital Base</div><div class="ac-stat-v">
 </body>
 
-</html> + initBalVal.toLocaleString() + '</div></div>' +
+</html> + initBalVal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</div></div>' +
                 '<div class="ac-stat"><div class="ac-stat-l">Balance Actual</div><div class="ac-stat-v" style="color:' + pc2 + '">
 </body>
 
 </html> + bal.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</div></div>' +
-                '<div class="ac-stat"><div class="ac-stat-l">Net P&L</div><div class="ac-stat-v ' + (netPnlVal >= 0 ? 'green' : 'red') + '">' + (netPnlVal >= 0 ? '+' : '') + '
+                '<div class="ac-stat"><div class="ac-stat-l">Net P&L (Trading)</div><div class="ac-stat-v ' + (netPnlVal >= 0 ? 'green' : 'red') + '">' + (netPnlVal >= 0 ? '+' : '') + '
 </body>
 
 </html> + netPnlVal.toFixed(2) + '</div></div>' +
                 '<div class="ac-stat"><div class="ac-stat-l">Win Rate</div><div class="ac-stat-v ' + (winRateVal >= 50 ? 'green' : 'red') + '">' + winRateVal.toFixed(1) + '%</div></div>' +
-                '<div class="ac-stat full"><div class="ac-stat-l">Trades</div><div class="ac-stat-v">' + (as.total || 0) + '</div></div>' +
+                '<div class="ac-stat full"><div class="ac-stat-l">Operaciones Registradas</div><div class="ac-stat-v">' + (as.total || 0) + ' trades</div></div>' +
                 '</div></div>';
             } catch (innerErr) {
               console.error("Error rendering card for account:", acct, innerErr);
@@ -9209,6 +9342,12 @@ function _renderAnalisis_orig() {
       window.openCalendarExportModal = openCalendarExportModal;
       window.downloadCalendarExportImage = downloadCalendarExportImage;
       window.copyCalendarExportImage = copyCalendarExportImage;
+
+      window.openDepositModal = openDepositModal;
+      window.updateDepositModalLabels = updateDepositModalLabels;
+      window.submitDeposit = submitDeposit;
+      window.openEditAccount = openEditAccount;
+      window.openDeleteAccount = openDeleteAccount;
 
       // ── Init ──
       document.getElementById('auth-screen').style.display = 'flex';
