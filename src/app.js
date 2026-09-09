@@ -2749,23 +2749,22 @@
         var next = 1;
         while (cells.length % 7 !== 0) cells.push({ day: next++, other: true });
 
-        const pnlColor = ms.netPnl >= 0 ? '#4ade80' : '#f87171';
+        const pnlColor = ms.netPnl >= 0 ? '#16a34a' : '#f87171';
         const pnlSign = ms.netPnl >= 0 ? '+' : '';
         const pnlFormatted = pnlSign + '$' + ms.netPnl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const wrColor = ms.winRate >= 50 ? '#4ade80' : '#f87171';
+        const wrColor = ms.winRate >= 50 ? '#16a34a' : '#f87171';
         const pfText = isFinite(ms.profitFactor) ? ms.profitFactor.toFixed(2) : (ms.profitFactor > 0 ? '∞' : '0.00');
 
         let html = '';
 
         // ── TOP BRANDING & HEADER ──
         html += '<div style="text-align:center;margin-bottom:14px;">';
-        html += '  <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:6px;">';
-        html += '    <img src="logo.png" alt="GoldFX" style="width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(255,205,27,0.4));">';
-        html += '    <span style="font-size:18px;font-weight:900;letter-spacing:1.5px;color:#fff;text-transform:uppercase;font-family:var(--sans);">SYNTRACKER FX</span>';
+        html += '  <div style="margin-bottom:4px;">';
+        html += '    <span style="font-size:19px;font-weight:900;letter-spacing:2px;color:#ffcd1b;text-transform:uppercase;font-family:var(--sans);">SYNTRACKER FX</span>';
         html += '  </div>';
         html += '  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">';
         html += '    <div style="height:1px;width:35px;background:linear-gradient(90deg, transparent, #ffcd1b);"></div>';
-        html += '    <span style="font-size:9.5px;font-weight:800;letter-spacing:2px;color:#ffcd1b;text-transform:uppercase;">ESTEBAN GOLDFX OFFICIAL</span>';
+        html += '    <span style="font-size:9.5px;font-weight:800;letter-spacing:2px;color:rgba(255,255,255,0.7);text-transform:uppercase;">ESTEBAN GOLDFX OFFICIAL</span>';
         html += '    <div style="height:1px;width:35px;background:linear-gradient(90deg, #ffcd1b, transparent);"></div>';
         html += '  </div>';
         html += '  <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;">' + monthName + ' <span style="color:#ffcd1b;">' + yr + '</span></div>';
@@ -2774,11 +2773,11 @@
         // ── HERO STATS CARD (Instagram Story Style) ──
         html += '<div style="background:linear-gradient(135deg, rgba(255,205,27,0.08) 0%, rgba(18,18,18,0.85) 100%);border:1px solid rgba(255,205,27,0.3);border-radius:18px;padding:16px 18px;margin-bottom:14px;box-shadow:0 10px 25px rgba(0,0,0,0.5);text-align:center;">';
         html += '  <div style="font-size:10px;font-weight:800;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">NET P&L DEL MES</div>';
-        html += '  <div style="font-size:30px;font-weight:900;color:' + pnlColor + ';font-family:var(--mono);line-height:1.1;letter-spacing:-0.5px;text-shadow:0 0 20px ' + (ms.netPnl >= 0 ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.3)') + ';">' + pnlFormatted + '</div>';
+        html += '  <div style="font-size:30px;font-weight:900;color:' + pnlColor + ';font-family:var(--mono);line-height:1.1;letter-spacing:-0.5px;text-shadow:0 0 20px ' + (ms.netPnl >= 0 ? 'rgba(22,163,74,0.35)' : 'rgba(248,113,113,0.3)') + ';">' + pnlFormatted + '</div>';
         html += '  <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);font-size:11.5px;">';
         html += '    <span style="color:' + wrColor + ';font-weight:700;">🎯 ' + ms.winRate.toFixed(1) + '% WR</span>';
         html += '    <span style="color:var(--text-muted);">&bull;</span>';
-        html += '    <span style="color:#fff;font-weight:600;"><span style="color:#4ade80;">' + ms.wins + 'W</span> / <span style="color:#f87171;">' + ms.losses + 'L</span> / <span style="color:#ffcd1b;">' + ms.bes + 'BE</span></span>';
+        html += '    <span style="color:#fff;font-weight:600;"><span style="color:#16a34a;">' + ms.wins + 'W</span> / <span style="color:#f87171;">' + ms.losses + 'L</span> / <span style="color:#ffcd1b;">' + ms.bes + 'BE</span></span>';
         html += '  </div>';
         html += '</div>';
 
@@ -2790,7 +2789,7 @@
         html += '  </div>';
         html += '  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">';
         html += '    <span style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Días Ganadores</span>';
-        html += '    <span style="font-size:13px;font-weight:800;color:#4ade80;font-family:var(--mono);">' + profitableDays + ' / ' + tradedDays + ' d</span>';
+        html += '    <span style="font-size:13px;font-weight:800;color:#16a34a;font-family:var(--mono);">' + profitableDays + ' / ' + tradedDays + ' d</span>';
         html += '  </div>';
         html += '</div>';
 
@@ -2819,8 +2818,8 @@
 
             if (hasData) {
               var isWin = c.data.pnl >= 0;
-              cellBg = isWin ? 'rgba(74, 222, 128, 0.1)' : 'rgba(248, 113, 113, 0.1)';
-              cellBorder = isWin ? '1px solid rgba(74, 222, 128, 0.35)' : '1px solid rgba(248, 113, 113, 0.35)';
+              cellBg = isWin ? 'rgba(22, 163, 74, 0.12)' : 'rgba(248, 113, 113, 0.1)';
+              cellBorder = isWin ? '1px solid rgba(22, 163, 74, 0.4)' : '1px solid rgba(248, 113, 113, 0.35)';
             } else if (isInaction) {
               cellBg = 'rgba(255, 205, 27, 0.04)';
               cellBorder = '1px solid rgba(255, 205, 27, 0.2)';
@@ -2845,7 +2844,7 @@
               var isWin = c.data.pnl >= 0;
               var pnlAbs = Math.abs(c.data.pnl);
               var pnlStr = (isWin ? '+' : '-') + (pnlAbs >= 1000 ? '$' + (pnlAbs/1000).toFixed(1) + 'K' : '$' + pnlAbs.toFixed(0));
-              var pnlDayColor = isWin ? '#4ade80' : '#f87171';
+              var pnlDayColor = isWin ? '#16a34a' : '#f87171';
 
               html += '        <div style="font-size:11px;font-weight:900;color:' + pnlDayColor + ';font-family:var(--mono);line-height:1;margin:2px 0;text-align:center;">' + pnlStr + '</div>';
 
@@ -2870,23 +2869,15 @@
         html += '  </div>';
         html += '</div>';
 
-        // ── TRADER SIGNATURE & BRAND FOOTER ──
-        html += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,205,27,0.25);border-radius:16px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">';
-        html += '  <div style="display:flex;align-items:center;gap:10px;">';
+        // ── TRADER SIGNATURE FOOTER (Centered) ──
+        html += '<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,205,27,0.22);border-radius:18px;padding:12px 18px;display:flex;align-items:center;justify-content:center;text-align:center;">';
+        html += '  <div style="display:flex;align-items:center;justify-content:center;gap:11px;">';
         if (avatarImgSrc) {
-          html += '    <img src="' + avatarImgSrc + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid #ffcd1b;">';
+          html += '    <img src="' + avatarImgSrc + '" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1.5px solid #ffcd1b;">';
         } else {
-          html += '    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg, #ffcd1b, #a67726);color:#000;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;">' + (userName.charAt(0).toUpperCase() || 'S') + '</div>';
+          html += '    <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg, #ffcd1b, #a67726);color:#000;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;">' + (userName.charAt(0).toUpperCase() || 'S') + '</div>';
         }
-        html += '    <div style="text-align:left;">';
-        html += '      <div style="font-size:13px;font-weight:800;color:#fff;line-height:1.2;">' + userName + '</div>';
-        html += '      <div style="font-size:9.5px;font-weight:700;color:#ffcd1b;letter-spacing:0.5px;text-transform:uppercase;">👑 GoldFX Certified Trader</div>';
-        html += '    </div>';
-        html += '  </div>';
-
-        html += '  <div style="text-align:right;">';
-        html += '    <div style="font-size:10px;font-weight:800;color:#fff;letter-spacing:0.5px;">@estebangoldfx</div>';
-        html += '    <div style="font-size:8.5px;color:var(--text-muted);letter-spacing:0.5px;margin-top:1px;">Syntracker FX Official</div>';
+        html += '    <div style="font-size:14px;font-weight:800;color:#fff;letter-spacing:0.5px;">' + userName + '</div>';
         html += '  </div>';
         html += '</div>';
 
