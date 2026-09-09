@@ -2660,6 +2660,375 @@
       function changeMonth(d) { calDate.setMonth(calDate.getMonth() + d); renderCalendar(); }
       function goToday() { calDate = new Date(); renderCalendar(); }
 
+      // ── CALENDAR EXPORT (Tarjeta Mensual) ──
+      function openCalendarExportModal() {
+        const modal = document.getElementById('cal-export-modal');
+        if (!modal) return;
+        renderCalendarExportCard();
+        modal.classList.add('open');
+      }
+
+      function renderCalendarExportCard() {
+        const container = document.getElementById('cal-export-card');
+        if (!container) return;
+
+        const trades = getFilteredTrades();
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const yr = calDate.getFullYear(), mo = calDate.getMonth();
+        const monthName = months[mo];
+
+        const mTrades = trades.filter(function (t) {
+          var d = new Date(t.date + 'T00:00:00');
+          return d.getFullYear() === yr && d.getMonth() === mo;
+        });
+        const ms = computeStats(mTrades);
+
+        var dayMap = {};
+        var inactionMap = {};
+        var emoIcons = { 'Confianza':'😌', 'Calma':'🧘', 'Claridad':'💡', 'Neutral':'🤔', 'Duda':'❓', 'Miedo':'😰', 'Impaciencia':'😤', 'Frustración':'😡', 'Avaricia':'🤑', 'Venganza':'⚔️', 'Arrepentimiento':'🤦' };
+
+        var profitableDays = 0;
+        var tradedDays = 0;
+
+        mTrades.forEach(function (t) {
+          var d = new Date(t.date + 'T00:00:00').getDate();
+          if (t.asset === 'INACCIÓN') {
+            inactionMap[d] = t.notes || '🛌 Descanso';
+            return;
+          }
+          if (!dayMap[d]) {
+            dayMap[d] = { pnl: 0, count: 0, wins: 0, losses: 0, bes: 0, discScores: [], emotions: {} };
+          }
+          dayMap[d].pnl += t.pnl;
+          dayMap[d].count++;
+          if (t.pnl > 0) dayMap[d].wins++;
+          else if (t.pnl < 0) dayMap[d].losses++;
+          else dayMap[d].bes++;
+
+          if (t.discipline_score != null) dayMap[d].discScores.push(t.discipline_score);
+          if (t.emotion) {
+            dayMap[d].emotions[t.emotion] = (dayMap[d].emotions[t.emotion] || 0) + 1;
+          }
+        });
+
+        Object.values(dayMap).forEach(function(d) {
+          tradedDays++;
+          if (d.pnl > 0) profitableDays++;
+        });
+
+        // User Profile Data
+        const u = sb.getUser();
+        let userName = 'Sarah Posada';
+        if (u) {
+          userName = (u.user_metadata && u.user_metadata.full_name) || u.email || 'Sarah Posada';
+          if (userName.toLowerCase().includes('sara') || userName.toLowerCase().includes('juliana')) {
+            userName = 'Sarah Posada';
+          }
+        }
+        const userAvEl = document.querySelector('.user-av');
+        let avatarImgSrc = null;
+        if (userAvEl) {
+          const imgInside = userAvEl.querySelector('img');
+          if (imgInside && imgInside.src) avatarImgSrc = imgInside.src;
+        }
+
+        // Days grid computation
+        var firstDay = new Date(yr, mo, 1).getDay();
+        var daysInMonth = new Date(yr, mo + 1, 0).getDate();
+        var daysInPrev = new Date(yr, mo, 0).getDate();
+
+        var cells = [];
+        for (var i = firstDay - 1; i >= 0; i--) cells.push({ day: daysInPrev - i, other: true });
+        for (var d = 1; d <= daysInMonth; d++) {
+          cells.push({ day: d, data: dayMap[d] });
+        }
+        var next = 1;
+        while (cells.length % 7 !== 0) cells.push({ day: next++, other: true });
+
+        const pnlColor = ms.netPnl >= 0 ? '#4ade80' : '#f87171';
+        const pnlSign = ms.netPnl >= 0 ? '+' : '';
+        const pnlFormatted = pnlSign + '$' + ms.netPnl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const wrColor = ms.winRate >= 50 ? '#4ade80' : '#f87171';
+
+        let html = '';
+
+        // ── HEADER ──
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,205,27,0.25);padding-bottom:18px;margin-bottom:20px;">';
+        html += '  <div style="display:flex;align-items:center;gap:12px;">';
+        html += '    <img src="logo.png" alt="GoldFX Logo" style="width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(255,205,27,0.35));">';
+        html += '    <div>';
+        html += '      <div style="font-size:16px;font-weight:900;letter-spacing:1px;color:#fff;text-transform:uppercase;font-family:var(--sans);">SYNTRACKER FX</div>';
+        html += '      <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#ffcd1b;text-transform:uppercase;">Esteban GoldFX Official</div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '  <div style="text-align:right;">';
+        html += '    <div style="font-size:20px;font-weight:900;color:#ffcd1b;letter-spacing:1.5px;text-transform:uppercase;font-family:var(--sans);">' + monthName + ' ' + yr + '</div>';
+        html += '    <div style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;">Reporte Oficial de Rendimiento</div>';
+        html += '  </div>';
+        html += '</div>';
+
+        // ── STATS BAR ──
+        html += '<div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:12px;margin-bottom:22px;">';
+        // Net P&L
+        html += '  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;text-align:center;">';
+        html += '    <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Net P&L</div>';
+        html += '    <div style="font-size:19px;font-weight:900;color:' + pnlColor + ';font-family:var(--mono);">' + pnlFormatted + '</div>';
+        html += '  </div>';
+        // Win Rate
+        html += '  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;text-align:center;">';
+        html += '    <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Win Rate</div>';
+        html += '    <div style="font-size:19px;font-weight:900;color:' + wrColor + ';font-family:var(--mono);">' + ms.winRate.toFixed(1) + '%</div>';
+        html += '  </div>';
+        // Total Trades (Wins / Losses)
+        html += '  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;text-align:center;">';
+        html += '    <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Operaciones</div>';
+        html += '    <div style="font-size:19px;font-weight:900;color:#fff;font-family:var(--mono);">' + ms.total + ' <span style="font-size:12px;font-weight:600;color:#4ade80;">' + ms.wins + 'W</span> / <span style="font-size:12px;font-weight:600;color:#f87171;">' + ms.losses + 'L</span></div>';
+        html += '  </div>';
+        // Profit Factor / Días Positivos
+        var pfText = isFinite(ms.profitFactor) ? ms.profitFactor.toFixed(2) : (ms.profitFactor > 0 ? '∞' : '0.00');
+        html += '  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;text-align:center;">';
+        html += '    <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Profit Factor / Días W</div>';
+        html += '    <div style="font-size:19px;font-weight:900;color:#ffcd1b;font-family:var(--mono);">' + pfText + ' <span style="font-size:11px;font-weight:600;color:var(--text-secondary);">' + profitableDays + '/' + tradedDays + 'd</span></div>';
+        html += '  </div>';
+        html += '</div>';
+
+        // ── CALENDAR GRID ──
+        html += '<div style="background:rgba(18,18,18,0.7);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:14px;margin-bottom:22px;">';
+        // Grid Days Header
+        html += '  <div style="display:grid;grid-template-columns:repeat(7, 1fr) 68px;gap:6px;margin-bottom:8px;text-align:center;">';
+        const dayNames = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'SEM'];
+        dayNames.forEach(function(dn, idx) {
+          var isSem = idx === 7;
+          html += '    <div style="font-size:10px;font-weight:800;letter-spacing:1px;color:' + (isSem ? '#ffcd1b' : 'var(--text-muted)') + ';text-transform:uppercase;padding:4px 0;">' + dn + '</div>';
+        });
+        html += '  </div>';
+
+        // Grid Body
+        html += '  <div style="display:flex;flex-direction:column;gap:6px;">';
+        for (var i = 0; i < cells.length; i += 7) {
+          var week = cells.slice(i, i + 7);
+          var weekPnl = 0;
+          var weekTraded = false;
+
+          html += '    <div style="display:grid;grid-template-columns:repeat(7, 1fr) 68px;gap:6px;">';
+          week.forEach(function(c) {
+            var isInaction = !c.other && inactionMap[c.day] && !c.data;
+            var hasData = !c.other && c.data && !isInaction;
+
+            var cellBg = 'rgba(255,255,255,0.02)';
+            var cellBorder = '1px solid rgba(255,255,255,0.04)';
+            var numColor = c.other ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.7)';
+
+            if (hasData) {
+              weekTraded = true;
+              weekPnl += c.data.pnl;
+              var isWin = c.data.pnl >= 0;
+              cellBg = isWin ? 'rgba(74, 222, 128, 0.08)' : 'rgba(248, 113, 113, 0.08)';
+              cellBorder = isWin ? '1px solid rgba(74, 222, 128, 0.3)' : '1px solid rgba(248, 113, 113, 0.3)';
+            } else if (isInaction) {
+              cellBg = 'rgba(255, 205, 27, 0.04)';
+              cellBorder = '1px solid rgba(255, 205, 27, 0.15)';
+            }
+
+            html += '      <div style="background:' + cellBg + ';border:' + cellBorder + ';border-radius:10px;padding:8px 9px;min-height:74px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;">';
+            
+            // Top header of day cell
+            html += '        <div style="display:flex;justify-content:space-between;align-items:center;line-height:1;">';
+            if (hasData) {
+              html += '          <span style="font-size:9.5px;font-weight:700;color:var(--text-muted);">' + c.data.count + 'T</span>';
+            } else if (isInaction) {
+              html += '          <span style="font-size:9.5px;font-weight:600;color:#ffcd1b;">💤</span>';
+            } else {
+              html += '          <span></span>';
+            }
+            html += '          <span style="font-size:11px;font-weight:700;color:' + numColor + ';font-family:var(--mono);">' + c.day + '</span>';
+            html += '        </div>';
+
+            // Middle content
+            if (hasData) {
+              var isWin = c.data.pnl >= 0;
+              var pnlAbs = Math.abs(c.data.pnl);
+              var pnlStr = (isWin ? '+' : '-') + (pnlAbs >= 1000 ? '$' + (pnlAbs/1000).toFixed(2) + 'K' : '$' + pnlAbs.toFixed(2));
+              var pnlDayColor = isWin ? '#4ade80' : '#f87171';
+
+              html += '        <div style="margin:4px 0;">';
+              html += '          <div style="font-size:13px;font-weight:800;color:' + pnlDayColor + ';font-family:var(--mono);line-height:1.2;">' + pnlStr + '</div>';
+              html += '        </div>';
+
+              // Bottom badge: discipline + emotion
+              var avgDisc = c.data.discScores.length ? Math.round(c.data.discScores.reduce(function(a,b){return a+b;},0)/c.data.discScores.length) : null;
+              var domEmo = null, domCount = 0;
+              Object.keys(c.data.emotions).forEach(function(ek){
+                if(c.data.emotions[ek] > domCount) { domCount = c.data.emotions[ek]; domEmo = ek; }
+              });
+
+              html += '        <div style="display:flex;align-items:center;justify-content:space-between;font-size:9px;line-height:1;">';
+              if (avgDisc != null) {
+                var discColor = avgDisc >= 80 ? '#ffcd1b' : (avgDisc >= 50 ? '#a1a1aa' : '#f87171');
+                html += '          <span style="color:' + discColor + ';font-weight:700;">🎯' + avgDisc + '%</span>';
+              } else {
+                html += '          <span></span>';
+              }
+              if (domEmo) {
+                html += '          <span style="font-size:11px;">' + (emoIcons[domEmo] || '') + '</span>';
+              }
+              html += '        </div>';
+            } else if (isInaction) {
+              html += '        <div style="font-size:9px;color:rgba(255,205,27,0.7);font-weight:500;margin:auto 0;line-height:1.2;text-align:center;">Descanso</div>';
+            } else {
+              html += '        <div></div>';
+            }
+
+            html += '      </div>';
+          });
+
+          // Week column cell
+          var weekBg = 'rgba(255,255,255,0.015)';
+          var weekBorder = '1px solid rgba(255,255,255,0.04)';
+          var weekPnlColor = 'var(--text-muted)';
+          var weekPnlStr = '—';
+
+          if (weekTraded) {
+            var isWWin = weekPnl >= 0;
+            weekBg = isWWin ? 'rgba(74, 222, 128, 0.05)' : 'rgba(248, 113, 113, 0.05)';
+            weekBorder = isWWin ? '1px solid rgba(74, 222, 128, 0.25)' : '1px solid rgba(248, 113, 113, 0.25)';
+            weekPnlColor = isWWin ? '#4ade80' : '#f87171';
+            var wAbs = Math.abs(weekPnl);
+            weekPnlStr = (isWWin ? '+' : '-') + (wAbs >= 1000 ? '$' + (wAbs/1000).toFixed(1) + 'K' : '$' + wAbs.toFixed(0));
+          }
+
+          html += '      <div style="background:' + weekBg + ';border:' + weekBorder + ';border-radius:10px;padding:8px 6px;min-height:74px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-sizing:border-box;text-align:center;">';
+          html += '        <div style="font-size:9px;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:4px;">S' + (Math.floor(i/7) + 1) + '</div>';
+          html += '        <div style="font-size:12px;font-weight:800;color:' + weekPnlColor + ';font-family:var(--mono);">' + weekPnlStr + '</div>';
+          html += '      </div>';
+
+          html += '    </div>';
+        }
+        html += '  </div>';
+        html += '</div>';
+
+        // ── FOOTER: TRADER SIGNATURE ──
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,205,27,0.25);padding-top:16px;">';
+        html += '  <div style="display:flex;align-items:center;gap:12px;">';
+        if (avatarImgSrc) {
+          html += '    <img src="' + avatarImgSrc + '" style="width:38px;height:38px;border-radius:10px;object-fit:cover;border:1.5px solid #ffcd1b;">';
+        } else {
+          html += '    <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg, #ffcd1b, #a67726);color:#000;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px;">' + (userName.charAt(0).toUpperCase() || 'S') + '</div>';
+        }
+        html += '    <div>';
+        html += '      <div style="font-size:14px;font-weight:800;color:#fff;letter-spacing:0.3px;">' + userName + '</div>';
+        html += '      <div style="font-size:10px;font-weight:600;color:#ffcd1b;letter-spacing:1px;text-transform:uppercase;">GoldFX Certified Trader</div>';
+        html += '    </div>';
+        html += '  </div>';
+        
+        var todayStr = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+        html += '  <div style="text-align:right;">';
+        html += '    <div style="font-size:11px;font-weight:700;color:var(--text-secondary);letter-spacing:0.5px;">Syntracker FX • Esteban GoldFX</div>';
+        html += '    <div style="font-size:9.5px;color:var(--text-muted);letter-spacing:0.5px;margin-top:2px;">Generado el ' + todayStr + '</div>';
+        html += '  </div>';
+        html += '</div>';
+
+        container.innerHTML = html;
+      }
+
+      async function downloadCalendarExportImage() {
+        const card = document.getElementById('cal-export-card');
+        if (!card) return;
+        if (typeof html2canvas === 'undefined') {
+          alert('El módulo de captura no se encuentra cargado. Por favor recarga la página.');
+          return;
+        }
+        const btn = document.getElementById('btn-dl-cal-img');
+        const txt = document.getElementById('txt-dl-cal-img');
+        const originalTxt = txt ? txt.textContent : 'Descargar PNG';
+        if (txt) txt.textContent = 'Generando... ⏳';
+        if (btn) btn.disabled = true;
+
+        try {
+          const canvas = await html2canvas(card, {
+            scale: 2.5,
+            backgroundColor: '#070709',
+            useCORS: true,
+            logging: false
+          });
+
+          const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+          const yr = calDate.getFullYear(), mo = calDate.getMonth();
+          const fileName = 'GoldFX_Calendario_' + months[mo] + '_' + yr + '.png';
+
+          const link = document.createElement('a');
+          link.download = fileName;
+          link.href = canvas.toDataURL('image/png');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          if (txt) txt.textContent = '¡Descargado! ✅';
+          setTimeout(function () {
+            if (txt) txt.textContent = originalTxt;
+            if (btn) btn.disabled = false;
+          }, 2000);
+        } catch (err) {
+          console.error('Error generating calendar image:', err);
+          alert('No se pudo generar la imagen del calendario. Por favor intenta de nuevo.');
+          if (txt) txt.textContent = originalTxt;
+          if (btn) btn.disabled = false;
+        }
+      }
+
+      async function copyCalendarExportImage() {
+        const card = document.getElementById('cal-export-card');
+        if (!card) return;
+        if (typeof html2canvas === 'undefined') {
+          alert('El módulo de captura no se encuentra cargado. Por favor recarga la página.');
+          return;
+        }
+        const btn = document.getElementById('btn-copy-cal-img');
+        const txt = document.getElementById('txt-copy-cal-img');
+        const originalTxt = txt ? txt.textContent : 'Copiar Imagen';
+        if (txt) txt.textContent = 'Copiando... ⏳';
+        if (btn) btn.disabled = true;
+
+        try {
+          const canvas = await html2canvas(card, {
+            scale: 2.5,
+            backgroundColor: '#070709',
+            useCORS: true,
+            logging: false
+          });
+
+          canvas.toBlob(async function (blob) {
+            if (!blob) {
+              throw new Error('No se pudo convertir el canvas a blob');
+            }
+            try {
+              if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+                await navigator.clipboard.write([
+                  new ClipboardItem({ 'image/png': blob })
+                ]);
+                if (txt) txt.textContent = '¡Copiado! ✅';
+              } else {
+                downloadCalendarExportImage();
+                if (txt) txt.textContent = 'Descargado 📥';
+              }
+            } catch (clipErr) {
+              console.warn('Clipboard write failed, downloading instead:', clipErr);
+              downloadCalendarExportImage();
+              if (txt) txt.textContent = 'Descargado 📥';
+            }
+            setTimeout(function () {
+              if (txt) txt.textContent = originalTxt;
+              if (btn) btn.disabled = false;
+            }, 2500);
+          }, 'image/png');
+        } catch (err) {
+          console.error('Error copying calendar image:', err);
+          alert('No se pudo copiar la imagen al portapapeles.');
+          if (txt) txt.textContent = originalTxt;
+          if (btn) btn.disabled = false;
+        }
+      }
+
       // ── Inaction Day (Día sin Operar) ──
       function openInactionModal(dateStr) {
         document.getElementById('inaction-date').value = dateStr;
@@ -4116,6 +4485,10 @@ function _renderAnalisis_orig() {
       window.doSendRecovery = doSendRecovery;
       window.doResetPassword = doResetPassword;
       window.checkRecoveryFlow = checkRecoveryFlow;
+
+      window.openCalendarExportModal = openCalendarExportModal;
+      window.downloadCalendarExportImage = downloadCalendarExportImage;
+      window.copyCalendarExportImage = copyCalendarExportImage;
 
       // ── Init ──
       document.getElementById('auth-screen').style.display = 'flex';

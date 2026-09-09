@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Syntracker Fx - GoldFX Journal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
     *,
     *::before,
@@ -3579,6 +3580,10 @@
           <div class="cal-month-title" id="cal-month-title">Mayo 2026</div>
           <button class="ic-btn" onclick="changeMonth(1)">›</button>
           <button class="tog-btn active" onclick="goToday(this)">Hoy</button>
+          <button class="btn-primary" onclick="openCalendarExportModal()" style="display:flex;align-items:center;gap:6px;padding:6px 13px;font-size:12px;font-weight:700;background:linear-gradient(135deg, #ffcd1b, #a67726);color:#000;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 10px rgba(255,205,27,0.25);margin-left:4px;" title="Exportar y compartir tarjeta del calendario">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Exportar Tarjeta
+          </button>
         </div>
         <div style="display:flex;gap:14px;">
           <div style="text-align:right;">
@@ -4554,6 +4559,48 @@
           <button type="submit" class="btn-green" id="tjm-submit-btn">Conectar e Inscribirme</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Exportar Calendario -->
+  <div class="overlay" id="cal-export-modal" onclick="closeOnBg(event,'cal-export-modal')">
+    <div class="modal" style="width:960px;max-width:96vw;max-height:94vh;display:flex;flex-direction:column;padding:22px;border:1px solid rgba(255,205,27,0.35);box-shadow:0 25px 70px rgba(0,0,0,0.95), 0 0 35px rgba(255,205,27,0.12);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div>
+          <div class="modal-title" style="margin-bottom:2px;display:flex;align-items:center;gap:8px;font-size:17px;">
+            <span>📸</span> Vista Previa de Tarjeta Mensual
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);">Genera una captura en alta resolución con tus estadísticas y firma de trader</div>
+        </div>
+        <button class="btn-cancel" onclick="closeModal('cal-export-modal')" style="padding:4px 10px;font-size:14px;">✕</button>
+      </div>
+
+      <!-- Scrollable preview wrapper -->
+      <div style="flex:1;overflow:auto;background:#050505;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;display:flex;justify-content:center;align-items:flex-start;">
+        <div id="cal-export-card-wrapper" style="transform-origin:top center;transition:transform 0.2s;">
+          <!-- Dynamic Render Card -->
+          <div id="cal-export-card" style="width:840px;background:#070709;border:1.5px solid rgba(255,205,27,0.4);border-radius:24px;padding:28px 30px;box-shadow:0 20px 60px rgba(0,0,0,0.95), inset 0 0 30px rgba(255,205,27,0.03);color:#fff;font-family:'Inter', sans-serif;box-sizing:border-box;position:relative;overflow:hidden;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Foot Actions -->
+      <div class="modal-foot" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;">
+          <span>💡</span> Tip: Copia la imagen para pegarla directamente en WhatsApp, Telegram o Twitter sin guardarla.
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-cancel" onclick="closeModal('cal-export-modal')">Cerrar</button>
+          <button id="btn-copy-cal-img" class="tog-btn" onclick="copyCalendarExportImage()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:600;background:var(--bg-card-inner);border:1px solid var(--border-bronze);color:var(--text-primary);border-radius:8px;cursor:pointer;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            <span id="txt-copy-cal-img">Copiar Imagen</span>
+          </button>
+          <button id="btn-dl-cal-img" class="btn-primary" onclick="downloadCalendarExportImage()" style="display:flex;align-items:center;gap:6px;padding:8px 18px;font-size:13px;font-weight:700;background:linear-gradient(135deg, #ffcd1b, #a67726);color:#000;border:none;border-radius:8px;cursor:pointer;box-shadow:0 3px 12px rgba(255,205,27,0.25);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            <span id="txt-dl-cal-img">Descargar PNG</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
