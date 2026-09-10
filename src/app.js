@@ -1043,12 +1043,25 @@
     // ── Account state ──
     let activeAccount = 'global';
 
-    // ── Trade Log month filter ──
+    // ── Trade Log month & global filter ──
     let tlDate = new Date();
+    let tlMode = 'mes'; // 'global' | 'mes'
     const TL_MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    
+    function setTlMode(mode) {
+      tlMode = mode;
+      var gBtn = document.getElementById('tl-mode-global');
+      var mBtn = document.getElementById('tl-mode-mes');
+      var nav = document.getElementById('tl-month-nav');
+      if (gBtn) gBtn.classList.toggle('active', mode === 'global');
+      if (mBtn) mBtn.classList.toggle('active', mode === 'mes');
+      if (nav) nav.style.display = mode === 'mes' ? 'flex' : 'none';
+      renderTrades();
+    }
+
     function updateTlMonthTitle() {
       var el = document.getElementById('tl-month-title');
-      if (el) el.textContent = TL_MONTHS[tlDate.getMonth()] + ' ' + tlDate.getFullYear();
+      if (el) el.innerHTML = '<span>' + TL_MONTHS[tlDate.getMonth()] + ' ' + tlDate.getFullYear() + '</span> <span style="font-size:10px;color:var(--yellow);">▾</span>';
     }
     function changeTlMonth(d) {
       tlDate.setMonth(tlDate.getMonth() + d);
@@ -1065,6 +1078,9 @@
     }
     function getTlFilteredTrades() {
       var base = getFilteredTrades();
+      if (tlMode === 'global') {
+        return base;
+      }
       var yr = tlDate.getFullYear(), mo = tlDate.getMonth();
       return base.filter(function(t){
         var d = new Date(t.date + 'T00:00:00');
@@ -1087,7 +1103,7 @@
     }
     function updateStMonthTitle() {
       var el = document.getElementById('st-month-title');
-      if (el) el.textContent = TL_MONTHS[stDate.getMonth()] + ' ' + stDate.getFullYear();
+      if (el) el.innerHTML = '<span>' + TL_MONTHS[stDate.getMonth()] + ' ' + stDate.getFullYear() + '</span> <span style="font-size:10px;color:var(--yellow);">▾</span>';
     }
     function changeStMonth(d) {
       stDate.setMonth(stDate.getMonth() + d);
@@ -1126,7 +1142,7 @@
     }
     function updateAnMonthTitle() {
       var el = document.getElementById('an-month-title');
-      if (el) el.textContent = TL_MONTHS[anDate.getMonth()] + ' ' + anDate.getFullYear();
+      if (el) el.innerHTML = '<span>' + TL_MONTHS[anDate.getMonth()] + ' ' + anDate.getFullYear() + '</span> <span style="font-size:10px;color:var(--yellow);">▾</span>';
     }
     function changeAnMonth(d) {
       anDate.setMonth(anDate.getMonth() + d);
@@ -1148,6 +1164,63 @@
         var d = new Date(t.date + 'T00:00:00');
         return d.getFullYear() === yr && d.getMonth() === mo;
       });
+    }
+
+    // ── Quick Jump Date Modal Picker ──
+    function openJumpPicker(target) {
+      var targetSection = target || 'calendario';
+      var targetInput = document.getElementById('jp-target-section');
+      if (targetInput) targetInput.value = targetSection;
+      
+      var curDate = new Date();
+      if (targetSection === 'tradelog') curDate = tlDate;
+      else if (targetSection === 'calendario') curDate = calDate;
+      else if (targetSection === 'estadisticas') curDate = stDate;
+      else if (targetSection === 'analisis') curDate = anDate;
+
+      var mSel = document.getElementById('jp-month');
+      var yInp = document.getElementById('jp-year');
+      if (mSel) mSel.value = curDate.getMonth();
+      if (yInp) yInp.value = curDate.getFullYear();
+
+      openModal('jump-picker-modal');
+    }
+
+    function applyJumpPicker() {
+      var targetInput = document.getElementById('jp-target-section');
+      var targetSection = targetInput ? targetInput.value : 'calendario';
+      var mSel = document.getElementById('jp-month');
+      var yInp = document.getElementById('jp-year');
+
+      var mo = mSel ? parseInt(mSel.value, 10) : new Date().getMonth();
+      var yr = yInp ? parseInt(yInp.value, 10) : new Date().getFullYear();
+
+      if (isNaN(yr) || yr < 2015 || yr > 2035) {
+        alert('Por favor ingresa un año válido entre 2015 y 2035');
+        return;
+      }
+
+      if (targetSection === 'tradelog') {
+        tlDate = new Date(yr, mo, 1);
+        if (tlMode === 'global') setTlMode('mes');
+        updateTlMonthTitle();
+        renderTrades();
+      } else if (targetSection === 'calendario') {
+        calDate = new Date(yr, mo, 1);
+        renderCalendar();
+      } else if (targetSection === 'estadisticas') {
+        stDate = new Date(yr, mo, 1);
+        if (stMode === 'global') setStMode('mes');
+        updateStMonthTitle();
+        renderStats();
+      } else if (targetSection === 'analisis') {
+        anDate = new Date(yr, mo, 1);
+        if (anMode === 'global') setAnMode('mes');
+        updateAnMonthTitle();
+        renderAnalisis();
+      }
+
+      closeModal('jump-picker-modal');
     }
 
     function buildAccountFilter() {
@@ -2744,7 +2817,8 @@
         const trades = getFilteredTrades();
         const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         const yr = calDate.getFullYear(), mo = calDate.getMonth();
-        document.getElementById('cal-month-title').textContent = months[mo] + ' ' + yr;
+        var cmt = document.getElementById('cal-month-title');
+        if (cmt) cmt.innerHTML = '<span>' + months[mo] + ' ' + yr + '</span> <span style="font-size:10px;color:var(--yellow);">▾</span>';
 
         const mTrades = trades.filter(function (t) {
           var d = new Date(t.date + 'T00:00:00');
@@ -4703,6 +4777,19 @@ function _renderAnalisis_orig() {
       window.openProfileModal = openProfileModal;
       window.saveUserProfile = saveUserProfile;
       window.handleAvatarChange = handleAvatarChange;
+
+      // Exponer navegación y filtros
+      window.setTlMode = setTlMode;
+      window.changeTlMonth = changeTlMonth;
+      window.goTlToday = goTlToday;
+      window.setStMode = setStMode;
+      window.changeStMonth = changeStMonth;
+      window.goStToday = goStToday;
+      window.setAnMode = setAnMode;
+      window.changeAnMonth = changeAnMonth;
+      window.goAnToday = goAnToday;
+      window.openJumpPicker = openJumpPicker;
+      window.applyJumpPicker = applyJumpPicker;
 
       // ── Init ──
       document.getElementById('auth-screen').style.display = 'flex';

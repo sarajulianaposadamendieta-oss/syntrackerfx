@@ -3741,13 +3741,23 @@
           <div class="stat-pill-val" id="tl-pf">∞</div>
         </div>
       </div>
-      <!-- Month nav -->
+      <!-- Month nav & Mode toggle -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <button class="ic-btn" onclick="changeTlMonth(-1)">‹</button>
-          <div class="cal-month-title" id="tl-month-title" style="font-size:15px;">Mayo 2026</div>
-          <button class="ic-btn" onclick="changeTlMonth(1)">›</button>
-          <button class="tog-btn active" id="tl-today-btn" onclick="goTlToday(this)">Hoy</button>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <!-- Mode toggle: Global vs Mes -->
+          <div class="toggle-group" style="padding:2px;">
+            <button class="tog-btn" id="tl-mode-global" onclick="setTlMode('global')">🌐 Todos</button>
+            <button class="tog-btn active" id="tl-mode-mes" onclick="setTlMode('mes')">📅 Mes</button>
+          </div>
+          <div id="tl-month-nav" style="display:flex;align-items:center;gap:8px;">
+            <button class="ic-btn" onclick="changeTlMonth(-1)">‹</button>
+            <div class="cal-month-title" id="tl-month-title" style="font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;" onclick="openJumpPicker('tradelog')" title="Hacer clic para saltar a un año o mes específico">
+              <span>Mayo 2026</span>
+              <span style="font-size:10px;color:var(--yellow);">▾</span>
+            </div>
+            <button class="ic-btn" onclick="changeTlMonth(1)">›</button>
+            <button class="tog-btn active" id="tl-today-btn" onclick="goTlToday(this)">Hoy</button>
+          </div>
         </div>
         <div style="display:flex;gap:8px;">
           <button id="tl-panel-toggle" class="tog-btn active" onclick="toggleDetailPanel()" title="Mostrar/ocultar panel">◧ Panel</button>
@@ -3801,7 +3811,10 @@
         style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <button class="ic-btn" onclick="changeMonth(-1)">‹</button>
-          <div class="cal-month-title" id="cal-month-title">Mayo 2026</div>
+          <div class="cal-month-title" id="cal-month-title" style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;" onclick="openJumpPicker('calendario')" title="Hacer clic para saltar a un año o mes específico">
+            <span>Mayo 2026</span>
+            <span style="font-size:10px;color:var(--yellow);">▾</span>
+          </div>
           <button class="ic-btn" onclick="changeMonth(1)">›</button>
           <button class="tog-btn active" onclick="goToday(this)">Hoy</button>
           <button class="btn-primary" onclick="openCalendarExportModal()" style="display:flex;align-items:center;gap:6px;padding:6px 13px;font-size:12px;font-weight:700;background:linear-gradient(135deg, #ffcd1b, #a67726);color:#000;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 10px rgba(255,205,27,0.25);margin-left:4px;" title="Exportar y compartir tarjeta del calendario">
@@ -3869,7 +3882,10 @@
           <!-- Month nav (hidden in global mode) -->
           <div id="st-month-nav" style="display:flex;align-items:center;gap:8px;">
             <button class="ic-btn" onclick="changeStMonth(-1)">&#8249;</button>
-            <div class="cal-month-title" id="st-month-title" style="font-size:15px;">Mayo 2026</div>
+            <div class="cal-month-title" id="st-month-title" style="font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;" onclick="openJumpPicker('estadisticas')" title="Hacer clic para saltar a un año o mes específico">
+              <span>Mayo 2026</span>
+              <span style="font-size:10px;color:var(--yellow);">▾</span>
+            </div>
             <button class="ic-btn" onclick="changeStMonth(1)">&#8250;</button>
             <button class="tog-btn active" id="st-today-btn" onclick="goStToday(this)">Hoy</button>
           </div>
@@ -3964,7 +3980,10 @@
           </div>
           <div id="an-month-nav" style="display:flex;align-items:center;gap:8px;">
             <button class="ic-btn" onclick="changeAnMonth(-1)">&#8249;</button>
-            <div class="cal-month-title" id="an-month-title" style="font-size:15px;">Mayo 2026</div>
+            <div class="cal-month-title" id="an-month-title" style="font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;" onclick="openJumpPicker('analisis')" title="Hacer clic para saltar a un año o mes específico">
+              <span>Mayo 2026</span>
+              <span style="font-size:10px;color:var(--yellow);">▾</span>
+            </div>
             <button class="ic-btn" onclick="changeAnMonth(1)">&#8250;</button>
             <button class="tog-btn active" id="an-today-btn" onclick="goAnToday(this)">Hoy</button>
           </div>
@@ -4197,7 +4216,7 @@
             <option>Asia</option>
             <option>Otra</option>
           </select></div>
-        <div class="form-g"><label class="form-l">Fecha</label><input class="form-i" id="tm-date" type="date"></div>
+        <div class="form-g"><label class="form-l">Fecha</label><input class="form-i" id="tm-date" type="date" min="2015-01-01" max="2035-12-31"></div>
       </div>
 
       <!-- Tipo de Entrada + Condición de Mercado -->
@@ -4947,6 +4966,50 @@
             <span id="txt-dl-cal-img">Descargar PNG</span>
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SALTAR A FECHA (QUICK JUMP PICKER) -->
+  <div class="modal-bg" id="jump-picker-modal" onclick="closeModalOnBg(event, 'jump-picker-modal')">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-hdr">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px;">📅</span>
+          <div class="modal-title" style="font-size:16px;">Saltar a Mes / Año</div>
+        </div>
+        <button class="modal-x" onclick="closeModal('jump-picker-modal')">✕</button>
+      </div>
+      <div style="font-size:12.5px;color:var(--text-secondary);margin-bottom:14px;">
+        Selecciona el mes y año específico para navegar directamente sin necesidad de pasar mes por mes.
+      </div>
+      <input type="hidden" id="jp-target-section" value="calendario">
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:10px;margin-bottom:14px;">
+        <div class="form-g">
+          <label class="form-l">Mes</label>
+          <select class="form-i" id="jp-month">
+            <option value="0">Enero</option>
+            <option value="1">Febrero</option>
+            <option value="2">Marzo</option>
+            <option value="3">Abril</option>
+            <option value="4">Mayo</option>
+            <option value="5">Junio</option>
+            <option value="6">Julio</option>
+            <option value="7">Agosto</option>
+            <option value="8">Septiembre</option>
+            <option value="9">Octubre</option>
+            <option value="10">Noviembre</option>
+            <option value="11">Diciembre</option>
+          </select>
+        </div>
+        <div class="form-g">
+          <label class="form-l">Año</label>
+          <input class="form-i" id="jp-year" type="number" min="2015" max="2035" placeholder="2026">
+        </div>
+      </div>
+      <div class="modal-foot" style="margin-top:8px;">
+        <button class="btn-cancel" onclick="closeModal('jump-picker-modal')">Cancelar</button>
+        <button class="btn-primary" onclick="applyJumpPicker()">Aplicar</button>
       </div>
     </div>
   </div>
@@ -6051,12 +6114,25 @@
     // ── Account state ──
     let activeAccount = 'global';
 
-    // ── Trade Log month filter ──
+    // ── Trade Log month & global filter ──
     let tlDate = new Date();
+    let tlMode = 'mes'; // 'global' | 'mes'
     const TL_MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    
+    function setTlMode(mode) {
+      tlMode = mode;
+      var gBtn = document.getElementById('tl-mode-global');
+      var mBtn = document.getElementById('tl-mode-mes');
+      var nav = document.getElementById('tl-month-nav');
+      if (gBtn) gBtn.classList.toggle('active', mode === 'global');
+      if (mBtn) mBtn.classList.toggle('active', mode === 'mes');
+      if (nav) nav.style.display = mode === 'mes' ? 'flex' : 'none';
+      renderTrades();
+    }
+
     function updateTlMonthTitle() {
       var el = document.getElementById('tl-month-title');
-      if (el) el.textContent = TL_MONTHS[tlDate.getMonth()] + ' ' + tlDate.getFullYear();
+      if (el) el.innerHTML = '<span>' + TL_MONTHS[tlDate.getMonth()] + ' ' + tlDate.getFullYear() + '</span> <span style="font-size:10px;color:var(--yellow);">▾</span>';
     }
     function changeTlMonth(d) {
       tlDate.setMonth(tlDate.getMonth() + d);
@@ -6073,6 +6149,9 @@
     }
     function getTlFilteredTrades() {
       var base = getFilteredTrades();
+      if (tlMode === 'global') {
+        return base;
+      }
       var yr = tlDate.getFullYear(), mo = tlDate.getMonth();
       return base.filter(function(t){
         var d = new Date(t.date + 'T00:00:00');
@@ -6095,7 +6174,7 @@
     }
     function updateStMonthTitle() {
       var el = document.getElementById('st-month-title');
-      if (el) el.textContent = TL_MONTHS[stDate.getMonth()] + ' ' + stDate.getFullYear();
+      if (el) el.innerHTML = '<span>' + TL_MONTHS[stDate.getMonth()] + ' ' + stDate.getFullYear() + '</span> <span style="font-size:10px;color:var(--yellow);">▾</span>';
     }
     function changeStMonth(d) {
       stDate.setMonth(stDate.getMonth() + d);
@@ -6134,7 +6213,7 @@
     }
     function updateAnMonthTitle() {
       var el = document.getElementById('an-month-title');
-      if (el) el.textContent = TL_MONTHS[anDate.getMonth()] + ' ' + anDate.getFullYear();
+      if (el) el.innerHTML = '<span>' + TL_MONTHS[anDate.getMonth()] + ' ' + anDate.getFullYear() + '</span> <span style="font-size:10px;color:var(--yellow);">▾</span>';
     }
     function changeAnMonth(d) {
       anDate.setMonth(anDate.getMonth() + d);
@@ -6156,6 +6235,63 @@
         var d = new Date(t.date + 'T00:00:00');
         return d.getFullYear() === yr && d.getMonth() === mo;
       });
+    }
+
+    // ── Quick Jump Date Modal Picker ──
+    function openJumpPicker(target) {
+      var targetSection = target || 'calendario';
+      var targetInput = document.getElementById('jp-target-section');
+      if (targetInput) targetInput.value = targetSection;
+      
+      var curDate = new Date();
+      if (targetSection === 'tradelog') curDate = tlDate;
+      else if (targetSection === 'calendario') curDate = calDate;
+      else if (targetSection === 'estadisticas') curDate = stDate;
+      else if (targetSection === 'analisis') curDate = anDate;
+
+      var mSel = document.getElementById('jp-month');
+      var yInp = document.getElementById('jp-year');
+      if (mSel) mSel.value = curDate.getMonth();
+      if (yInp) yInp.value = curDate.getFullYear();
+
+      openModal('jump-picker-modal');
+    }
+
+    function applyJumpPicker() {
+      var targetInput = document.getElementById('jp-target-section');
+      var targetSection = targetInput ? targetInput.value : 'calendario';
+      var mSel = document.getElementById('jp-month');
+      var yInp = document.getElementById('jp-year');
+
+      var mo = mSel ? parseInt(mSel.value, 10) : new Date().getMonth();
+      var yr = yInp ? parseInt(yInp.value, 10) : new Date().getFullYear();
+
+      if (isNaN(yr) || yr < 2015 || yr > 2035) {
+        alert('Por favor ingresa un año válido entre 2015 y 2035');
+        return;
+      }
+
+      if (targetSection === 'tradelog') {
+        tlDate = new Date(yr, mo, 1);
+        if (tlMode === 'global') setTlMode('mes');
+        updateTlMonthTitle();
+        renderTrades();
+      } else if (targetSection === 'calendario') {
+        calDate = new Date(yr, mo, 1);
+        renderCalendar();
+      } else if (targetSection === 'estadisticas') {
+        stDate = new Date(yr, mo, 1);
+        if (stMode === 'global') setStMode('mes');
+        updateStMonthTitle();
+        renderStats();
+      } else if (targetSection === 'analisis') {
+        anDate = new Date(yr, mo, 1);
+        if (anMode === 'global') setAnMode('mes');
+        updateAnMonthTitle();
+        renderAnalisis();
+      }
+
+      closeModal('jump-picker-modal');
     }
 
     function buildAccountFilter() {
@@ -7797,7 +7933,8 @@
         const trades = getFilteredTrades();
         const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         const yr = calDate.getFullYear(), mo = calDate.getMonth();
-        document.getElementById('cal-month-title').textContent = months[mo] + ' ' + yr;
+        var cmt = document.getElementById('cal-month-title');
+        if (cmt) cmt.innerHTML = '<span>' + months[mo] + ' ' + yr + '</span> <span style="font-size:10px;color:var(--yellow);">▾</span>';
 
         const mTrades = trades.filter(function (t) {
           var d = new Date(t.date + 'T00:00:00');
@@ -9858,6 +9995,19 @@ function _renderAnalisis_orig() {
       window.openProfileModal = openProfileModal;
       window.saveUserProfile = saveUserProfile;
       window.handleAvatarChange = handleAvatarChange;
+
+      // Exponer navegación y filtros
+      window.setTlMode = setTlMode;
+      window.changeTlMonth = changeTlMonth;
+      window.goTlToday = goTlToday;
+      window.setStMode = setStMode;
+      window.changeStMonth = changeStMonth;
+      window.goStToday = goStToday;
+      window.setAnMode = setAnMode;
+      window.changeAnMonth = changeAnMonth;
+      window.goAnToday = goAnToday;
+      window.openJumpPicker = openJumpPicker;
+      window.applyJumpPicker = applyJumpPicker;
 
       // ── Init ──
       document.getElementById('auth-screen').style.display = 'flex';
