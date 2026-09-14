@@ -1,7 +1,7 @@
 
 
 
-    const SUPABASE_URL = 'https://xtynjkstprkkbontplow.supabase.co';
+    const SUPABASE_URL = 'https://nuvoeaqorlzrrhscosim.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_aoQyXV5JAq7Pvkh4cTIxow_df9AyT_D';
 
     // ── Supabase client ──
