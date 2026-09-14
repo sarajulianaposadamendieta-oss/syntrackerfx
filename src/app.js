@@ -4639,7 +4639,17 @@ function _renderAnalisis_orig() {
             badges: ['🛡️', '🎯', '🔥']
           };
 
-          await sb.insert('tournament_participants', participantData);
+          try {
+            await sb.insert('tournament_participants', participantData);
+          } catch (insertErr) {
+            // Si falta la columna country en la base de datos, reintentar sin ella
+            if (insertErr.message && insertErr.message.includes('country')) {
+              delete participantData.country;
+              await sb.insert('tournament_participants', participantData);
+            } else {
+              throw insertErr;
+            }
+          }
           try {
             await sb.update('profiles', user.id, { country: country });
           } catch (pe) {}
