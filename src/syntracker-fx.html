@@ -9439,7 +9439,7 @@ function _renderAnalisis_orig() {
         const pnlWeekly = parseFloat(p.pnl_weekly_pct || 0);
         const pnlMonthly = parseFloat(p.pnl_monthly_pct || 0);
         const ddDaily = parseFloat(p.dd_daily_pct || 0);
-        const tradesCount = parseInt(p.total_trades || 0, 10);
+        const tradesCount = parseInt(p.trades_count != null ? p.trades_count : (p.total_trades || 0), 10);
 
         // Paleta de colores neón por rango
         const COLOR_PALETTE = [
