@@ -4037,30 +4037,32 @@ function _renderAnalisis_orig() {
         const pnlAcum = parseFloat(p.return_pct || 0);
         const pnlWeekly = parseFloat(p.pnl_weekly_pct || 0);
         const pnlMonthly = parseFloat(p.pnl_monthly_pct || 0);
+        const ddDaily = parseFloat(p.dd_daily_pct || 0);
+        const ddMax = parseFloat(p.dd_max_pct || 0);
         const trades = parseInt(p.total_trades || p.trades_count || 0, 10);
         const violations = parseInt(p.violations_count || 0, 10);
         const disciplineScore = parseFloat(p.discipline_score != null ? p.discipline_score : 100);
 
         // 1. 🎖️ Disciplina: Ha operado al menos 1 trade, DD diario <= 1.1%, CERO faltas y 100% disciplina
-        if (trades >= 1 && ddDaily <= 1.1 && violations === 0 && disciplineScore >= 100) {
+        if (trades >= 1 && ddDaily <= 1.1 && ddMax < 5.0 && violations === 0 && disciplineScore >= 100) {
           badges.push(TOURNAMENT_ACHIEVEMENTS[0]);
         }
 
-        // 2. 🔥 Consistencia: Retorno positivo acumulado (> 0%), al menos 2 trades y sin descalificación
-        if (pnlAcum > 0 && trades >= 2) {
+        // 2. 🔥 Consistencia: Retorno positivo acumulado (> 0%), al menos 2 trades, CERO faltas y activo
+        if (pnlAcum > 0 && trades >= 2 && violations === 0 && ddMax < 5.0) {
           badges.push(TOURNAMENT_ACHIEVEMENTS[1]);
         }
 
-        // 3. 🏆 Trader de la Semana: Mejor rendimiento semanal > 0
-        if (allParticipants && allParticipants.length > 0 && pnlWeekly > 0) {
+        // 3. 🏆 Trader de la Semana: Mayor rendimiento semanal (> 0%), CERO faltas y activo
+        if (allParticipants && allParticipants.length > 0 && pnlWeekly > 0 && violations === 0) {
           const maxWeekly = Math.max(...allParticipants.map(x => parseFloat(x.pnl_weekly_pct || 0)));
           if (pnlWeekly === maxWeekly && maxWeekly > 0) {
             badges.push(TOURNAMENT_ACHIEVEMENTS[2]);
           }
         }
 
-        // 4. 👑 Trader del Mes: Mejor rendimiento mensual > 0
-        if (allParticipants && allParticipants.length > 0 && pnlMonthly > 0) {
+        // 4. 👑 Trader del Mes: Mayor rendimiento mensual (> 0%), CERO faltas y activo
+        if (allParticipants && allParticipants.length > 0 && pnlMonthly > 0 && violations === 0) {
           const maxMonthly = Math.max(...allParticipants.map(x => parseFloat(x.pnl_monthly_pct || 0)));
           if (pnlMonthly === maxMonthly && maxMonthly > 0) {
             badges.push(TOURNAMENT_ACHIEVEMENTS[3]);
@@ -4524,6 +4526,20 @@ function _renderAnalisis_orig() {
               const elWinRate = document.getElementById('u-win-rate');
               if (elWinRate) {
                 elWinRate.textContent = parseFloat(myPart.win_rate || 0).toFixed(1) + '%';
+              }
+
+              const elViolations = document.getElementById('u-violations-count');
+              const violations = parseInt(myPart.violations_count || 0, 10);
+              if (elViolations) {
+                elViolations.textContent = violations === 0 ? '0 (Ninguna)' : `${violations} falta${violations === 1 ? '' : 's'}`;
+                elViolations.style.color = violations === 0 ? 'var(--green)' : (violations === 1 ? 'var(--yellow)' : 'var(--red)');
+              }
+
+              const elDiscipline = document.getElementById('u-discipline-score');
+              const discScore = parseFloat(myPart.discipline_score != null ? myPart.discipline_score : 100);
+              if (elDiscipline) {
+                elDiscipline.textContent = discScore.toFixed(0) + '%';
+                elDiscipline.style.color = discScore >= 100 ? 'var(--green)' : (discScore >= 70 ? 'var(--yellow)' : 'var(--red)');
               }
 
               // 4. Posición
