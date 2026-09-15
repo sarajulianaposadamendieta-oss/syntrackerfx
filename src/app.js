@@ -1035,9 +1035,29 @@
       if (id === 'estadisticas') renderStats();
       if (id === 'comparar') renderComparar();
       if (id === 'cuentas') renderAccounts();
-      if (id === 'torneo') loadTournamentData();
+      if (id === 'torneo') {
+        loadTournamentData();
+        startTournamentPolling();
+      } else if (tournamentPollInterval) {
+        clearInterval(tournamentPollInterval);
+        tournamentPollInterval = null;
+      }
     }
     window.goTo = goTo;
+
+    let tournamentPollInterval = null;
+    function startTournamentPolling() {
+      if (tournamentPollInterval) clearInterval(tournamentPollInterval);
+      tournamentPollInterval = setInterval(() => {
+        const pTorneo = document.getElementById('page-torneo');
+        if (pTorneo && pTorneo.classList.contains('active')) {
+          loadTournamentData();
+        } else {
+          clearInterval(tournamentPollInterval);
+          tournamentPollInterval = null;
+        }
+      }, 15000);
+    }
     function setView(v, btn) { document.querySelectorAll('.tog-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); }
 
     // ── Account state ──
@@ -4779,8 +4799,27 @@ function _renderAnalisis_orig() {
       window.setPanelPhotoIndex = setPanelPhotoIndex;
       window.setDetailModalPhotoIndex = setDetailModalPhotoIndex;
 
+      async function manualRefreshTournament() {
+        const spinEl = document.getElementById('refresh-spinner');
+        const btnEl = document.getElementById('btn-refresh-tournament');
+        if (spinEl) spinEl.style.transform = 'rotate(360deg)';
+        if (btnEl) btnEl.style.opacity = '0.6';
+
+        try {
+          await loadTournamentData();
+        } catch (err) {
+          console.error('Error refreshing tournament:', err);
+        } finally {
+          setTimeout(() => {
+            if (spinEl) spinEl.style.transform = 'none';
+            if (btnEl) btnEl.style.opacity = '1';
+          }, 500);
+        }
+      }
+
       // Exponer globalmente
       window.loadTournamentData = loadTournamentData;
+      window.manualRefreshTournament = manualRefreshTournament;
       window.openTournamentJoinModal = openTournamentJoinModal;
       window.submitTournamentJoin = submitTournamentJoin;
 

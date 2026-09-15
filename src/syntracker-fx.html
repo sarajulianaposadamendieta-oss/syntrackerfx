@@ -4033,6 +4033,9 @@
             <button class="stark-time-tab" id="stark-tab-week" onclick="setTournamentTimeframe('week')">Esta semana</button>
             <button class="stark-time-tab" id="stark-tab-month" onclick="setTournamentTimeframe('month')">Este mes</button>
           </div>
+          <button type="button" id="btn-refresh-tournament" onclick="manualRefreshTournament()" style="font-size:12px; font-weight:700; padding:7px 14px; border-radius:18px; display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; cursor:pointer; transition:all 0.2s ease;">
+            <span id="refresh-spinner" style="display:inline-block; transition:transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);">🔄</span> <span>Actualizar</span>
+          </button>
           <div id="tournament-join-btn-container">
             <!-- Dinámico -->
           </div>
@@ -6127,9 +6130,29 @@
       if (id === 'estadisticas') renderStats();
       if (id === 'comparar') renderComparar();
       if (id === 'cuentas') renderAccounts();
-      if (id === 'torneo') loadTournamentData();
+      if (id === 'torneo') {
+        loadTournamentData();
+        startTournamentPolling();
+      } else if (tournamentPollInterval) {
+        clearInterval(tournamentPollInterval);
+        tournamentPollInterval = null;
+      }
     }
     window.goTo = goTo;
+
+    let tournamentPollInterval = null;
+    function startTournamentPolling() {
+      if (tournamentPollInterval) clearInterval(tournamentPollInterval);
+      tournamentPollInterval = setInterval(() => {
+        const pTorneo = document.getElementById('page-torneo');
+        if (pTorneo && pTorneo.classList.contains('active')) {
+          loadTournamentData();
+        } else {
+          clearInterval(tournamentPollInterval);
+          tournamentPollInterval = null;
+        }
+      }, 15000);
+    }
     function setView(v, btn) { document.querySelectorAll('.tog-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); }
 
     // ── Account state ──
@@ -10018,8 +10041,27 @@ function _renderAnalisis_orig() {
       window.setPanelPhotoIndex = setPanelPhotoIndex;
       window.setDetailModalPhotoIndex = setDetailModalPhotoIndex;
 
+      async function manualRefreshTournament() {
+        const spinEl = document.getElementById('refresh-spinner');
+        const btnEl = document.getElementById('btn-refresh-tournament');
+        if (spinEl) spinEl.style.transform = 'rotate(360deg)';
+        if (btnEl) btnEl.style.opacity = '0.6';
+
+        try {
+          await loadTournamentData();
+        } catch (err) {
+          console.error('Error refreshing tournament:', err);
+        } finally {
+          setTimeout(() => {
+            if (spinEl) spinEl.style.transform = 'none';
+            if (btnEl) btnEl.style.opacity = '1';
+          }, 500);
+        }
+      }
+
       // Exponer globalmente
       window.loadTournamentData = loadTournamentData;
+      window.manualRefreshTournament = manualRefreshTournament;
       window.openTournamentJoinModal = openTournamentJoinModal;
       window.submitTournamentJoin = submitTournamentJoin;
 

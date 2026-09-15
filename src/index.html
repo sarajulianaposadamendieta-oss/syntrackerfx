@@ -4033,6 +4033,9 @@
             <button class="stark-time-tab" id="stark-tab-week" onclick="setTournamentTimeframe('week')">Esta semana</button>
             <button class="stark-time-tab" id="stark-tab-month" onclick="setTournamentTimeframe('month')">Este mes</button>
           </div>
+          <button type="button" id="btn-refresh-tournament" onclick="manualRefreshTournament()" style="font-size:12px; font-weight:700; padding:7px 14px; border-radius:18px; display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; cursor:pointer; transition:all 0.2s ease;">
+            <span id="refresh-spinner" style="display:inline-block; transition:transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);">🔄</span> <span>Actualizar</span>
+          </button>
           <div id="tournament-join-btn-container">
             <!-- Dinámico -->
           </div>
