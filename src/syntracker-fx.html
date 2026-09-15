@@ -9270,15 +9270,16 @@ function _renderAnalisis_orig() {
         const pnlAcum = parseFloat(p.return_pct || 0);
         const pnlWeekly = parseFloat(p.pnl_weekly_pct || 0);
         const pnlMonthly = parseFloat(p.pnl_monthly_pct || 0);
-        const ddDaily = parseFloat(p.dd_daily_pct || 0);
         const trades = parseInt(p.total_trades || p.trades_count || 0, 10);
+        const violations = parseInt(p.violations_count || 0, 10);
+        const disciplineScore = parseFloat(p.discipline_score != null ? p.discipline_score : 100);
 
-        // 1. 🎖️ Disciplina: Ha operado al menos 1 trade, DD diario <= 1.1%
-        if (trades >= 1 && ddDaily <= 1.1) {
+        // 1. 🎖️ Disciplina: Ha operado al menos 1 trade, DD diario <= 1.1%, CERO faltas y 100% disciplina
+        if (trades >= 1 && ddDaily <= 1.1 && violations === 0 && disciplineScore >= 100) {
           badges.push(TOURNAMENT_ACHIEVEMENTS[0]);
         }
 
-        // 2. 🔥 Consistencia: Retorno positivo acumulado (> 0%) y al menos 2 trades
+        // 2. 🔥 Consistencia: Retorno positivo acumulado (> 0%), al menos 2 trades y sin descalificación
         if (pnlAcum > 0 && trades >= 2) {
           badges.push(TOURNAMENT_ACHIEVEMENTS[1]);
         }
