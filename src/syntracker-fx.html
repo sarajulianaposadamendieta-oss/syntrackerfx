@@ -4877,10 +4877,31 @@
 
   <!-- MODAL: Inscribirse en Torneo -->
   <div class="overlay" id="tournament-join-modal" onclick="closeOnBg(event,'tournament-join-modal')">
-    <div class="modal" style="max-width: 480px;">
+    <div class="modal" style="max-width: 490px;">
       <div class="modal-title">🏆 Conectar Cuenta MT5 al Torneo</div>
-      <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:16px; line-height:1.4;">
-        Ingresa las credenciales de tu cuenta de MetaTrader 5 para participar. <strong>Importante:</strong> Usa tu contraseña de inversor (solo lectura) para garantizar total seguridad.
+      
+      <!-- Banner Registro Broker Oficial -->
+      <div style="background: linear-gradient(135deg, rgba(255, 205, 27, 0.12), rgba(0, 0, 0, 0.5)); border: 1px solid rgba(255, 205, 27, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 800; color: #ffcd1b; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px;">
+              <span>📈🔥</span> Paso 1: Registro en Broker Oficial
+            </div>
+            <div style="font-size: 12px; color: #e2e8f0; margin-top: 3px; font-weight: 600;">
+              Regístrate en el broker para obtener acceso al torneo de trading.
+            </div>
+          </div>
+          <a href="https://portal.wetrade.com/register?code=10109898" target="_blank" rel="noopener noreferrer" class="btn-gold" style="padding: 8px 14px; font-size: 11.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; font-weight: 800; border-radius: 8px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(255,205,27,0.25);">
+            <span>Crear Cuenta</span> ↗
+          </a>
+        </div>
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.35; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; margin-top: 6px;">
+          ¡Demuestra tu estrategia, disciplina y habilidades en el mercado! Luego de crear tu cuenta en el broker, ingresa tus credenciales abajo.
+        </div>
+      </div>
+
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:14px; line-height:1.4;">
+        <strong>Paso 2:</strong> Ingresa las credenciales de tu cuenta MT5. Usa tu contraseña de inversor (solo lectura) para garantizar total seguridad.
       </div>
       <form id="tournament-join-form" onsubmit="submitTournamentJoin(event)">
         <div class="form-g" style="margin-bottom:14px;">
