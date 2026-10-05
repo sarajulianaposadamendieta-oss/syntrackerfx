@@ -7,7 +7,15 @@
   <title>Syntracker Fx - GoldFX Journal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+    try {
+      if (localStorage.getItem('syntracker_auth_session')) {
+        document.documentElement.classList.add('has-session');
+      }
+    } catch(e){}
+  </script>
   <style>
+    html.has-session #auth-screen { display: none !important; }
     *,
     *::before,
     *::after {
@@ -5094,7 +5102,7 @@
     </div>
   </nav>
 
-  <script src="app.js?v=1791166467349"></script>
+  <script src="app.js?v=1791220138649"></script>
 </body>
 
 </html>

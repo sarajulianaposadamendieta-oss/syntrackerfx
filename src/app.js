@@ -7,19 +7,111 @@
     // ── Supabase client ──
     const sb = (function () {
       const base = { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
-      let token = null, user = null;
+      const STORAGE_KEY = 'syntracker_auth_session';
+      let token = null, user = null, refreshToken = null;
+
+      function saveSession(t, u, rt) {
+        token = t || null;
+        user = u || null;
+        if (rt !== undefined) refreshToken = rt || null;
+        try {
+          if (token && user) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+              token: token,
+              user: user,
+              refresh_token: refreshToken,
+              saved_at: Date.now()
+            }));
+            document.documentElement.classList.add('has-session');
+          } else {
+            localStorage.removeItem(STORAGE_KEY);
+            document.documentElement.classList.remove('has-session');
+          }
+        } catch (e) {
+          console.warn('LocalStorage not accessible:', e);
+        }
+      }
+
+      function loadSession() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const d = JSON.parse(raw);
+            if (d && d.token && d.user) {
+              token = d.token;
+              user = d.user;
+              refreshToken = d.refresh_token || null;
+              document.documentElement.classList.add('has-session');
+              return { token, user, refresh_token: refreshToken };
+            }
+          }
+        } catch (e) {
+          console.warn('Error reading saved session:', e);
+        }
+        return null;
+      }
+
       function h() { return Object.assign({}, base, { 'Authorization': 'Bearer ' + (token || SUPABASE_KEY) }); }
+
       async function signUp(email, password, name) {
         const r = await fetch(SUPABASE_URL + '/auth/v1/signup', { method: 'POST', headers: base, body: JSON.stringify({ email, password, data: { full_name: name } }) });
-        const d = await r.json(); if (d.error) throw new Error(d.error.message); return d;
+        const d = await r.json();
+        if (d.error) throw new Error(d.error.message);
+        if (d.access_token && d.user) {
+          saveSession(d.access_token, d.user, d.refresh_token);
+        }
+        return d;
       }
+
       async function signIn(email, password) {
         const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', { method: 'POST', headers: base, body: JSON.stringify({ email, password }) });
-        const d = await r.json(); if (!r.ok) throw new Error(d.error_description || d.message || 'Error al iniciar sesión');
-        token = d.access_token; user = d.user; return d;
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error_description || d.message || 'Error al iniciar sesión');
+        saveSession(d.access_token, d.user, d.refresh_token);
+        return d;
       }
-      async function signOut() { try { await fetch(SUPABASE_URL + '/auth/v1/logout', { method: 'POST', headers: h() }); } catch (e) { } token = null; user = null; }
+
+      async function signOut() {
+        try {
+          await fetch(SUPABASE_URL + '/auth/v1/logout', { method: 'POST', headers: h() });
+        } catch (e) {}
+        saveSession(null, null, null);
+      }
+
+      async function verifySession() {
+        const s = loadSession();
+        if (!s || !s.token) return null;
+        try {
+          const r = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: h() });
+          if (r.ok) {
+            const u = await r.json();
+            user = u;
+            saveSession(token, user, refreshToken);
+            return user;
+          }
+          // Si el token expiró, intentar renovar con refresh_token
+          if (refreshToken) {
+            const rf = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+              method: 'POST',
+              headers: base,
+              body: JSON.stringify({ refresh_token: refreshToken })
+            });
+            if (rf.ok) {
+              const rd = await rf.json();
+              saveSession(rd.access_token, rd.user, rd.refresh_token);
+              return rd.user;
+            }
+          }
+        } catch (e) {
+          // Si hubo error de red, mantener sesión con el usuario en caché para no forzar logout
+          if (user) return user;
+        }
+        saveSession(null, null, null);
+        return null;
+      }
+
       function getUser() { return user; }
+
       async function query(table, opts) {
         opts = opts || {};
         let url = SUPABASE_URL + '/rest/v1/' + table + '?select=' + (opts.select || '*');
@@ -87,6 +179,7 @@
         }
         const d = await r.json();
         user = d.user || d;
+        saveSession(token, user, refreshToken);
         return d;
       }
       async function recoverPassword(email) {
@@ -105,9 +198,11 @@
         }
         return r.json().catch(() => ({}));
       }
-      function setToken(t, u) { token = t; if (u) user = u; }
+      function setToken(t, u, rt) {
+        saveSession(t, u, rt);
+      }
       function getToken() { return token; }
-      return { signUp, signIn, signOut, getUser, query, insert, update, remove, uploadFile, updateUser, recoverPassword, setToken, getToken };
+      return { signUp, signIn, signOut, getUser, query, insert, update, remove, uploadFile, updateUser, recoverPassword, setToken, getToken, loadSession, verifySession };
     })();
 
     // ── Auth UI ──
@@ -230,9 +325,16 @@
       }
     }
     async function doLogout() {
-      showLoading(true); await sb.signOut();
-      trades = []; accounts = [];
-      document.getElementById('auth-screen').style.display = 'flex';
+      showLoading(true);
+      try {
+        await sb.signOut();
+      } catch (e) {}
+      trades = [];
+      accounts = [];
+      userConfirmations = [];
+      document.documentElement.classList.remove('has-session');
+      const authScreen = document.getElementById('auth-screen');
+      if (authScreen) authScreen.style.display = 'flex';
       showLoading(false);
     }
     document.addEventListener('keydown', function (e) {
@@ -561,7 +663,9 @@
 
     async function initApp() {
       const user = sb.getUser(); if (!user) return;
-      document.getElementById('auth-screen').style.display = 'none';
+      const authScreen = document.getElementById('auth-screen');
+      if (authScreen) authScreen.style.display = 'none';
+      document.documentElement.classList.add('has-session');
 
       // Load profile info from Supabase profiles table if available
       try {
@@ -590,37 +694,67 @@
 
       renderUserProfile(user);
 
-      document.getElementById('date-pill').textContent = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+      const datePill = document.getElementById('date-pill');
+      if (datePill) datePill.textContent = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
       showLoading(true);
-      await loadAccounts(); await loadTrades(); await loadConfirmations();
-      buildAccountFilter(); renderAll(); showLoading(false);
+      try {
+        await Promise.all([loadAccounts(), loadTrades(), loadConfirmations()]);
+      } catch (loadErr) {
+        console.error('Error cargando datos del journal:', loadErr);
+      }
+      try {
+        buildAccountFilter();
+        renderAll();
+      } catch (renderErr) {
+        console.error('Error renderizando journal:', renderErr);
+      } finally {
+        showLoading(false);
+      }
     }
 
     async function loadTrades() {
-      const uid = sb.getUser().id;
-      const data = await sb.query('trades', { select: '*', filter: 'user_id=eq.' + uid, order: 'date.asc,created_at.asc' });
-      trades = (Array.isArray(data) ? data : []).map(tradeFromRow);
+      const u = sb.getUser();
+      if (!u) return;
+      try {
+        const data = await sb.query('trades', { select: '*', filter: 'user_id=eq.' + u.id, order: 'date.asc,created_at.asc' });
+        trades = (Array.isArray(data) ? data : []).map(tradeFromRow);
+      } catch (e) {
+        console.error('Error cargando trades:', e);
+        trades = [];
+      }
     }
 
     async function loadAccounts() {
-      const uid = sb.getUser().id;
-      const data = await sb.query('accounts', { select: '*', filter: 'user_id=eq.' + uid, order: 'created_at.asc' });
-      if (Array.isArray(data) && data.length > 0) {
-        accounts = data.map(function (a) {
-          return {
-            id: a.id, name: a.name, type: a.type, broker: a.broker || '',
-            initialBalance: parseFloat(a.initial_balance) || 0, icon: a.icon || '💰',
-            iconClass: a.type === 'Capital Real' ? 'gold' : 'target'
-          };
-        });
-      } else { accounts = []; }
+      const u = sb.getUser();
+      if (!u) return;
+      try {
+        const data = await sb.query('accounts', { select: '*', filter: 'user_id=eq.' + u.id, order: 'created_at.asc' });
+        if (Array.isArray(data) && data.length > 0) {
+          accounts = data.map(function (a) {
+            return {
+              id: a.id, name: a.name, type: a.type, broker: a.broker || '',
+              initialBalance: parseFloat(a.initial_balance) || 0, icon: a.icon || '💰',
+              iconClass: a.type === 'Capital Real' ? 'gold' : 'target'
+            };
+          });
+        } else { accounts = []; }
+      } catch (e) {
+        console.error('Error cargando cuentas:', e);
+        accounts = [];
+      }
       refreshAccountSelects();
     }
 
     async function loadConfirmations() {
-      const uid = sb.getUser().id;
-      const data = await sb.query('user_confirmations', { select: '*', filter: 'user_id=eq.' + uid, order: 'created_at.asc' });
-      userConfirmations = Array.isArray(data) ? data : [];
+      const u = sb.getUser();
+      if (!u) return;
+      try {
+        const data = await sb.query('user_confirmations', { select: '*', filter: 'user_id=eq.' + u.id, order: 'created_at.asc' });
+        userConfirmations = Array.isArray(data) ? data : [];
+      } catch (e) {
+        console.error('Error cargando confirmaciones:', e);
+        userConfirmations = [];
+      }
     }
 
 
@@ -4858,11 +4992,36 @@ function _renderAnalisis_orig() {
       window.changeAnMonth = changeAnMonth;
       window.goAnToday = goAnToday;
       window.openJumpPicker = openJumpPicker;
-      window.applyJumpPicker = applyJumpPicker;
+      window.doLogout = doLogout;
 
-      // ── Init ──
-      document.getElementById('auth-screen').style.display = 'flex';
-      checkRecoveryFlow();
+      // ── Init con Auto-Login & Persistencia de Sesión ──
+      async function autoInit() {
+        checkRecoveryFlow();
+        const saved = sb.loadSession();
+        if (saved && saved.user && saved.token) {
+          const authScreen = document.getElementById('auth-screen');
+          if (authScreen) authScreen.style.display = 'none';
+          document.documentElement.classList.add('has-session');
+          showLoading(true);
+          try {
+            await sb.verifySession();
+            await initApp();
+          } catch (e) {
+            console.error('Error restaurando sesión:', e);
+            if (!sb.getUser()) {
+              document.documentElement.classList.remove('has-session');
+              if (authScreen) authScreen.style.display = 'flex';
+            }
+          } finally {
+            showLoading(false);
+          }
+        } else {
+          document.documentElement.classList.remove('has-session');
+          const authScreen = document.getElementById('auth-screen');
+          if (authScreen) authScreen.style.display = 'flex';
+        }
+      }
+      autoInit();
 
 
 
