@@ -36,23 +36,26 @@ def update_participant(pid, data):
 def ensure_mt5_alive():
     try:
         term = mt5.terminal_info()
-        if term is None or not term.connected:
-            mt5.initialize(timeout=10000)
+        if term is None:
+            try:
+                mt5.shutdown()
+            except:
+                pass
+            time.sleep(1)
+            if not mt5.initialize(timeout=15000):
+                reset_mt5_connection()
     except:
-        try:
-            mt5.initialize(timeout=10000)
-        except:
-            pass
+        reset_mt5_connection()
 
 def reset_mt5_connection():
-    print("[Auto-Healing] Reiniciando canal con MetaTrader 5...")
+    print("[Auto-Healing] Reiniciando terminal y canal con MetaTrader 5...")
     try:
         mt5.shutdown()
     except:
         pass
     os.system("taskkill /F /IM terminal64.exe >nul 2>&1")
     time.sleep(3)
-    if mt5.initialize(timeout=15000):
+    if mt5.initialize(timeout=20000):
         print("[Auto-Healing] MetaTrader 5 reanudado con exito.")
         return True
     else:
@@ -201,7 +204,7 @@ def run_synchronizer():
 
                 authorized = False
                 try:
-                    authorized = mt5.login(login=login, password=pwd, server=server, timeout=5000)
+                    authorized = mt5.login(login=login, password=pwd, server=server, timeout=10000)
                 except:
                     authorized = False
 
@@ -210,9 +213,14 @@ def run_synchronizer():
                     err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
 
                     if err_code in [-10005, -10004]:
-                        print(f"[{idx}/{len(participants)}] [WARN] Pausa de broker en #{login}. Esperando 3s...")
-                        time.sleep(3)
-                        ensure_mt5_alive()
+                        print(f"[{idx}/{len(participants)}] [AUTO-REPAIR] Limpiando canal IPC por #{login}...")
+                        try:
+                            mt5.shutdown()
+                        except:
+                            pass
+                        time.sleep(1)
+                        if not mt5.initialize(timeout=15000):
+                            reset_mt5_connection()
                     else:
                         pass
 
