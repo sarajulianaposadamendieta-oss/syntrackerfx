@@ -43,7 +43,10 @@ def ensure_mt5_alive():
                 pass
             time.sleep(1)
             if not mt5.initialize(timeout=15000):
-                reset_mt5_connection()
+                err = mt5.last_error()
+                err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
+                if err_code != -6:
+                    reset_mt5_connection()
     except:
         reset_mt5_connection()
 
@@ -55,11 +58,17 @@ def reset_mt5_connection():
         pass
     os.system("taskkill /F /IM terminal64.exe >nul 2>&1")
     time.sleep(3)
-    if mt5.initialize(timeout=20000):
+    init_ok = mt5.initialize(timeout=20000)
+    if init_ok:
         print("[Auto-Healing] MetaTrader 5 reanudado con exito.")
         return True
     else:
-        print(f"[Auto-Healing] Error reanudando MT5: {mt5.last_error()}")
+        err = mt5.last_error()
+        err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
+        if err_code == -6:
+            print("[Auto-Healing] MetaTrader 5 abierto y enlazado.")
+            return True
+        print(f"[Auto-Healing] Error reanudando MT5: {err}")
         return False
 
 def calculate_rules(deals, initial_balance):
@@ -178,9 +187,22 @@ def run_synchronizer():
     print("SYNTRACKER FX - SINCRONIZADOR WETRADE MT5 (AUTO-HEALING)")
     print("=" * 60)
 
-    if not mt5.initialize(timeout=30000):
-        print(f"[ERROR] Error al iniciar MT5: {mt5.last_error()}")
-        return
+    init_ok = False
+    try:
+        init_ok = mt5.initialize(timeout=30000)
+    except:
+        pass
+
+    if not init_ok:
+        err = mt5.last_error()
+        err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
+        if err_code == -6:
+            print("[INFO] Terminal MT5 detectado y enlazado. Iniciando sincronizacion...")
+        else:
+            print(f"[WARN] Error inicial: {err}. Reintentando conexion limpia...")
+            if not reset_mt5_connection():
+                print(f"[ERROR] No se pudo iniciar MT5: {mt5.last_error()}")
+                return
 
     ciclo = 1
     while True:
