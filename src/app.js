@@ -4630,6 +4630,8 @@ function _renderAnalisis_orig() {
           alert('Debes iniciar sesión para inscribirte en el torneo.');
           return;
         }
+        const srvInput = document.getElementById('tjm-server');
+        if (srvInput) srvInput.value = 'WeTrade-MT5';
         document.getElementById('tournament-join-modal').classList.add('open');
       }
 
@@ -4638,7 +4640,8 @@ function _renderAnalisis_orig() {
         const user = sb.getUser();
         if (!user) return;
 
-        const server = document.getElementById('tjm-server').value.trim();
+        const serverEl = document.getElementById('tjm-server');
+        const server = (serverEl && serverEl.value.trim()) || 'WeTrade-MT5';
         const login = document.getElementById('tjm-login').value.trim();
         const country = document.getElementById('tjm-country').value || 'CO';
         const password = document.getElementById('tjm-password').value.trim();
