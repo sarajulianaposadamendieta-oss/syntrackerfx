@@ -16,10 +16,12 @@ HEADERS = {
     "Prefer": "return=minimal"
 }
 
+MT5_PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
+
 def get_participants():
     url = f"{SUPABASE_URL}/rest/v1/tournament_participants?select=*"
     try:
-        r = requests.get(url, headers=HEADERS, timeout=8)
+        r = requests.get(url, headers=HEADERS, timeout=10)
         if r.status_code == 200:
             return r.json()
     except Exception as e:
@@ -33,43 +35,40 @@ def update_participant(pid, data):
     except Exception as e:
         print(f"[Supabase] Error actualizando participante {pid}: {e}")
 
-def ensure_mt5_alive():
+def ensure_mt5():
+    """Verifica conexion con MT5. Si no esta abierto, lo abre con su ruta exacta SIN matar nada."""
     try:
         term = mt5.terminal_info()
-        if term is None:
-            try:
-                mt5.shutdown()
-            except:
-                pass
-            time.sleep(1)
-            if not mt5.initialize(timeout=15000):
-                err = mt5.last_error()
-                err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
-                if err_code != -6:
-                    reset_mt5_connection()
+        if term is not None:
+            return True
     except:
-        reset_mt5_connection()
+        pass
 
-def reset_mt5_connection():
-    print("[Auto-Healing] Reiniciando terminal y canal con MetaTrader 5...")
     try:
         mt5.shutdown()
     except:
         pass
-    os.system("taskkill /F /IM terminal64.exe >nul 2>&1")
-    time.sleep(3)
-    init_ok = mt5.initialize(timeout=20000)
-    if init_ok:
-        print("[Auto-Healing] MetaTrader 5 reanudado con exito.")
-        return True
-    else:
-        err = mt5.last_error()
-        err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
-        if err_code == -6:
-            print("[Auto-Healing] MetaTrader 5 abierto y enlazado.")
+    time.sleep(1)
+
+    try:
+        if mt5.initialize(path=MT5_PATH, timeout=30000):
+            print("[INFO] MetaTrader 5 conectado correctamente.")
             return True
-        print(f"[Auto-Healing] Error reanudando MT5: {err}")
-        return False
+    except:
+        pass
+
+    # Si el proceso no estaba abierto, iniciarlo suavemente
+    try:
+        print("[INFO] Abriendo MetaTrader 5 en el servidor...")
+        os.startfile(MT5_PATH)
+        time.sleep(10)
+        if mt5.initialize(path=MT5_PATH, timeout=30000):
+            print("[INFO] MetaTrader 5 abierto y conectado con exito.")
+            return True
+    except Exception as ex:
+        print(f"[ERROR] No se pudo lanzar MT5: {ex}")
+
+    return False
 
 def calculate_rules(deals, initial_balance):
     now_utc = datetime.datetime.now(datetime.timezone.utc)
@@ -184,30 +183,20 @@ def calculate_rules(deals, initial_balance):
 
 def run_synchronizer():
     print("=" * 60)
-    print("SYNTRACKER FX - SINCRONIZADOR WETRADE MT5 (AUTO-HEALING)")
+    print("SYNTRACKER FX - SINCRONIZADOR WETRADE MT5 (ROBUSTO 24/7)")
     print("=" * 60)
 
-    init_ok = False
-    try:
-        init_ok = mt5.initialize(timeout=30000)
-    except:
-        pass
-
-    if not init_ok:
-        err = mt5.last_error()
-        err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
-        if err_code == -6:
-            print("[INFO] Terminal MT5 detectado y enlazado. Iniciando sincronizacion...")
-        else:
-            print(f"[WARN] Error inicial: {err}. Reintentando conexion limpia...")
-            if not reset_mt5_connection():
-                print(f"[ERROR] No se pudo iniciar MT5: {mt5.last_error()}")
-                return
+    # Conectar suavemente sin matar nada
+    if not ensure_mt5():
+        print("[WARN] No se pudo inicializar MT5 al arranque. Reintentando...")
+        time.sleep(5)
+        if not ensure_mt5():
+            print("[ERROR] MetaTrader 5 debe estar instalado en C:\\Program Files\\MetaTrader 5\\terminal64.exe")
+            return
 
     ciclo = 1
     while True:
         try:
-            ensure_mt5_alive()
             participants = get_participants()
             hora = datetime.datetime.now().strftime("%H:%M:%S")
             print(f"\n[{hora} | Ciclo #{ciclo}] Sincronizando {len(participants)} cuentas...")
@@ -224,34 +213,29 @@ def run_synchronizer():
 
                 login = int(login_raw)
 
+                # Si MT5 se cayó por alguna razon, reabrirlo sin taskkill
+                if not ensure_mt5():
+                    print(f"[{idx}/{len(participants)}] [WARN] Esperando reconexion de MT5...")
+                    time.sleep(5)
+                    continue
+
                 authorized = False
                 try:
-                    authorized = mt5.login(login=login, password=pwd, server=server, timeout=10000)
-                except:
+                    authorized = mt5.login(login=login, password=pwd, server=server, timeout=12000)
+                except Exception as ex:
                     authorized = False
 
                 if not authorized:
                     err = mt5.last_error()
-                    err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
-
-                    if err_code in [-10005, -10004]:
-                        print(f"[{idx}/{len(participants)}] [AUTO-REPAIR] Limpiando canal IPC por #{login}...")
-                        try:
-                            mt5.shutdown()
-                        except:
-                            pass
-                        time.sleep(1)
-                        if not mt5.initialize(timeout=15000):
-                            reset_mt5_connection()
-                    else:
-                        pass
-
-                    time.sleep(1.5)
+                    # Si falla, simplemente saltar la cuenta sin matar el programa
+                    # Nunca ejecutar taskkill por una cuenta individual
+                    print(f"[{idx}/{len(participants)}] [SALTAR] #{login} ({name}) no conecto: {err}")
+                    time.sleep(2)
                     continue
 
                 acc = mt5.account_info()
                 if acc is None:
-                    time.sleep(1.5)
+                    time.sleep(2)
                     continue
 
                 current_balance = float(acc.balance)
@@ -271,16 +255,16 @@ def run_synchronizer():
                 update_participant(pid, metrics)
                 print(f"[{idx}/{len(participants)}] [OK] #{login} ({name}) -> Bal: ${current_balance:,.2f} | PnL: ${metrics['net_pnl']:+,.2f} | Trades: {metrics['trades_count']} | Faltas: {metrics['violations_count']}")
 
-                time.sleep(1.5)
+                # Pausa prudente de 2 segundos entre cuentas
+                time.sleep(2)
 
+            print(f"\n⏳ Ciclo #{ciclo} completado con exito. Pausa de 60 segundos antes de la siguiente vuelta...")
             ciclo += 1
-            print("Ciclo completado con exito. Pausa de 30 segundos...")
-            time.sleep(30)
+            time.sleep(60)
 
         except Exception as main_err:
-            print(f"[ERROR] Excepcion en ciclo: {main_err}")
-            time.sleep(10)
-            reset_mt5_connection()
+            print(f"[ERROR] Excepcion inesperada en ciclo: {main_err}")
+            time.sleep(15)
 
 if __name__ == "__main__":
     run_synchronizer()
