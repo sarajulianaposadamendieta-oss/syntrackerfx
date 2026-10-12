@@ -227,9 +227,22 @@ def run_synchronizer():
 
                 if not authorized:
                     err = mt5.last_error()
-                    # Si falla, simplemente saltar la cuenta sin matar el programa
-                    # Nunca ejecutar taskkill por una cuenta individual
+                    err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
                     print(f"[{idx}/{len(participants)}] [SALTAR] #{login} ({name}) no conecto: {err}")
+
+                    # Si el error fue timeout de IPC, refrescar el canal de Python a MT5
+                    # SIN matar el programa para que la siguiente cuenta entre 100% limpia
+                    if err_code in [-10005, -10004]:
+                        try:
+                            mt5.shutdown()
+                        except:
+                            pass
+                        time.sleep(1)
+                        try:
+                            mt5.initialize(path=MT5_PATH, timeout=15000)
+                        except:
+                            pass
+
                     time.sleep(2)
                     continue
 
