@@ -4344,10 +4344,11 @@ function _renderAnalisis_orig() {
           '#38bdf8', // 10 (celeste)
           '#ef4444'  // 11+
         ];
-        const borderCol = COLOR_PALETTE[(rank - 4) % COLOR_PALETTE.length] || '#3b82f6';
-        const isOro = rank <= 5;
-        const tierName = isOro ? 'Oro' : 'Plata';
-        const tierCol = isOro ? '#eab308' : '#94a3b8';
+        const isDisqualified = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+        const borderCol = isDisqualified ? '#ef4444' : (COLOR_PALETTE[(rank - 4) % COLOR_PALETTE.length] || '#3b82f6');
+        const isOro = !isDisqualified && rank <= 5;
+        const tierName = isDisqualified ? 'Descalificado' : (isOro ? 'Oro' : 'Plata');
+        const tierCol = isDisqualified ? '#ef4444' : (isOro ? '#eab308' : '#94a3b8');
 
         const customAvatar = getParticipantAvatarHtml(p, 32);
         const crestSvg = isOro ? CRESTS.oro(32) : CRESTS.plata(32);
@@ -4446,8 +4447,12 @@ function _renderAnalisis_orig() {
         const top3Container = document.getElementById('tournament-top3-container');
         const cardsContainer = document.getElementById('tournament-cards-container');
 
-        // Ordenar participantes según el marco temporal activo
+        // Ordenar participantes: ACTIVOS primero (por PnL), DESCALIFICADOS al fondo (nunca en el podio)
         const sortedList = [...tournamentParticipants].sort((a, b) => {
+          const disqA = (a.status && a.status.startsWith('Descalificado')) || parseFloat(a.dd_max_pct || 0) >= 5.0;
+          const disqB = (b.status && b.status.startsWith('Descalificado')) || parseFloat(b.dd_max_pct || 0) >= 5.0;
+          if (disqA && !disqB) return 1;
+          if (!disqA && disqB) return -1;
           let valA = 0, valB = 0;
           if (activeTournamentTimeframe === 'all') {
             valA = parseFloat(a.return_pct || 0);
