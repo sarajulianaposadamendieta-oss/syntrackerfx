@@ -252,10 +252,14 @@ def run_synchronizer():
                     time.sleep(2)
                     continue
 
+                time.sleep(1.5)
                 acc = mt5.account_info()
                 if acc is None:
                     time.sleep(2)
-                    continue
+                    acc = mt5.account_info()
+                    if acc is None:
+                        time.sleep(2)
+                        continue
 
                 current_balance = float(acc.balance)
                 initial_balance = float(p.get('initial_balance') or current_balance or 10000.0)
@@ -265,7 +269,16 @@ def run_synchronizer():
                 from_date = datetime.datetime(2026, 9, 1)
                 to_date = datetime.datetime.now()
                 deals = mt5.history_deals_get(from_date, to_date)
-                closed_deals = [d for d in deals if d.entry == mt5.DEAL_ENTRY_OUT] if deals else []
+                if deals is None:
+                    time.sleep(1.5)
+                    deals = mt5.history_deals_get(from_date, to_date)
+
+                if deals is None:
+                    print(f"[{idx}/{len(participants)}] [WARN] #{login} ({name}): Historial no disponible temporalmente en MT5. Saltando para proteger datos...")
+                    time.sleep(2)
+                    continue
+
+                closed_deals = [d for d in deals if d.entry == mt5.DEAL_ENTRY_OUT]
 
                 metrics = calculate_rules(closed_deals, initial_balance)
                 metrics["current_balance"] = current_balance
