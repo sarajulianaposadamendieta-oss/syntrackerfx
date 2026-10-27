@@ -16,7 +16,13 @@ HEADERS = {
     "Prefer": "return=minimal"
 }
 
-MT5_PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
+MT5_CANDIDATE_PATHS = [
+    r"C:\Program Files\MetaTrader 5 Terminal\terminal64.exe",
+    r"C:\Program Files\MetaTrader 5\terminal64.exe",
+    r"C:\Program Files\MetaTrader 5 IC Markets (SC)\terminal64.exe",
+    r"C:\Program Files\FTMO MetaTrader 5\terminal64.exe",
+]
+MT5_PATH = next((p for p in MT5_CANDIDATE_PATHS if os.path.exists(p)), r"C:\Program Files\MetaTrader 5 Terminal\terminal64.exe")
 
 def get_participants():
     url = f"{SUPABASE_URL}/rest/v1/tournament_participants?select=*"
