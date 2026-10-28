@@ -284,15 +284,33 @@ def run_synchronizer():
                 metrics["current_balance"] = current_balance
                 metrics["initial_balance"] = initial_balance
 
-                update_participant(pid, metrics)
-                print(f"[{idx}/{len(participants)}] [OK] #{login} ({name}) -> Bal: ${current_balance:,.2f} | PnL: ${metrics['net_pnl']:+,.2f} | Trades: {metrics['trades_count']} | Faltas: {metrics['violations_count']}")
+                # Optimización Supabase: Solo escribir a disco si hubo cambios reales
+                prev_balance = float(p.get('current_balance') or 0.0)
+                prev_trades = int(p.get('trades_count') or 0)
+                prev_violations = int(p.get('violations_count') or 0)
+                prev_pnl = float(p.get('net_pnl') or 0.0)
+                prev_status = str(p.get('status') or '')
 
-                # Pausa prudente de 2 segundos entre cuentas
+                has_changed = (
+                    abs(current_balance - prev_balance) > 0.01 or
+                    metrics['trades_count'] != prev_trades or
+                    metrics['violations_count'] != prev_violations or
+                    abs(metrics['net_pnl'] - prev_pnl) > 0.01 or
+                    metrics['status'] != prev_status
+                )
+
+                if has_changed:
+                    update_participant(pid, metrics)
+                    print(f"[{idx}/{len(participants)}] [CAMBIO] #{login} ({name}) -> Bal: ${current_balance:,.2f} | PnL: ${metrics['net_pnl']:+,.2f} | Trades: {metrics['trades_count']} | Faltas: {metrics['violations_count']}")
+                else:
+                    print(f"[{idx}/{len(participants)}] [OK] #{login} ({name}) -> Al dia (sin cambios)")
+
+                # Pausa de 2 segundos entre cuentas
                 time.sleep(2)
 
-            print(f"\n⏳ Ciclo #{ciclo} completado con exito. Pausa de 60 segundos antes de la siguiente vuelta...")
+            print(f"\n⏳ Ciclo #{ciclo} completado con exito. Pausa de 2 minutos antes de la siguiente vuelta...")
             ciclo += 1
-            time.sleep(60)
+            time.sleep(120)
 
         except Exception as main_err:
             print(f"[ERROR] Excepcion inesperada en ciclo: {main_err}")
