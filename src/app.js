@@ -5108,6 +5108,18 @@ function _renderAnalisis_orig() {
         const tpData = await sb.query('tournament_participants', { select: '*', order: 'return_pct.desc' });
         adminParticipantsData = Array.isArray(tpData) ? tpData : [];
 
+        // Calcular Puesto Bruto por PnL y Puesto Oficial del Torneo
+        const rawSorted = [...adminParticipantsData].sort((a, b) => parseFloat(b.return_pct || 0) - parseFloat(a.return_pct || 0));
+        rawSorted.forEach((p, idx) => { p.rawPnlRank = idx + 1; });
+
+        const activeList = adminParticipantsData.filter(p => !((p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0))
+          .sort((a, b) => parseFloat(b.return_pct || 0) - parseFloat(a.return_pct || 0));
+        const disqList = adminParticipantsData.filter(p => ((p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0))
+          .sort((a, b) => parseFloat(b.return_pct || 0) - parseFloat(a.return_pct || 0));
+
+        activeList.forEach((p, idx) => { p.officialRank = idx + 1; });
+        disqList.forEach((p, idx) => { p.officialRank = activeList.length + idx + 1; });
+
         // Mapa de participantes por user_id y user_email
         const tpMap = new Map();
         adminParticipantsData.forEach(p => {
@@ -5205,17 +5217,41 @@ function _renderAnalisis_orig() {
     window.renderAdminDashboard = renderAdminDashboard;
 
     // ── Pestaña 1: Radar de Faltas & Auditoría en Vivo ──
+    let currentAuditFilter = 'all';
+
+    window.filterAuditByTab = function(filter) {
+      currentAuditFilter = filter || 'all';
+      document.querySelectorAll('#audit-filter-btns .mfilter-btn').forEach(btn => {
+        if (btn.getAttribute('data-afilter') === currentAuditFilter) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+      renderAdminAuditFeed();
+    };
+
     function renderAdminAuditFeed() {
       const container = document.getElementById('admin-audit-feed-container');
       if (!container) return;
 
-      const term = (currentAuditSearch || '').toLowerCase().trim();
-      let items = adminParticipantsData.filter(p => {
-        const hasViolations = parseInt(p.violations_count || 0, 10) > 0;
-        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
-        return hasViolations || isDisq;
-      });
+      const totalCount = adminParticipantsData.length;
+      const violationsCount = adminParticipantsData.filter(p => (parseInt(p.violations_count || 0, 10) > 0) || (p.status && p.status.startsWith('Descalificado')) || (parseFloat(p.dd_max_pct || 0) >= 5.0)).length;
+      const cleanCount = totalCount - violationsCount;
 
+      const elAll = document.getElementById('audit-count-all');
+      const elViol = document.getElementById('audit-count-violations');
+      const elClean = document.getElementById('audit-count-clean');
+      if (elAll) elAll.textContent = totalCount;
+      if (elViol) elViol.textContent = violationsCount;
+      if (elClean) elClean.textContent = cleanCount;
+
+      let items = [...adminParticipantsData];
+
+      if (currentAuditFilter === 'violations') {
+        items = items.filter(p => (parseInt(p.violations_count || 0, 10) > 0) || (p.status && p.status.startsWith('Descalificado')) || (parseFloat(p.dd_max_pct || 0) >= 5.0));
+      } else if (currentAuditFilter === 'clean') {
+        items = items.filter(p => (parseInt(p.violations_count || 0, 10) === 0) && !(p.status && p.status.startsWith('Descalificado')) && (parseFloat(p.dd_max_pct || 0) < 5.0));
+      }
+
+      const term = (currentAuditSearch || '').toLowerCase().trim();
       if (term) {
         items = items.filter(p => {
           const name = (p.user_name || '').toLowerCase();
@@ -5225,68 +5261,105 @@ function _renderAnalisis_orig() {
         });
       }
 
+      // Ordenar por puesto oficial
+      items.sort((a, b) => (a.officialRank || 999) - (b.officialRank || 999));
+
       if (items.length === 0) {
         container.innerHTML = `
           <div style="text-align:center; padding:36px; background:#0d0f14; border:1px solid rgba(255,255,255,0.06); border-radius:14px; color:#94a3b8; font-size:13px;">
-            <div style="font-size:32px; margin-bottom:8px;">✅</div>
-            <strong>¡Excelente disciplina general!</strong><br>
-            No se encontraron participantes con faltas activas ni descalificaciones según el filtro actual.
+            <div style="font-size:32px; margin-bottom:8px;">🔍</div>
+            <strong>No se encontraron participantes</strong><br>
+            Ajusta los filtros o el buscador para ver resultados.
           </div>
         `;
         return;
       }
 
-      items.sort((a, b) => {
-        const vA = parseInt(a.violations_count || 0, 10);
-        const vB = parseInt(b.violations_count || 0, 10);
-        return vB - vA;
-      });
-
       container.innerHTML = items.map(p => {
         const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
         const violations = parseInt(p.violations_count || 0, 10);
+        const isClean = violations === 0 && !isDisq;
         const maxDd = parseFloat(p.dd_max_pct || 0).toFixed(2);
         const dailyDd = parseFloat(p.dd_daily_pct || 0).toFixed(2);
         const trades = parseInt(p.trades_count || 0, 10);
         const pnl = parseFloat(p.return_pct || 0).toFixed(2);
         const pnlCol = pnl >= 0 ? '#4ade80' : '#f87171';
+        const rank = p.officialRank || '—';
+        const rawRank = p.rawPnlRank || '—';
 
-        const statusPill = isDisq 
-          ? `<span style="background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.45); color:#ef4444; font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px; text-transform:uppercase;">🚫 Descalificado</span>`
-          : `<span style="background:rgba(249,115,22,0.15); border:1px solid rgba(249,115,22,0.4); color:#f97316; font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px; text-transform:uppercase;">⚠️ Con Faltas</span>`;
+        // Badge de posición en el torneo
+        let rankBadge = '';
+        if (!isDisq) {
+          if (rank === 1) {
+            rankBadge = `<span style="background:linear-gradient(135deg, rgba(234,179,8,0.25), rgba(234,179,8,0.08)); border:1px solid #eab308; color:#facc15; font-size:11px; font-weight:900; padding:3px 10px; border-radius:12px; display:inline-flex; align-items:center; gap:5px; box-shadow:0 0 10px rgba(234,179,8,0.2);">🥇 Top #1 del Torneo</span>`;
+          } else if (rank === 2) {
+            rankBadge = `<span style="background:rgba(226,232,240,0.18); border:1px solid #cbd5e1; color:#ffffff; font-size:11px; font-weight:900; padding:3px 10px; border-radius:12px; display:inline-flex; align-items:center; gap:5px;">🥈 Top #2 del Torneo</span>`;
+          } else if (rank === 3) {
+            rankBadge = `<span style="background:rgba(217,119,6,0.2); border:1px solid #d97706; color:#f59e0b; font-size:11px; font-weight:900; padding:3px 10px; border-radius:12px; display:inline-flex; align-items:center; gap:5px;">🥉 Top #3 del Torneo</span>`;
+          } else {
+            rankBadge = `<span style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; font-size:11px; font-weight:800; padding:3px 8px; border-radius:10px;">🏆 Puesto #${rank} del Torneo</span>`;
+          }
+        } else {
+          rankBadge = `<span style="background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.45); color:#ef4444; font-size:11px; font-weight:800; padding:3px 8px; border-radius:10px;">🚫 Descalificado (Puesto #${rank})</span>`;
+          if (rawRank <= 3) {
+            rankBadge += ` <span style="background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.35); color:#facc15; font-size:10px; font-weight:700; padding:2px 7px; border-radius:8px;" title="Por rentabilidad bruta estaría en el podio, pero perdió el puesto por faltas">⚠️ Era Top #${rawRank} por Rentabilidad</span>`;
+          }
+        }
 
+        // Status pill
+        let statusPill = '';
+        if (isClean) {
+          statusPill = `<span style="background:rgba(34,197,94,0.18); border:1px solid rgba(34,197,94,0.4); color:#4ade80; font-size:10px; font-weight:800; padding:2.5px 8px; border-radius:10px;">🌟 100% Disciplina Impecable</span>`;
+        } else if (isDisq) {
+          statusPill = `<span style="background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.45); color:#ef4444; font-size:10px; font-weight:800; padding:2.5px 8px; border-radius:10px;">🚫 Fuera del Podio</span>`;
+        } else {
+          statusPill = `<span style="background:rgba(249,115,22,0.15); border:1px solid rgba(249,115,22,0.4); color:#f97316; font-size:10px; font-weight:800; padding:2.5px 8px; border-radius:10px;">⚠️ Con Faltas (${violations})</span>`;
+        }
+
+        // Motive description
         let motiveDescription = [];
-        if (violations > 0) motiveDescription.push(`Acumula <strong>${violations} falta(s)</strong> de operativa (límite: 1 trade/día).`);
-        if (parseFloat(maxDd) >= 5.0) motiveDescription.push(`Tocó un Drawdown Máximo de <strong>${maxDd}%</strong> (límite permitido: 5.0%).`);
-        if (parseFloat(dailyDd) > 1.1) motiveDescription.push(`Excedió el Drawdown Diario con <strong>${dailyDd}%</strong> (límite: 1.1%).`);
-        if (p.disqualification_reason) motiveDescription.push(`Motivo manual: <em>"${escapeHtml(p.disqualification_reason)}"</em>`);
+        if (isClean) {
+          motiveDescription.push('🌟 <strong style="color:#4ade80;">Operativa Ejemplar:</strong> No registra ninguna falta. Cumple estrictamente el límite de 1 trade/día y mantiene su balance y drawdown bajo control.');
+        } else {
+          if (violations > 0) motiveDescription.push(`Acumula <strong>${violations} falta(s)</strong> de operativa (límite permitido: 1 trade al día).`);
+          if (parseFloat(maxDd) >= 5.0) motiveDescription.push(`Tocó un Drawdown Máximo de <strong>${maxDd}%</strong> (excede el 5.0% máximo de la regla).`);
+          if (parseFloat(dailyDd) > 1.1) motiveDescription.push(`Excedió el Drawdown Diario con <strong>${dailyDd}%</strong> (límite: 1.1%).`);
+          if (p.disqualification_reason) motiveDescription.push(`Motivo manual: <em>"${escapeHtml(p.disqualification_reason)}"</em>`);
+        }
+
+        const borderColor = isClean ? '#22c55e' : (isDisq ? '#ef4444' : '#f97316');
 
         return `
-          <div class="audit-card" style="border-left: 4px solid ${isDisq ? '#ef4444' : '#f97316'}; background:#11131a; border-radius:12px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:10px; border-top:1px solid rgba(255,255,255,0.05); border-right:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05);">
-            <div style="flex:1; min-width:240px;">
+          <div class="audit-card" style="border-left: 4px solid ${borderColor}; background:#11131a; border-radius:12px; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:10px; border-top:1px solid rgba(255,255,255,0.05); border-right:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="flex:1; min-width:260px;">
               <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                <span style="font-size:14px; font-weight:800; color:#fff;">${escapeHtml(p.user_name || 'Estudiante')}</span>
+                ${rankBadge}
+                <span style="font-size:14.5px; font-weight:800; color:#fff;">${escapeHtml(p.user_name || 'Estudiante')}</span>
                 <span style="font-family:var(--mono); font-size:11px; color:#94a3b8; background:#18181b; padding:2px 6px; border-radius:4px;">#${p.mt5_login}</span>
                 ${statusPill}
               </div>
-              <div style="font-size:12px; color:#cbd5e1; margin-top:6px; line-height:1.4;">
+
+              <div style="font-size:12px; color:#cbd5e1; margin-top:8px; line-height:1.45;">
                 ${motiveDescription.join(' ')}
               </div>
-              <div style="display:flex; gap:16px; margin-top:8px; font-size:11px; font-family:var(--mono); color:#94a3b8;">
+
+              <div style="display:flex; gap:18px; margin-top:10px; font-size:11px; font-family:var(--mono); color:#94a3b8; flex-wrap:wrap;">
+                <span>Retorno: <strong style="color:${pnlCol}; font-size:12px;">${pnl >= 0 ? '+' : ''}${pnl}%</strong></span>
+                <span>Balance: <strong style="color:#fff;">$${parseFloat(p.current_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong></span>
                 <span>Trades: <strong style="color:#fff;">${trades}</strong></span>
                 <span>Max DD: <strong style="color:${parseFloat(maxDd) >= 5.0 ? '#ef4444' : '#fff'};">${maxDd}%</strong></span>
-                <span>Retorno: <strong style="color:${pnlCol};">${pnl >= 0 ? '+' : ''}${pnl}%</strong></span>
+                <span>Disciplina: <strong style="color:${parseFloat(p.discipline_score || 0) === 100 ? '#4ade80' : '#f97316'};">${p.discipline_score || 0}%</strong></span>
               </div>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:6px; flex-shrink:0;">
               ${violations > 0 ? `
-                <button type="button" class="btn-green" onclick="forgiveParticipantViolation('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="Resetear contador de faltas y restaurar puntaje de disciplina">
+                <button type="button" class="btn-green" onclick="forgiveParticipantViolation('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="Resetear contador de faltas y devolver al podio">
                   <span>🕊️</span> Perdonar Faltas
                 </button>
               ` : ''}
               ${isDisq ? `
-                <button type="button" class="btn-grey" onclick="adminReactivateParticipant('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="Reincorporar al torneo">
+                <button type="button" class="btn-grey" onclick="adminReactivateParticipant('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px; color:#4ade80;" title="Reincorporar al torneo">
                   <span>🔄</span> Reincorporar
                 </button>
               ` : `
@@ -5294,6 +5367,9 @@ function _renderAnalisis_orig() {
                   <span>🛑</span> Descalificar
                 </button>
               `}
+              <button type="button" class="btn-grey" onclick="openAdminEditModal('${p.id}')" style="font-size:11px; padding:5px 12px; border-radius:6px;" title="Editar credenciales MT5">
+                <span>✏️</span> Editar MT5
+              </button>
             </div>
           </div>
         `;
