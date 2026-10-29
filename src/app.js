@@ -1612,7 +1612,22 @@
 
     function openTradeModal() { renderConfGrid('tm-confirmations', []); document.getElementById('trade-modal').classList.add('open'); }
     function openAcctModal() { document.getElementById('acct-modal').classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'flex';
+        el.classList.add('open');
+      }
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'none';
+        el.classList.remove('open');
+      }
+    }
+    window.openModal = openModal;
+    window.closeModal = closeModal;
     function closeOnBg(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
     function selectNews(btn) { document.querySelectorAll('.news-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); document.getElementById('news-val').value = btn.dataset.val; }
 
@@ -5640,28 +5655,48 @@ function _renderAnalisis_orig() {
 
     window.openAdminEditModal = function(pid) {
       const p = adminParticipantsData.find(item => item.id === pid);
-      if (!p) return;
-      document.getElementById('aedit-pid').value = p.id;
-      document.getElementById('aedit-name').value = p.user_name || '';
-      document.getElementById('aedit-login').value = p.mt5_login || '';
-      document.getElementById('aedit-pass').value = p.mt5_password || '';
-      document.getElementById('aedit-server').value = p.mt5_server || 'WeTrade-MT5';
-      document.getElementById('aedit-balance').value = p.initial_balance || 0;
+      if (!p) {
+        toast('No se encontró el participante.', 'error');
+        return;
+      }
+      const elPid = document.getElementById('aedit-pid');
+      const elName = document.getElementById('aedit-student-name');
+      const elLogin = document.getElementById('aedit-login');
+      const elPass = document.getElementById('aedit-password');
+      const elServer = document.getElementById('aedit-server');
+      const elBal = document.getElementById('aedit-initial-balance');
+
+      if (elPid) elPid.value = p.id;
+      if (elName) elName.textContent = (p.user_name || 'Estudiante') + ' (#' + (p.mt5_login || 'Sin login') + ')';
+      if (elLogin) elLogin.value = p.mt5_login || '';
+      if (elPass) {
+        elPass.value = p.mt5_password || '';
+        elPass.type = 'password';
+      }
+      if (elServer) elServer.value = p.mt5_server || 'WeTrade-MT5';
+      if (elBal) elBal.value = p.initial_balance || 0;
+
       openModal('admin-edit-modal');
     };
 
-    window.toggleAdminPassVisibility = function() {
-      const input = document.getElementById('aedit-pass');
-      if (input) input.type = input.type === 'password' ? 'text' : 'password';
+    window.toggleEditPwdVisibility = function() {
+      const el = document.getElementById('aedit-password');
+      if (el) el.type = el.type === 'password' ? 'text' : 'password';
     };
+    window.toggleAdminPassVisibility = window.toggleEditPwdVisibility;
 
-    window.submitAdminParticipantEdit = async function(e) {
-      if (e) e.preventDefault();
+    window.saveAdminEditParticipant = async function(e) {
+      if (e && e.preventDefault) e.preventDefault();
       const pid = document.getElementById('aedit-pid').value;
       const login = document.getElementById('aedit-login').value.trim();
-      const pass = document.getElementById('aedit-pass').value.trim();
-      const server = document.getElementById('aedit-server').value.trim();
-      const balance = parseFloat(document.getElementById('aedit-balance').value) || 0;
+      const pass = document.getElementById('aedit-password').value.trim();
+      const server = document.getElementById('aedit-server').value.trim() || 'WeTrade-MT5';
+      const balance = parseFloat(document.getElementById('aedit-initial-balance').value) || 0;
+
+      if (!login) {
+        toast('El login de MT5 es obligatorio.', 'error');
+        return;
+      }
 
       showLoading(true);
       try {
@@ -5675,33 +5710,53 @@ function _renderAnalisis_orig() {
             initial_balance: balance
           }
         });
-        toast('Credenciales MT5 actualizadas correctamente.', 'success');
+        toast('Credenciales MT5 guardadas con éxito.', 'success');
         closeModal('admin-edit-modal');
         await loadAdminData();
         renderAdminTournamentTable();
+        renderAdminAuditFeed();
+        if (activeAdminSubtab === 'bot') loadAdminBotTab();
       } catch (err) {
-        console.error('Error actualizando participante:', err);
+        console.error('Error guardando credenciales MT5:', err);
         toast('Error al guardar credenciales en Supabase.', 'error');
       } finally {
         showLoading(false);
       }
     };
+    window.submitAdminParticipantEdit = window.saveAdminEditParticipant;
 
     window.openAdminDisqualifyModal = function(pid) {
       const p = adminParticipantsData.find(item => item.id === pid);
       if (!p) return;
-      document.getElementById('adisq-pid').value = p.id;
-      document.getElementById('adisq-name-display').textContent = p.user_name + ' (#' + p.mt5_login + ')';
-      document.getElementById('adisq-custom-reason').value = '';
+      const elPid = document.getElementById('adisq-pid');
+      const elName = document.getElementById('adisq-student-name');
+      const elSelect = document.getElementById('adisq-reason-select');
+      const elCustom = document.getElementById('adisq-reason-custom');
+
+      if (elPid) elPid.value = p.id;
+      if (elName) elName.textContent = (p.user_name || 'Estudiante') + ' (#' + p.mt5_login + ')';
+      if (elSelect) elSelect.value = 'Superó el 5% de Drawdown Máximo';
+      if (elCustom) {
+        elCustom.value = '';
+        elCustom.style.display = 'none';
+      }
       openModal('admin-disqualify-modal');
     };
 
-    window.submitAdminDisqualification = async function(e) {
-      if (e) e.preventDefault();
+    window.handleDisqReasonSelect = function(sel) {
+      const customInput = document.getElementById('adisq-reason-custom');
+      if (customInput) {
+        customInput.style.display = sel.value === 'Otro motivo' ? 'block' : 'none';
+        if (sel.value === 'Otro motivo') customInput.focus();
+      }
+    };
+
+    window.confirmAdminDisqualify = async function(e) {
+      if (e && e.preventDefault) e.preventDefault();
       const pid = document.getElementById('adisq-pid').value;
-      const selectReason = document.getElementById('adisq-reason-select').value;
-      const customReason = document.getElementById('adisq-custom-reason').value.trim();
-      const finalReason = customReason ? customReason : selectReason;
+      const selVal = document.getElementById('adisq-reason-select').value;
+      const customVal = document.getElementById('adisq-reason-custom').value.trim();
+      const reason = (selVal === 'Otro motivo' && customVal) ? customVal : selVal;
 
       showLoading(true);
       try {
@@ -5709,8 +5764,8 @@ function _renderAnalisis_orig() {
           method: 'PATCH',
           filter: 'id=eq.' + pid,
           body: {
-            status: 'Descalificado: ' + finalReason,
-            disqualification_reason: finalReason
+            status: 'Descalificado: ' + reason,
+            disqualification_reason: reason
           }
         });
         toast('Participante descalificado correctamente.', 'success');
@@ -5718,35 +5773,13 @@ function _renderAnalisis_orig() {
         await loadAdminData();
         renderAdminDashboard();
       } catch (err) {
-        console.error('Error descalificando participante:', err);
-        toast('Error al registrar descalificación.', 'error');
+        console.error('Error descalificando:', err);
+        toast('Error al descalificar en Supabase.', 'error');
       } finally {
         showLoading(false);
       }
     };
-
-    window.adminReactivateParticipant = async function(pid) {
-      if (!confirm('¿Deseas reactivar a este participante y devolverle el estado Activo?')) return;
-      showLoading(true);
-      try {
-        await sb.query('tournament_participants', {
-          method: 'PATCH',
-          filter: 'id=eq.' + pid,
-          body: {
-            status: 'Activo',
-            disqualification_reason: null
-          }
-        });
-        toast('Participante reactivado exitosamente.', 'success');
-        await loadAdminData();
-        renderAdminDashboard();
-      } catch (err) {
-        console.error('Error reactivando participante:', err);
-        toast('Error al reactivar participante.', 'error');
-      } finally {
-        showLoading(false);
-      }
-    };
+    window.submitAdminDisqualification = window.confirmAdminDisqualify;
 
     // ── Pestaña 4: Comunicados y Anuncios Globales ──
     const ANNOUNCEMENT_STORAGE_KEY = 'syntracker_global_announcement';
