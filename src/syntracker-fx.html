@@ -3393,6 +3393,103 @@
       font-size: 9.5px;
     }
   </style>
+<style>
+
+    /* ADMIN PANEL STYLES */
+    .admin-tab-btn {
+      background: #13161f;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .admin-tab-btn:hover {
+      background: #1e2230;
+      color: #fff;
+    }
+    .admin-tab-btn.active {
+      background: linear-gradient(135deg, rgba(234,179,8,0.2), rgba(245,158,11,0.08));
+      border-color: rgba(234,179,8,0.5);
+      color: #eab308;
+      box-shadow: 0 0 15px rgba(234,179,8,0.15);
+    }
+    .mfilter-btn {
+      background: #13161f;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .mfilter-btn:hover {
+      background: #1a1e2b;
+      color: #fff;
+    }
+    .mfilter-btn.active {
+      background: #27272a;
+      color: #fff;
+      border-color: rgba(255,255,255,0.25);
+    }
+    .membership-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .membership-badge.mensual {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.35);
+      color: #4ade80;
+    }
+    .membership-badge.anual {
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.35);
+      color: #60a5fa;
+    }
+    .membership-badge.lifetime {
+      background: rgba(168,85,247,0.15);
+      border: 1px solid rgba(168,85,247,0.4);
+      color: #c084fc;
+    }
+    .membership-badge.vip {
+      background: rgba(234,179,8,0.15);
+      border: 1px solid rgba(234,179,8,0.45);
+      color: #facc15;
+      box-shadow: 0 0 10px rgba(234,179,8,0.2);
+    }
+    .audit-card {
+      background: #0d0f14;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: all 0.2s ease;
+    }
+    .audit-card:hover {
+      border-color: rgba(255,255,255,0.18);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+    }
+
+</style>
 </head>
 
 <body>
@@ -3605,6 +3702,11 @@
       <div class="nav-item" onclick="goTo('torneo',this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-.98 1.2A3.5 3.5 0 0 0 7 21.5h10a3.5 3.5 0 0 0-2.02-3.3c-.53-.2-.98-.65-.98-1.2v-2.34"/><path d="M6 4h12v5a6 6 0 0 1-12 0V4z"/></svg></span> Torneo
       </div>
+      <div id="nav-item-admin" class="nav-item" style="display:none; color:#eab308; font-weight:700; border-left: 3px solid transparent;" onclick="goTo('admin',this)">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Panel Admin
+      </div>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-.98 1.2A3.5 3.5 0 0 0 7 21.5h10a3.5 3.5 0 0 0-2.02-3.3c-.53-.2-.98-.65-.98-1.2v-2.34"/><path d="M6 4h12v5a6 6 0 0 1-12 0V4z"/></svg></span> Torneo
+      </div>
     </nav>
     <div class="sidebar-section" style="padding-bottom:10px;">CUENTA ACTIVA</div>
     <div class="acct-dropdown" id="sidebar-account-selector">
@@ -3634,6 +3736,17 @@
 
   <!-- MAIN -->
   <div class="main">
+    <!-- BANNER DE ANUNCIO GLOBAL (ADMIN) -->
+    <div id="global-announcement-banner" style="display:none; margin:14px 24px 0 24px; padding:12px 18px; border-radius:12px; background:linear-gradient(90deg, rgba(234,179,8,0.18), rgba(245,158,11,0.08)); border:1px solid rgba(234,179,8,0.35); box-shadow:0 4px 20px rgba(0,0,0,0.4); align-items:center; justify-content:space-between; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:18px;">📢</span>
+        <div>
+          <div style="font-size:10px; font-weight:800; color:#eab308; text-transform:uppercase; letter-spacing:1px;">COMUNICADO OFICIAL</div>
+          <div id="announcement-banner-text" style="font-size:13px; font-weight:700; color:#fef08a; margin-top:2px;"></div>
+        </div>
+      </div>
+      <button onclick="dismissAnnouncement()" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size:16px; padding:4px;" title="Cerrar aviso">&times;</button>
+    </div>
     <!-- TOPBAR -->
     <div class="topbar">
       <!-- Mobile Header Brand (Visible on mobile only) -->
@@ -4172,6 +4285,297 @@
 
         <div id="tournament-cards-container">
           <!-- Renderizado dinámico de tarjetas #4 en adelante o lista completa -->
+        </div>
+      </div>
+    </div>
+
+  
+    <!-- ========================================== -->
+    <!--          PÁGINA: PANEL DE ADMINISTRACIÓN   -->
+    <!-- ========================================== -->
+    <div class="page" id="page-admin">
+      <!-- CABECERA ADMIN -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:18px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <h1 style="font-size:26px; font-weight:900; margin:0; color:#ffffff; letter-spacing:0.5px; display:flex; align-items:center; gap:10px;">
+              <span>🛡️</span> PANEL DE ADMINISTRACIÓN
+            </h1>
+            <span id="admin-role-badge" style="background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.4); color:#eab308; font-size:10.5px; font-weight:800; padding:2.5px 10px; border-radius:12px; text-transform:uppercase;">Superadmin</span>
+          </div>
+          <div style="font-size:12.5px; color:#94a3b8; font-weight:500; margin-top:4px;">Centro de control de membresías, auditoría de disciplina, torneos y plataforma.</div>
+        </div>
+
+        <!-- Tarjetas Resumen Métricas -->
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div style="background:#13161f; border:1px solid rgba(255,255,255,0.08); padding:8px 16px; border-radius:12px; text-align:center; min-width:90px;">
+            <div style="font-size:9.5px; color:#64748b; font-weight:700; text-transform:uppercase;">En Torneo</div>
+            <div id="admin-metric-total" style="font-size:18px; font-weight:900; color:#ffffff; font-family:var(--mono);">0</div>
+          </div>
+          <div style="background:#13161f; border:1px solid rgba(255,255,255,0.08); padding:8px 16px; border-radius:12px; text-align:center; min-width:90px;">
+            <div style="font-size:9.5px; color:#64748b; font-weight:700; text-transform:uppercase;">Activos</div>
+            <div id="admin-metric-active" style="font-size:18px; font-weight:900; color:#4ade80; font-family:var(--mono);">0</div>
+          </div>
+          <div style="background:#13161f; border:1px solid rgba(255,255,255,0.08); padding:8px 16px; border-radius:12px; text-align:center; min-width:90px;">
+            <div style="font-size:9.5px; color:#64748b; font-weight:700; text-transform:uppercase;">Descalificados</div>
+            <div id="admin-metric-disq" style="font-size:18px; font-weight:900; color:#ef4444; font-family:var(--mono);">0</div>
+          </div>
+          <div style="background:#13161f; border:1px solid rgba(255,255,255,0.08); padding:8px 16px; border-radius:12px; text-align:center; min-width:90px;">
+            <div style="font-size:9.5px; color:#64748b; font-weight:700; text-transform:uppercase;">Con Faltas</div>
+            <div id="admin-metric-violations" style="font-size:18px; font-weight:900; color:#f97316; font-family:var(--mono);">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NAVEGACIÓN SECUNDARIA DEL PANEL ADMIN -->
+      <div style="display:flex; gap:8px; margin-bottom:22px; overflow-x:auto; padding-bottom:6px;">
+        <button type="button" class="admin-tab-btn active" id="atab-btn-auditoria" onclick="switchAdminSubtab('auditoria')">
+          <span>🚨</span> Radar de Faltas & Auditoría
+        </button>
+        <button type="button" class="admin-tab-btn" id="atab-btn-membresias" onclick="switchAdminSubtab('membresias')">
+          <span>👥</span> Estudiantes & Membresías
+        </button>
+        <button type="button" class="admin-tab-btn" id="atab-btn-torneo" onclick="switchAdminSubtab('torneo')">
+          <span>🏆</span> Gestión del Torneo
+        </button>
+        <button type="button" class="admin-tab-btn" id="atab-btn-anuncios" onclick="switchAdminSubtab('anuncios')">
+          <span>📢</span> Publicar Anuncios
+        </button>
+        <button type="button" class="admin-tab-btn" id="atab-btn-bot" style="display:none; color:#38bdf8; border-color:rgba(56,189,248,0.3);" onclick="switchAdminSubtab('bot')">
+          <span>🤖</span> Salud del Bot (Sara)
+        </button>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PESTAÑA 1: RADAR DE FALTAS Y AUDITORÍA EN VIVO -->
+      <!-- ============================================== -->
+      <div id="admin-sec-auditoria" class="admin-sec-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3 style="margin:0; font-size:16px; font-weight:800; color:#fff;">🚨 Historial Disciplinario e Infracciones</h3>
+            <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Detalle de participantes con faltas de operativa o descalificados por regla de drawdown.</div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="audit-search-input" placeholder="Buscar por nombre o cuenta..." oninput="filterAuditFeed()" style="background:#13161f; border:1px solid rgba(255,255,255,0.12); color:#fff; font-size:12px; padding:6px 12px; border-radius:8px; width:220px;">
+          </div>
+        </div>
+
+        <div id="admin-audit-feed-container" style="display:flex; flex-direction:column; gap:10px;">
+          <!-- Renderizado dinámico de tarjetas de infracción -->
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PESTAÑA 2: ESTUDIANTES Y MEMBRESÍAS           -->
+      <!-- ============================================== -->
+      <div id="admin-sec-membresias" class="admin-sec-content" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3 style="margin:0; font-size:16px; font-weight:800; color:#fff;">👥 Control de Membresías de Estudiantes</h3>
+            <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Asigna y filtra estudiantes por plan: Mensual, Anual, Lifetime o VIP.</div>
+          </div>
+          <!-- Filtros de Membresía -->
+          <div style="display:flex; gap:6px; flex-wrap:wrap;" id="membership-filter-btns">
+            <button class="mfilter-btn active" data-mfilter="all" onclick="filterMembershipTable('all')">Todos (<span id="mcount-all">0</span>)</button>
+            <button class="mfilter-btn" data-mfilter="Mensual" onclick="filterMembershipTable('Mensual')">🟢 Mensual (<span id="mcount-mensual">0</span>)</button>
+            <button class="mfilter-btn" data-mfilter="Anual" onclick="filterMembershipTable('Anual')">🔵 Anual (<span id="mcount-anual">0</span>)</button>
+            <button class="mfilter-btn" data-mfilter="Lifetime" onclick="filterMembershipTable('Lifetime')">🟣 Lifetime (<span id="mcount-lifetime">0</span>)</button>
+            <button class="mfilter-btn" data-mfilter="VIP" onclick="filterMembershipTable('VIP')">🟡 VIP (<span id="mcount-vip">0</span>)</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <input type="text" id="membership-search-input" placeholder="Buscar estudiante por nombre o correo..." oninput="filterMembershipTable()" style="background:#13161f; border:1px solid rgba(255,255,255,0.12); color:#fff; font-size:12px; padding:7px 14px; border-radius:8px; width:100%; max-width:320px;">
+        </div>
+
+        <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; overflow:hidden;">
+          <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">
+              <thead>
+                <tr style="background:#13161f; color:#94a3b8; font-size:10.5px; font-weight:800; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.08);">
+                  <th style="padding:12px 16px;">Estudiante</th>
+                  <th style="padding:12px 14px;">Cuenta MT5</th>
+                  <th style="padding:12px 14px;">Membresía Asignada</th>
+                  <th style="padding:12px 14px;">Balance / PnL</th>
+                  <th style="padding:12px 14px;">Estado</th>
+                  <th style="padding:12px 14px; text-align:right;">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="admin-memberships-tbody">
+                <!-- Dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PESTAÑA 3: GESTIÓN DEL TORNEO                 -->
+      <!-- ============================================== -->
+      <div id="admin-sec-torneo" class="admin-sec-content" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3 style="margin:0; font-size:16px; font-weight:800; color:#fff;">🏆 Participantes y Credenciales MT5</h3>
+            <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Corrige claves MT5 mal escritas, descalifica con motivo justificado o reincorpora alumnos.</div>
+          </div>
+          <div>
+            <input type="text" id="tournament-manage-search" placeholder="Buscar por nombre o login..." oninput="filterTournamentManagementTable()" style="background:#13161f; border:1px solid rgba(255,255,255,0.12); color:#fff; font-size:12px; padding:6px 12px; border-radius:8px; width:220px;">
+          </div>
+        </div>
+
+        <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; overflow:hidden;">
+          <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">
+              <thead>
+                <tr style="background:#13161f; color:#94a3b8; font-size:10.5px; font-weight:800; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.08);">
+                  <th style="padding:12px 16px;">#</th>
+                  <th style="padding:12px 14px;">Participante</th>
+                  <th style="padding:12px 14px;">Login MT5</th>
+                  <th style="padding:12px 14px;">Clave Guardada</th>
+                  <th style="padding:12px 14px;">Trades</th>
+                  <th style="padding:12px 14px;">Faltas</th>
+                  <th style="padding:12px 14px;">Max DD</th>
+                  <th style="padding:12px 14px;">Estado</th>
+                  <th style="padding:12px 16px; text-align:right;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tournament-tbody">
+                <!-- Dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PESTAÑA 4: PUBLICACIÓN DE ANUNCIOS            -->
+      <!-- ============================================== -->
+      <div id="admin-sec-anuncios" class="admin-sec-content" style="display:none;">
+        <div style="max-width:680px; background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:22px;">
+          <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#fff;">📢 Comunicado Oficial para Estudiantes</h3>
+          <div style="font-size:12px; color:#94a3b8; margin-bottom:18px;">El mensaje que publiques aquí aparecerá fijado en la parte superior de la plataforma para todos los alumnos.</div>
+
+          <div style="margin-bottom:14px;">
+            <label style="display:block; font-size:11px; font-weight:700; color:#cbd5e1; text-transform:uppercase; margin-bottom:6px;">Texto del Comunicado</label>
+            <textarea id="admin-announcement-input" rows="3" placeholder="Ejemplo: ¡Atención comunidad! Hoy viernes el mercado cierra a las 5:00 PM. No olviden gestionar sus posiciones..." style="width:100%; background:#13161f; border:1px solid rgba(255,255,255,0.12); color:#fff; border-radius:8px; padding:10px 12px; font-size:13px; font-family:inherit; resize:vertical;"></textarea>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div id="admin-announcement-status" style="font-size:11.5px; color:#94a3b8;"></div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn-grey" onclick="clearGlobalAnnouncement()" style="padding:8px 14px; font-size:12px; border-radius:8px;">Eliminar Aviso</button>
+              <button type="button" class="btn-green" onclick="publishGlobalAnnouncement()" style="padding:8px 18px; font-size:12px; font-weight:700; border-radius:8px;">Publicar Aviso</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PESTAÑA 5: MONITOR DE SALUD (SARA ONLY)       -->
+      <!-- ============================================== -->
+      <div id="admin-sec-bot" class="admin-sec-content" style="display:none;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:20px;">
+          <div style="background:#0d0f14; border:1px solid rgba(56,189,248,0.25); border-radius:14px; padding:18px; box-shadow:0 0 20px rgba(56,189,248,0.06);">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase;">Estado Sincronizador</div>
+              <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#4ade80; box-shadow:0 0 8px #4ade80;"></span>
+            </div>
+            <div style="font-size:20px; font-weight:900; color:#fff; margin-top:8px;">MetaTrader 5 Activo</div>
+            <div style="font-size:11.5px; color:#94a3b8; margin-top:4px;">Broker: <strong style="color:#eab308;">WeTrade-MT5</strong></div>
+          </div>
+
+          <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
+            <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Consumo de Base de Datos</div>
+            <div style="font-size:20px; font-weight:900; color:#4ade80; margin-top:8px;">0.1% Disk IO (Saludable)</div>
+            <div style="font-size:11.5px; color:#94a3b8; margin-top:4px;">Dirty Checking activado: 99.8% ahorro</div>
+          </div>
+
+          <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
+            <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Cuentas Monitoreadas</div>
+            <div style="font-size:20px; font-weight:900; color:#eab308; margin-top:8px;" id="bot-monitored-count">74 Cuentas</div>
+            <div style="font-size:11.5px; color:#94a3b8; margin-top:4px;">Ciclo continuo activo</div>
+          </div>
+        </div>
+
+        <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
+          <h4 style="margin:0 0 8px 0; font-size:13px; font-weight:800; color:#38bdf8;">Instrucción de Ejecución Local</h4>
+          <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
+            El bot de sincronización corre en tu computador mediante el acceso directo: <code style="background:#13161f; padding:2px 6px; border-radius:4px; color:#fef08a;">Iniciar_Bot_Torneo.bat</code>.<br>
+            Cualquier cuenta con contraseña incorrecta se marcará en la tabla del torneo para que el alumno o tú puedan corregirla.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-admin -->
+
+    <!-- ============================================== -->
+    <!-- MODAL: EDITAR CREDENCIALES MT5 (ADMIN)         -->
+    <!-- ============================================== -->
+    <div class="overlay" id="admin-edit-modal" onclick="closeOnBg(event,'admin-edit-modal')" style="display:none;">
+      <div class="modal" style="max-width:440px;">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <span>✏️</span> Editar Credenciales MT5
+        </div>
+        <input type="hidden" id="aedit-pid">
+        
+        <div style="font-size:12px; color:#94a3b8; margin-bottom:14px;" id="aedit-student-name">—</div>
+
+        <div class="form-g" style="margin-bottom:12px;">
+          <label class="form-l">Login / Cuenta MT5</label>
+          <input type="text" class="form-i" id="aedit-login" placeholder="Ej: 40031711">
+        </div>
+
+        <div class="form-g" style="margin-bottom:12px;">
+          <label class="form-l">Contraseña MT5</label>
+          <div style="position:relative;">
+            <input type="password" class="form-i" id="aedit-password" placeholder="Clave de trading o inversor" style="padding-right:38px;">
+            <button type="button" onclick="toggleEditPwdVisibility()" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:#94a3b8; cursor:pointer; font-size:14px;">👁️</button>
+          </div>
+        </div>
+
+        <div class="form-g" style="margin-bottom:12px;">
+          <label class="form-l">Servidor Broker</label>
+          <input type="text" class="form-i" id="aedit-server" value="WeTrade-MT5" readonly style="opacity:0.8; cursor:not-allowed;">
+        </div>
+
+        <div class="form-g" style="margin-bottom:18px;">
+          <label class="form-l">Balance Inicial ($)</label>
+          <input type="number" step="0.01" class="form-i" id="aedit-initial-balance" placeholder="10000.00">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="btn-grey" onclick="closeModal('admin-edit-modal')">Cancelar</button>
+          <button type="button" class="btn-green" onclick="saveAdminEditParticipant()">Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL: DESCALIFICAR CON MOTIVO                 -->
+    <!-- ============================================== -->
+    <div class="overlay" id="admin-disqualify-modal" onclick="closeOnBg(event,'admin-disqualify-modal')" style="display:none;">
+      <div class="modal" style="max-width:420px; border-color:rgba(239,68,68,0.4);">
+        <div class="modal-title" style="color:#ef4444; display:flex; align-items:center; gap:8px;">
+          <span>🛑</span> Descalificar Participante
+        </div>
+        <input type="hidden" id="adisq-pid">
+        <div style="font-size:12.5px; color:#fff; font-weight:700; margin-bottom:4px;" id="adisq-student-name">—</div>
+        <div style="font-size:11.5px; color:#94a3b8; margin-bottom:14px;">Esta acción marcará al estudiante como descalificado y lo moverá al fondo de la clasificación.</div>
+
+        <div class="form-g" style="margin-bottom:16px;">
+          <label class="form-l">Motivo de Descalificación</label>
+          <select class="form-i" id="adisq-reason-select" onchange="handleDisqReasonSelect(this)" style="margin-bottom:8px;">
+            <option value="Superó el 5% de Drawdown Máximo">Superó el 5% de Drawdown Máximo</option>
+            <option value="Operó más de 1 vez por día (Exceso de faltas)">Operó más de 1 vez por día (Exceso de faltas)</option>
+            <option value="Uso indebido de cuenta o cuenta ajena">Uso indebido de cuenta o cuenta ajena</option>
+            <option value="Otro motivo">Otro motivo (Escribir abajo)</option>
+          </select>
+          <input type="text" class="form-i" id="adisq-reason-custom" placeholder="Escribe el motivo detallado..." style="display:none;">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="btn-grey" onclick="closeModal('admin-disqualify-modal')">Cancelar</button>
+          <button type="button" class="btn-red" onclick="confirmAdminDisqualify()" style="background:#ef4444; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">Confirmar Descalificación</button>
         </div>
       </div>
     </div>
@@ -5704,6 +6108,7 @@
         } catch (tpErr) {}
 
         renderUserProfile(user);
+      checkAdminNavVisibility();
         closeModal('profile-modal');
         alert('¡Perfil actualizado con éxito!');
       } catch (err) {
@@ -6245,7 +6650,7 @@
     }
 
     // ── Navigation ──
-    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading' };
+    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading', admin: 'Panel de Administración' };
     function goTo(id, el) {
       document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
@@ -6274,6 +6679,9 @@
       if (id === 'estadisticas') renderStats();
       if (id === 'comparar') renderComparar();
       if (id === 'cuentas') renderAccounts();
+      if (id === 'admin') {
+        renderAdminDashboard();
+      }
       if (id === 'torneo') {
         loadTournamentData();
         startTournamentPolling();
@@ -9596,10 +10004,11 @@ function _renderAnalisis_orig() {
           '#38bdf8', // 10 (celeste)
           '#ef4444'  // 11+
         ];
-        const borderCol = COLOR_PALETTE[(rank - 4) % COLOR_PALETTE.length] || '#3b82f6';
-        const isOro = rank <= 5;
-        const tierName = isOro ? 'Oro' : 'Plata';
-        const tierCol = isOro ? '#eab308' : '#94a3b8';
+        const isDisqualified = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+        const borderCol = isDisqualified ? '#ef4444' : (COLOR_PALETTE[(rank - 4) % COLOR_PALETTE.length] || '#3b82f6');
+        const isOro = !isDisqualified && rank <= 5;
+        const tierName = isDisqualified ? 'Descalificado' : (isOro ? 'Oro' : 'Plata');
+        const tierCol = isDisqualified ? '#ef4444' : (isOro ? '#eab308' : '#94a3b8');
 
         const customAvatar = getParticipantAvatarHtml(p, 32);
         const crestSvg = isOro ? CRESTS.oro(32) : CRESTS.plata(32);
@@ -9698,8 +10107,12 @@ function _renderAnalisis_orig() {
         const top3Container = document.getElementById('tournament-top3-container');
         const cardsContainer = document.getElementById('tournament-cards-container');
 
-        // Ordenar participantes según el marco temporal activo
+        // Ordenar participantes: ACTIVOS primero (por PnL), DESCALIFICADOS al fondo (nunca en el podio)
         const sortedList = [...tournamentParticipants].sort((a, b) => {
+          const disqA = (a.status && a.status.startsWith('Descalificado')) || parseFloat(a.dd_max_pct || 0) >= 5.0;
+          const disqB = (b.status && b.status.startsWith('Descalificado')) || parseFloat(b.dd_max_pct || 0) >= 5.0;
+          if (disqA && !disqB) return 1;
+          if (!disqA && disqB) return -1;
           let valA = 0, valB = 0;
           if (activeTournamentTimeframe === 'all') {
             valA = parseFloat(a.return_pct || 0);
@@ -10244,6 +10657,654 @@ function _renderAnalisis_orig() {
       window.changeAnMonth = changeAnMonth;
       window.goAnToday = goAnToday;
       window.openJumpPicker = openJumpPicker;
+
+    // =========================================================================
+    //                      MÓDULO: PANEL DE ADMINISTRACIÓN
+    // =========================================================================
+
+    let activeAdminSubtab = 'auditoria';
+    let adminParticipantsData = [];
+    let currentAuditSearch = '';
+    let currentMembershipSearch = '';
+    let currentMembershipFilter = 'all';
+    let currentTournamentSearch = '';
+
+    function getAdminRole() {
+      const u = sb.getUser();
+      if (!u || !u.email) return null;
+      const email = u.email.toLowerCase().trim();
+      if (email === 'parkjiminfromsara@gmail.com') return 'superadmin';
+      const admins = ['estebangoldfx@gmail.com', 'infogoldfx@gmail.com'];
+      if (admins.includes(email) || (u.user_metadata && (u.user_metadata.role === 'admin' || u.user_metadata.role === 'superadmin'))) {
+        return (u.user_metadata && u.user_metadata.role === 'superadmin') ? 'superadmin' : 'admin';
+      }
+      return null;
+    }
+
+    function isAdminUser() {
+      return getAdminRole() !== null;
+    }
+
+    function isSuperAdminUser() {
+      return getAdminRole() === 'superadmin';
+    }
+
+    function checkAdminNavVisibility() {
+      const role = getAdminRole();
+      const adminNav = document.getElementById('nav-item-admin');
+      if (adminNav) {
+        adminNav.style.display = role ? 'flex' : 'none';
+      }
+      const botTabBtn = document.getElementById('atab-btn-bot');
+      if (botTabBtn) {
+        botTabBtn.style.display = role === 'superadmin' ? 'inline-flex' : 'none';
+      }
+      const roleBadge = document.getElementById('admin-role-badge');
+      if (roleBadge) {
+        roleBadge.textContent = role === 'superadmin' ? 'Superadmin (Sara)' : 'Administrador';
+      }
+      loadGlobalAnnouncement();
+    }
+
+    window.switchAdminSubtab = function(tabName) {
+      activeAdminSubtab = tabName;
+      ['auditoria', 'membresias', 'torneo', 'anuncios', 'bot'].forEach(t => {
+        const btn = document.getElementById('atab-btn-' + t);
+        const sec = document.getElementById('admin-sec-' + t);
+        if (btn) {
+          if (t === tabName) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+        if (sec) {
+          sec.style.display = (t === tabName) ? 'block' : 'none';
+        }
+      });
+
+      if (tabName === 'auditoria') renderAdminAuditFeed();
+      if (tabName === 'membresias') renderAdminMembershipsTable();
+      if (tabName === 'torneo') renderAdminTournamentTable();
+      if (tabName === 'anuncios') loadAdminAnnouncementInput();
+    };
+
+    async function loadAdminParticipants() {
+      try {
+        const data = await sb.query('tournament_participants', { select: '*', order: 'return_pct.desc' });
+        if (Array.isArray(data)) {
+          adminParticipantsData = data;
+        }
+      } catch (e) {
+        console.error('Error cargando participantes admin:', e);
+        if (Array.isArray(tournamentParticipants) && tournamentParticipants.length > 0) {
+          adminParticipantsData = [...tournamentParticipants];
+        }
+      }
+      return adminParticipantsData;
+    }
+
+    async function renderAdminDashboard() {
+      if (!isAdminUser()) {
+        toast('Acceso denegado: Se requieren permisos de administrador.', 'error');
+        goTo('dashboard');
+        return;
+      }
+
+      showLoading(true);
+      await loadAdminParticipants();
+      showLoading(false);
+
+      // 1. Actualizar métricas de cabecera
+      const total = adminParticipantsData.length;
+      const active = adminParticipantsData.filter(p => !((p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0)).length;
+      const disq = total - active;
+      const withViolations = adminParticipantsData.filter(p => parseInt(p.violations_count || 0, 10) > 0).length;
+
+      const elTotal = document.getElementById('admin-metric-total');
+      const elActive = document.getElementById('admin-metric-active');
+      const elDisq = document.getElementById('admin-metric-disq');
+      const elViol = document.getElementById('admin-metric-violations');
+      const elBotMon = document.getElementById('bot-monitored-count');
+
+      if (elTotal) elTotal.textContent = total;
+      if (elActive) elActive.textContent = active;
+      if (elDisq) elDisq.textContent = disq;
+      if (elViol) elViol.textContent = withViolations;
+      if (elBotMon) elBotMon.textContent = total + ' Cuentas';
+
+      // 2. Renderizar la subpestaña activa
+      switchAdminSubtab(activeAdminSubtab);
+    }
+    window.renderAdminDashboard = renderAdminDashboard;
+
+    // ── Pestaña 1: Auditoría de Faltas ──
+    function renderAdminAuditFeed() {
+      const container = document.getElementById('admin-audit-feed-container');
+      if (!container) return;
+
+      const term = (currentAuditSearch || '').toLowerCase().trim();
+      // Filtrar participantes con faltas o descalificados
+      let items = adminParticipantsData.filter(p => {
+        const hasViolations = parseInt(p.violations_count || 0, 10) > 0;
+        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+        return hasViolations || isDisq;
+      });
+
+      if (term) {
+        items = items.filter(p => {
+          const name = (p.user_name || '').toLowerCase();
+          const login = String(p.mt5_login || '');
+          const email = (p.user_email || '').toLowerCase();
+          return name.includes(term) || login.includes(term) || email.includes(term);
+        });
+      }
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:36px; background:#0d0f14; border:1px solid rgba(255,255,255,0.06); border-radius:14px; color:#94a3b8; font-size:13px;">
+            <div style="font-size:32px; margin-bottom:8px;">✅</div>
+            <strong>¡Excelente disciplina general!</strong><br>
+            No se encontraron participantes con faltas activas ni descalificaciones según el filtro actual.
+          </div>
+        `;
+        return;
+      }
+
+      // Ordenar: primero los descalificados, luego por número de faltas descendente
+      items.sort((a, b) => {
+        const vA = parseInt(a.violations_count || 0, 10);
+        const vB = parseInt(b.violations_count || 0, 10);
+        return vB - vA;
+      });
+
+      container.innerHTML = items.map(p => {
+        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+        const violations = parseInt(p.violations_count || 0, 10);
+        const maxDd = parseFloat(p.dd_max_pct || 0).toFixed(2);
+        const dailyDd = parseFloat(p.dd_daily_pct || 0).toFixed(2);
+        const trades = parseInt(p.trades_count || 0, 10);
+        const pnl = parseFloat(p.return_pct || 0).toFixed(2);
+        const pnlCol = pnl >= 0 ? '#4ade80' : '#f87171';
+
+        const statusPill = isDisq 
+          ? `<span style="background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.45); color:#ef4444; font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px; text-transform:uppercase;">🚫 Descalificado</span>`
+          : `<span style="background:rgba(249,115,22,0.15); border:1px solid rgba(249,115,22,0.4); color:#f97316; font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px; text-transform:uppercase;">⚠️ Con Faltas</span>`;
+
+        let motiveDescription = [];
+        if (violations > 0) motiveDescription.push(`Acumula <strong>${violations} falta(s)</strong> de operativa (límite: 1 trade/día).`);
+        if (parseFloat(maxDd) >= 5.0) motiveDescription.push(`Tocó un Drawdown Máximo de <strong>${maxDd}%</strong> (límite permitido: 5.0%).`);
+        if (parseFloat(dailyDd) > 1.1) motiveDescription.push(`Excedió el Drawdown Diario con <strong>${dailyDd}%</strong> (límite: 1.1%).`);
+        if (p.disqualification_reason) motiveDescription.push(`Motivo manual: <em>"${escapeHtml(p.disqualification_reason)}"</em>`);
+
+        return `
+          <div class="audit-card" style="border-left: 4px solid ${isDisq ? '#ef4444' : '#f97316'};">
+            <div style="flex:1; min-width:240px;">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="font-size:14px; font-weight:800; color:#fff;">${escapeHtml(p.user_name || 'Estudiante')}</span>
+                <span style="font-family:var(--mono); font-size:11px; color:#94a3b8; background:#18181b; padding:2px 6px; border-radius:4px;">#${p.mt5_login}</span>
+                ${statusPill}
+              </div>
+              <div style="font-size:12px; color:#cbd5e1; margin-top:6px; line-height:1.4;">
+                ${motiveDescription.join(' ')}
+              </div>
+              <div style="display:flex; gap:16px; margin-top:8px; font-size:11px; font-family:var(--mono); color:#94a3b8;">
+                <span>Trades: <strong style="color:#fff;">${trades}</strong></span>
+                <span>Max DD: <strong style="color:${parseFloat(maxDd) >= 5.0 ? '#ef4444' : '#fff'};">${maxDd}%</strong></span>
+                <span>Retorno: <strong style="color:${pnlCol};">${pnl >= 0 ? '+' : ''}${pnl}%</strong></span>
+              </div>
+            </div>
+
+            <!-- Acciones de Auditoría -->
+            <div style="display:flex; flex-direction:column; gap:6px; flex-shrink:0;">
+              ${violations > 0 ? `
+                <button type="button" class="btn-green" onclick="forgiveParticipantViolation('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="Resetear contador de faltas y restaurar puntaje de disciplina">
+                  <span>🕊️</span> Perdonar Faltas
+                </button>
+              ` : ''}
+              ${isDisq ? `
+                <button type="button" class="btn-grey" onclick="adminReactivateParticipant('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="Reincorporar al torneo">
+                  <span>🔄</span> Reincorporar
+                </button>
+              ` : `
+                <button type="button" class="btn-grey" onclick="openAdminDisqualifyModal('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3);" title="Descalificar con motivo">
+                  <span>🛑</span> Descalificar
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.filterAuditFeed = function() {
+      const input = document.getElementById('audit-search-input');
+      currentAuditSearch = input ? input.value : '';
+      renderAdminAuditFeed();
+    };
+
+    window.forgiveParticipantViolation = async function(pid) {
+      if (!confirm('¿Deseas perdonar todas las faltas de este participante y restaurar su 100% de disciplina?')) return;
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: {
+            violations_count: 0,
+            discipline_score: 100.0,
+            status: 'Activo'
+          }
+        });
+        toast('Faltas perdonadas y disciplina restaurada al 100%.', 'success');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error perdonando faltas:', e);
+        toast('Error al actualizar participante.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    // ── Pestaña 2: Estudiantes & Membresías ──
+    function getParticipantMembership(p) {
+      // 1. Check if badge has membership
+      if (Array.isArray(p.badges)) {
+        const mb = p.badges.find(b => b && b.membership);
+        if (mb && mb.membership) return mb.membership;
+      }
+      if (p.membership) return p.membership;
+      return 'Mensual'; // Por defecto
+    }
+
+    function renderAdminMembershipsTable() {
+      const tbody = document.getElementById('admin-memberships-tbody');
+      if (!tbody) return;
+
+      const term = (currentMembershipSearch || '').toLowerCase().trim();
+      let items = [...adminParticipantsData];
+
+      // Contadores por plan
+      const counts = { all: items.length, Mensual: 0, Anual: 0, Lifetime: 0, VIP: 0 };
+      items.forEach(p => {
+        const m = getParticipantMembership(p);
+        if (counts[m] !== undefined) counts[m]++;
+        else counts.Mensual++;
+      });
+
+      ['all', 'mensual', 'anual', 'lifetime', 'vip'].forEach(k => {
+        const el = document.getElementById('mcount-' + k);
+        const mapKey = k === 'all' ? 'all' : (k.charAt(0).toUpperCase() + k.slice(1));
+        if (el) el.textContent = counts[mapKey] || 0;
+      });
+
+      // Filtrar por botón activo
+      if (currentMembershipFilter !== 'all') {
+        items = items.filter(p => getParticipantMembership(p) === currentMembershipFilter);
+      }
+
+      // Filtrar por término de búsqueda
+      if (term) {
+        items = items.filter(p => {
+          const name = (p.user_name || '').toLowerCase();
+          const email = (p.user_email || '').toLowerCase();
+          const login = String(p.mt5_login || '');
+          return name.includes(term) || email.includes(term) || login.includes(term);
+        });
+      }
+
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:28px; text-align:center; color:#94a3b8;">No se encontraron estudiantes para este filtro.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map(p => {
+        const m = getParticipantMembership(p);
+        const bal = parseFloat(p.current_balance || p.initial_balance || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        const pnl = parseFloat(p.return_pct || 0).toFixed(2);
+        const pnlCol = pnl >= 0 ? '#4ade80' : '#f87171';
+        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+
+        return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+            <td style="padding:12px 16px;">
+              <div style="font-weight:700; color:#fff;">${escapeHtml(p.user_name || 'Estudiante')}</div>
+              <div style="font-size:11px; color:#64748b;">${escapeHtml(p.user_email || 'Sin correo registrado')}</div>
+            </td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:#cbd5e1;">
+              #${p.mt5_login}
+            </td>
+            <td style="padding:12px 14px;">
+              <select onchange="updateStudentMembership('${p.id}', this.value)" style="background:#18181b; border:1px solid rgba(255,255,255,0.15); color:#fff; font-size:11.5px; font-weight:700; padding:4px 8px; border-radius:6px; cursor:pointer;">
+                <option value="Mensual" ${m === 'Mensual' ? 'selected' : ''}>🟢 Mensual</option>
+                <option value="Anual" ${m === 'Anual' ? 'selected' : ''}>🔵 Anual</option>
+                <option value="Lifetime" ${m === 'Lifetime' ? 'selected' : ''}>🟣 Lifetime</option>
+                <option value="VIP" ${m === 'VIP' ? 'selected' : ''}>🟡 VIP</option>
+              </select>
+            </td>
+            <td style="padding:12px 14px; font-family:var(--mono);">
+              <div style="color:#fff; font-weight:700;">${bal}</div>
+              <div style="font-size:11px; color:${pnlCol};">${pnl >= 0 ? '+' : ''}${pnl}%</div>
+            </td>
+            <td style="padding:12px 14px;">
+              <span style="font-size:10px; font-weight:800; padding:2px 7px; border-radius:8px; text-transform:uppercase; background:${isDisq ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)'}; color:${isDisq ? '#ef4444' : '#4ade80'}; border:1px solid ${isDisq ? 'rgba(239,68,68,0.3)' : 'rgba(34,197,94,0.3)'};">
+                ${isDisq ? 'Descalificado' : 'Activo'}
+              </span>
+            </td>
+            <td style="padding:12px 14px; text-align:right;">
+              <button type="button" class="btn-grey" onclick="openAdminEditModal('${p.id}')" style="font-size:11px; padding:4px 10px; border-radius:6px;">
+                Editar MT5
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.filterMembershipTable = function(filter) {
+      if (filter) {
+        currentMembershipFilter = filter;
+        document.querySelectorAll('#membership-filter-btns .mfilter-btn').forEach(b => {
+          if (b.dataset.mfilter === filter) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+      }
+      const search = document.getElementById('membership-search-input');
+      currentMembershipSearch = search ? search.value : '';
+      renderAdminMembershipsTable();
+    };
+
+    window.updateStudentMembership = async function(pid, newMembership) {
+      const p = adminParticipantsData.find(x => x.id === pid);
+      if (!p) return;
+
+      // Actualizar badges array conservando otros badges
+      let existingBadges = Array.isArray(p.badges) ? [...p.badges] : [];
+      // Quitar membresía anterior si existe
+      existingBadges = existingBadges.filter(b => !(b && b.membership));
+      // Agregar nueva membresía
+      existingBadges.push({
+        membership: newMembership,
+        label: newMembership,
+        updated_at: new Date().toISOString()
+      });
+
+      p.badges = existingBadges;
+
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: { badges: existingBadges }
+        });
+        toast(`Membresía de ${p.user_name || 'estudiante'} actualizada a ${newMembership}.`, 'success');
+        renderAdminMembershipsTable();
+      } catch (e) {
+        console.error('Error guardando membresía:', e);
+        toast('Error al actualizar la membresía en la base de datos.', 'error');
+      }
+    };
+
+    // ── Pestaña 3: Gestión del Torneo ──
+    function renderAdminTournamentTable() {
+      const tbody = document.getElementById('admin-tournament-tbody');
+      if (!tbody) return;
+
+      const term = (currentTournamentSearch || '').toLowerCase().trim();
+      let items = [...adminParticipantsData];
+
+      if (term) {
+        items = items.filter(p => {
+          const name = (p.user_name || '').toLowerCase();
+          const login = String(p.mt5_login || '');
+          return name.includes(term) || login.includes(term);
+        });
+      }
+
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="padding:28px; text-align:center; color:#94a3b8;">No hay participantes que coincidan con la búsqueda.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map((p, idx) => {
+        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+        const violations = parseInt(p.violations_count || 0, 10);
+        const maxDd = parseFloat(p.dd_max_pct || 0).toFixed(2);
+        const trades = parseInt(p.trades_count || 0, 10);
+
+        return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+            <td style="padding:12px 16px; color:#64748b; font-family:var(--mono);">#${idx + 1}</td>
+            <td style="padding:12px 14px;">
+              <div style="font-weight:700; color:#fff;">${escapeHtml(p.user_name || 'Participante')}</div>
+            </td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:#cbd5e1;">${p.mt5_login}</td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:#94a3b8;">
+              <span title="Clave guardada">${p.mt5_password ? '••••••••' : '<span style="color:#ef4444;">Sin clave</span>'}</span>
+            </td>
+            <td style="padding:12px 14px; font-family:var(--mono); text-align:center;">${trades}</td>
+            <td style="padding:12px 14px; font-family:var(--mono); text-align:center; color:${violations > 0 ? '#f97316' : '#94a3b8'}; font-weight:${violations > 0 ? '800' : 'normal'};">${violations}</td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:${parseFloat(maxDd) >= 5.0 ? '#ef4444' : '#94a3b8'};">${maxDd}%</td>
+            <td style="padding:12px 14px;">
+              <span style="font-size:10px; font-weight:800; padding:2px 7px; border-radius:8px; text-transform:uppercase; background:${isDisq ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)'}; color:${isDisq ? '#ef4444' : '#4ade80'}; border:1px solid ${isDisq ? 'rgba(239,68,68,0.3)' : 'rgba(34,197,94,0.3)'};">
+                ${isDisq ? 'Descalificado' : 'Activo'}
+              </span>
+            </td>
+            <td style="padding:12px 16px; text-align:right;">
+              <div style="display:inline-flex; gap:6px;">
+                <button type="button" class="btn-grey" onclick="openAdminEditModal('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px;" title="Editar credenciales MT5">✏️</button>
+                ${isDisq ? `
+                  <button type="button" class="btn-grey" onclick="adminReactivateParticipant('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px; color:#4ade80;" title="Reactivar">🔄</button>
+                ` : `
+                  <button type="button" class="btn-grey" onclick="openAdminDisqualifyModal('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px; color:#ef4444;" title="Descalificar">🛑</button>
+                `}
+                <button type="button" class="btn-grey" onclick="adminDeleteParticipant('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px; color:#64748b;" title="Eliminar del torneo">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.filterTournamentManagementTable = function() {
+      const input = document.getElementById('tournament-manage-search');
+      currentTournamentSearch = input ? input.value : '';
+      renderAdminTournamentTable();
+    };
+
+    // ── Modales de Administración ──
+    window.openAdminEditModal = function(pid) {
+      const p = adminParticipantsData.find(x => x.id === pid);
+      if (!p) return;
+
+      document.getElementById('aedit-pid').value = pid;
+      document.getElementById('aedit-student-name').textContent = p.user_name || 'Participante';
+      document.getElementById('aedit-login').value = p.mt5_login || '';
+      document.getElementById('aedit-password').value = p.mt5_password || '';
+      document.getElementById('aedit-server').value = p.mt5_server || 'WeTrade-MT5';
+      document.getElementById('aedit-initial-balance').value = p.initial_balance || 10000;
+
+      openModal('admin-edit-modal');
+    };
+
+    window.toggleEditPwdVisibility = function() {
+      const inp = document.getElementById('aedit-password');
+      if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+    };
+
+    window.saveAdminEditParticipant = async function() {
+      const pid = document.getElementById('aedit-pid').value;
+      const login = document.getElementById('aedit-login').value.trim();
+      const pwd = document.getElementById('aedit-password').value.trim();
+      const initBal = parseFloat(document.getElementById('aedit-initial-balance').value || 10000);
+
+      if (!login || !pwd) {
+        toast('El login y la contraseña de MT5 son obligatorios.', 'error');
+        return;
+      }
+
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: {
+            mt5_login: login,
+            mt5_password: pwd,
+            initial_balance: initBal
+          }
+        });
+        toast('Credenciales actualizadas exitosamente.', 'success');
+        closeModal('admin-edit-modal');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error guardando credenciales:', e);
+        toast('Error al guardar credenciales.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    window.openAdminDisqualifyModal = function(pid) {
+      const p = adminParticipantsData.find(x => x.id === pid);
+      if (!p) return;
+
+      document.getElementById('adisq-pid').value = pid;
+      document.getElementById('adisq-student-name').textContent = p.user_name || 'Estudiante';
+      document.getElementById('adisq-reason-select').value = 'Superó el 5% de Drawdown Máximo';
+      document.getElementById('adisq-reason-custom').style.display = 'none';
+      document.getElementById('adisq-reason-custom').value = '';
+
+      openModal('admin-disqualify-modal');
+    };
+
+    window.handleDisqReasonSelect = function(sel) {
+      const custom = document.getElementById('adisq-reason-custom');
+      if (custom) {
+        custom.style.display = (sel.value === 'Otro motivo') ? 'block' : 'none';
+      }
+    };
+
+    window.confirmAdminDisqualify = async function() {
+      const pid = document.getElementById('adisq-pid').value;
+      const sel = document.getElementById('adisq-reason-select').value;
+      const custom = document.getElementById('adisq-reason-custom').value.trim();
+      const reason = (sel === 'Otro motivo' && custom) ? custom : sel;
+
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: {
+            status: 'Descalificado: ' + reason
+          }
+        });
+        toast('Participante descalificado.', 'success');
+        closeModal('admin-disqualify-modal');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error descalificando:', e);
+        toast('Error al descalificar participante.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    window.adminReactivateParticipant = async function(pid) {
+      if (!confirm('¿Deseas reactivar a este participante en el torneo?')) return;
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: {
+            status: 'Activo'
+          }
+        });
+        toast('Participante reactivado exitosamente.', 'success');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error reactivando participante:', e);
+        toast('Error al reactivar participante.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    window.adminDeleteParticipant = async function(pid) {
+      if (!confirm('¿Estás segura de eliminar permanentemente a este participante del torneo? Esta acción no se puede deshacer.')) return;
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'DELETE',
+          filter: 'id=eq.' + pid
+        });
+        toast('Participante eliminado del torneo.', 'success');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error eliminando participante:', e);
+        toast('Error al eliminar participante.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    // ── Pestaña 4: Anuncios Globales ──
+    const ANNOUNCEMENT_STORAGE_KEY = 'syntracker_global_announcement';
+
+    window.loadAdminAnnouncementInput = function() {
+      const text = localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY) || '';
+      const inp = document.getElementById('admin-announcement-input');
+      const status = document.getElementById('admin-announcement-status');
+      if (inp) inp.value = text;
+      if (status) {
+        status.textContent = text ? 'Aviso activo actualmente visible para los estudiantes.' : 'No hay ningún aviso activo en este momento.';
+      }
+    };
+
+    window.publishGlobalAnnouncement = function() {
+      const inp = document.getElementById('admin-announcement-input');
+      const text = inp ? inp.value.trim() : '';
+      if (!text) {
+        toast('Escribe el texto del comunicado antes de publicar.', 'error');
+        return;
+      }
+      localStorage.setItem(ANNOUNCEMENT_STORAGE_KEY, text);
+      loadGlobalAnnouncement();
+      loadAdminAnnouncementInput();
+      toast('Comunicado publicado y visible para todos los estudiantes.', 'success');
+    };
+
+    window.clearGlobalAnnouncement = function() {
+      localStorage.removeItem(ANNOUNCEMENT_STORAGE_KEY);
+      loadGlobalAnnouncement();
+      loadAdminAnnouncementInput();
+      toast('Comunicado eliminado.', 'success');
+    };
+
+    function loadGlobalAnnouncement() {
+      const banner = document.getElementById('global-announcement-banner');
+      const bannerText = document.getElementById('announcement-banner-text');
+      const text = localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY);
+      if (banner && bannerText) {
+        if (text) {
+          bannerText.textContent = text;
+          banner.style.display = 'flex';
+        } else {
+          banner.style.display = 'none';
+        }
+      }
+    }
+
+    window.dismissAnnouncement = function() {
+      const banner = document.getElementById('global-announcement-banner');
+      if (banner) banner.style.display = 'none';
+    };
+
+
       window.doLogout = doLogout;
 
       // ── Init con Auto-Login & Persistencia de Sesión ──

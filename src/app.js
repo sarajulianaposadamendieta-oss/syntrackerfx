@@ -599,6 +599,7 @@
         } catch (tpErr) {}
 
         renderUserProfile(user);
+      checkAdminNavVisibility();
         closeModal('profile-modal');
         alert('¡Perfil actualizado con éxito!');
       } catch (err) {
@@ -1140,7 +1141,7 @@
     }
 
     // ── Navigation ──
-    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading' };
+    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading', admin: 'Panel de Administración' };
     function goTo(id, el) {
       document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
@@ -1169,6 +1170,9 @@
       if (id === 'estadisticas') renderStats();
       if (id === 'comparar') renderComparar();
       if (id === 'cuentas') renderAccounts();
+      if (id === 'admin') {
+        renderAdminDashboard();
+      }
       if (id === 'torneo') {
         loadTournamentData();
         startTournamentPolling();
@@ -4997,6 +5001,654 @@ function _renderAnalisis_orig() {
       window.changeAnMonth = changeAnMonth;
       window.goAnToday = goAnToday;
       window.openJumpPicker = openJumpPicker;
+
+    // =========================================================================
+    //                      MÓDULO: PANEL DE ADMINISTRACIÓN
+    // =========================================================================
+
+    let activeAdminSubtab = 'auditoria';
+    let adminParticipantsData = [];
+    let currentAuditSearch = '';
+    let currentMembershipSearch = '';
+    let currentMembershipFilter = 'all';
+    let currentTournamentSearch = '';
+
+    function getAdminRole() {
+      const u = sb.getUser();
+      if (!u || !u.email) return null;
+      const email = u.email.toLowerCase().trim();
+      if (email === 'parkjiminfromsara@gmail.com') return 'superadmin';
+      const admins = ['estebangoldfx@gmail.com', 'infogoldfx@gmail.com'];
+      if (admins.includes(email) || (u.user_metadata && (u.user_metadata.role === 'admin' || u.user_metadata.role === 'superadmin'))) {
+        return (u.user_metadata && u.user_metadata.role === 'superadmin') ? 'superadmin' : 'admin';
+      }
+      return null;
+    }
+
+    function isAdminUser() {
+      return getAdminRole() !== null;
+    }
+
+    function isSuperAdminUser() {
+      return getAdminRole() === 'superadmin';
+    }
+
+    function checkAdminNavVisibility() {
+      const role = getAdminRole();
+      const adminNav = document.getElementById('nav-item-admin');
+      if (adminNav) {
+        adminNav.style.display = role ? 'flex' : 'none';
+      }
+      const botTabBtn = document.getElementById('atab-btn-bot');
+      if (botTabBtn) {
+        botTabBtn.style.display = role === 'superadmin' ? 'inline-flex' : 'none';
+      }
+      const roleBadge = document.getElementById('admin-role-badge');
+      if (roleBadge) {
+        roleBadge.textContent = role === 'superadmin' ? 'Superadmin (Sara)' : 'Administrador';
+      }
+      loadGlobalAnnouncement();
+    }
+
+    window.switchAdminSubtab = function(tabName) {
+      activeAdminSubtab = tabName;
+      ['auditoria', 'membresias', 'torneo', 'anuncios', 'bot'].forEach(t => {
+        const btn = document.getElementById('atab-btn-' + t);
+        const sec = document.getElementById('admin-sec-' + t);
+        if (btn) {
+          if (t === tabName) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+        if (sec) {
+          sec.style.display = (t === tabName) ? 'block' : 'none';
+        }
+      });
+
+      if (tabName === 'auditoria') renderAdminAuditFeed();
+      if (tabName === 'membresias') renderAdminMembershipsTable();
+      if (tabName === 'torneo') renderAdminTournamentTable();
+      if (tabName === 'anuncios') loadAdminAnnouncementInput();
+    };
+
+    async function loadAdminParticipants() {
+      try {
+        const data = await sb.query('tournament_participants', { select: '*', order: 'return_pct.desc' });
+        if (Array.isArray(data)) {
+          adminParticipantsData = data;
+        }
+      } catch (e) {
+        console.error('Error cargando participantes admin:', e);
+        if (Array.isArray(tournamentParticipants) && tournamentParticipants.length > 0) {
+          adminParticipantsData = [...tournamentParticipants];
+        }
+      }
+      return adminParticipantsData;
+    }
+
+    async function renderAdminDashboard() {
+      if (!isAdminUser()) {
+        toast('Acceso denegado: Se requieren permisos de administrador.', 'error');
+        goTo('dashboard');
+        return;
+      }
+
+      showLoading(true);
+      await loadAdminParticipants();
+      showLoading(false);
+
+      // 1. Actualizar métricas de cabecera
+      const total = adminParticipantsData.length;
+      const active = adminParticipantsData.filter(p => !((p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0)).length;
+      const disq = total - active;
+      const withViolations = adminParticipantsData.filter(p => parseInt(p.violations_count || 0, 10) > 0).length;
+
+      const elTotal = document.getElementById('admin-metric-total');
+      const elActive = document.getElementById('admin-metric-active');
+      const elDisq = document.getElementById('admin-metric-disq');
+      const elViol = document.getElementById('admin-metric-violations');
+      const elBotMon = document.getElementById('bot-monitored-count');
+
+      if (elTotal) elTotal.textContent = total;
+      if (elActive) elActive.textContent = active;
+      if (elDisq) elDisq.textContent = disq;
+      if (elViol) elViol.textContent = withViolations;
+      if (elBotMon) elBotMon.textContent = total + ' Cuentas';
+
+      // 2. Renderizar la subpestaña activa
+      switchAdminSubtab(activeAdminSubtab);
+    }
+    window.renderAdminDashboard = renderAdminDashboard;
+
+    // ── Pestaña 1: Auditoría de Faltas ──
+    function renderAdminAuditFeed() {
+      const container = document.getElementById('admin-audit-feed-container');
+      if (!container) return;
+
+      const term = (currentAuditSearch || '').toLowerCase().trim();
+      // Filtrar participantes con faltas o descalificados
+      let items = adminParticipantsData.filter(p => {
+        const hasViolations = parseInt(p.violations_count || 0, 10) > 0;
+        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+        return hasViolations || isDisq;
+      });
+
+      if (term) {
+        items = items.filter(p => {
+          const name = (p.user_name || '').toLowerCase();
+          const login = String(p.mt5_login || '');
+          const email = (p.user_email || '').toLowerCase();
+          return name.includes(term) || login.includes(term) || email.includes(term);
+        });
+      }
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:36px; background:#0d0f14; border:1px solid rgba(255,255,255,0.06); border-radius:14px; color:#94a3b8; font-size:13px;">
+            <div style="font-size:32px; margin-bottom:8px;">✅</div>
+            <strong>¡Excelente disciplina general!</strong><br>
+            No se encontraron participantes con faltas activas ni descalificaciones según el filtro actual.
+          </div>
+        `;
+        return;
+      }
+
+      // Ordenar: primero los descalificados, luego por número de faltas descendente
+      items.sort((a, b) => {
+        const vA = parseInt(a.violations_count || 0, 10);
+        const vB = parseInt(b.violations_count || 0, 10);
+        return vB - vA;
+      });
+
+      container.innerHTML = items.map(p => {
+        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+        const violations = parseInt(p.violations_count || 0, 10);
+        const maxDd = parseFloat(p.dd_max_pct || 0).toFixed(2);
+        const dailyDd = parseFloat(p.dd_daily_pct || 0).toFixed(2);
+        const trades = parseInt(p.trades_count || 0, 10);
+        const pnl = parseFloat(p.return_pct || 0).toFixed(2);
+        const pnlCol = pnl >= 0 ? '#4ade80' : '#f87171';
+
+        const statusPill = isDisq 
+          ? `<span style="background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.45); color:#ef4444; font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px; text-transform:uppercase;">🚫 Descalificado</span>`
+          : `<span style="background:rgba(249,115,22,0.15); border:1px solid rgba(249,115,22,0.4); color:#f97316; font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px; text-transform:uppercase;">⚠️ Con Faltas</span>`;
+
+        let motiveDescription = [];
+        if (violations > 0) motiveDescription.push(`Acumula <strong>${violations} falta(s)</strong> de operativa (límite: 1 trade/día).`);
+        if (parseFloat(maxDd) >= 5.0) motiveDescription.push(`Tocó un Drawdown Máximo de <strong>${maxDd}%</strong> (límite permitido: 5.0%).`);
+        if (parseFloat(dailyDd) > 1.1) motiveDescription.push(`Excedió el Drawdown Diario con <strong>${dailyDd}%</strong> (límite: 1.1%).`);
+        if (p.disqualification_reason) motiveDescription.push(`Motivo manual: <em>"${escapeHtml(p.disqualification_reason)}"</em>`);
+
+        return `
+          <div class="audit-card" style="border-left: 4px solid ${isDisq ? '#ef4444' : '#f97316'};">
+            <div style="flex:1; min-width:240px;">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="font-size:14px; font-weight:800; color:#fff;">${escapeHtml(p.user_name || 'Estudiante')}</span>
+                <span style="font-family:var(--mono); font-size:11px; color:#94a3b8; background:#18181b; padding:2px 6px; border-radius:4px;">#${p.mt5_login}</span>
+                ${statusPill}
+              </div>
+              <div style="font-size:12px; color:#cbd5e1; margin-top:6px; line-height:1.4;">
+                ${motiveDescription.join(' ')}
+              </div>
+              <div style="display:flex; gap:16px; margin-top:8px; font-size:11px; font-family:var(--mono); color:#94a3b8;">
+                <span>Trades: <strong style="color:#fff;">${trades}</strong></span>
+                <span>Max DD: <strong style="color:${parseFloat(maxDd) >= 5.0 ? '#ef4444' : '#fff'};">${maxDd}%</strong></span>
+                <span>Retorno: <strong style="color:${pnlCol};">${pnl >= 0 ? '+' : ''}${pnl}%</strong></span>
+              </div>
+            </div>
+
+            <!-- Acciones de Auditoría -->
+            <div style="display:flex; flex-direction:column; gap:6px; flex-shrink:0;">
+              ${violations > 0 ? `
+                <button type="button" class="btn-green" onclick="forgiveParticipantViolation('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="Resetear contador de faltas y restaurar puntaje de disciplina">
+                  <span>🕊️</span> Perdonar Faltas
+                </button>
+              ` : ''}
+              ${isDisq ? `
+                <button type="button" class="btn-grey" onclick="adminReactivateParticipant('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="Reincorporar al torneo">
+                  <span>🔄</span> Reincorporar
+                </button>
+              ` : `
+                <button type="button" class="btn-grey" onclick="openAdminDisqualifyModal('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3);" title="Descalificar con motivo">
+                  <span>🛑</span> Descalificar
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.filterAuditFeed = function() {
+      const input = document.getElementById('audit-search-input');
+      currentAuditSearch = input ? input.value : '';
+      renderAdminAuditFeed();
+    };
+
+    window.forgiveParticipantViolation = async function(pid) {
+      if (!confirm('¿Deseas perdonar todas las faltas de este participante y restaurar su 100% de disciplina?')) return;
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: {
+            violations_count: 0,
+            discipline_score: 100.0,
+            status: 'Activo'
+          }
+        });
+        toast('Faltas perdonadas y disciplina restaurada al 100%.', 'success');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error perdonando faltas:', e);
+        toast('Error al actualizar participante.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    // ── Pestaña 2: Estudiantes & Membresías ──
+    function getParticipantMembership(p) {
+      // 1. Check if badge has membership
+      if (Array.isArray(p.badges)) {
+        const mb = p.badges.find(b => b && b.membership);
+        if (mb && mb.membership) return mb.membership;
+      }
+      if (p.membership) return p.membership;
+      return 'Mensual'; // Por defecto
+    }
+
+    function renderAdminMembershipsTable() {
+      const tbody = document.getElementById('admin-memberships-tbody');
+      if (!tbody) return;
+
+      const term = (currentMembershipSearch || '').toLowerCase().trim();
+      let items = [...adminParticipantsData];
+
+      // Contadores por plan
+      const counts = { all: items.length, Mensual: 0, Anual: 0, Lifetime: 0, VIP: 0 };
+      items.forEach(p => {
+        const m = getParticipantMembership(p);
+        if (counts[m] !== undefined) counts[m]++;
+        else counts.Mensual++;
+      });
+
+      ['all', 'mensual', 'anual', 'lifetime', 'vip'].forEach(k => {
+        const el = document.getElementById('mcount-' + k);
+        const mapKey = k === 'all' ? 'all' : (k.charAt(0).toUpperCase() + k.slice(1));
+        if (el) el.textContent = counts[mapKey] || 0;
+      });
+
+      // Filtrar por botón activo
+      if (currentMembershipFilter !== 'all') {
+        items = items.filter(p => getParticipantMembership(p) === currentMembershipFilter);
+      }
+
+      // Filtrar por término de búsqueda
+      if (term) {
+        items = items.filter(p => {
+          const name = (p.user_name || '').toLowerCase();
+          const email = (p.user_email || '').toLowerCase();
+          const login = String(p.mt5_login || '');
+          return name.includes(term) || email.includes(term) || login.includes(term);
+        });
+      }
+
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:28px; text-align:center; color:#94a3b8;">No se encontraron estudiantes para este filtro.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map(p => {
+        const m = getParticipantMembership(p);
+        const bal = parseFloat(p.current_balance || p.initial_balance || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        const pnl = parseFloat(p.return_pct || 0).toFixed(2);
+        const pnlCol = pnl >= 0 ? '#4ade80' : '#f87171';
+        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+
+        return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+            <td style="padding:12px 16px;">
+              <div style="font-weight:700; color:#fff;">${escapeHtml(p.user_name || 'Estudiante')}</div>
+              <div style="font-size:11px; color:#64748b;">${escapeHtml(p.user_email || 'Sin correo registrado')}</div>
+            </td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:#cbd5e1;">
+              #${p.mt5_login}
+            </td>
+            <td style="padding:12px 14px;">
+              <select onchange="updateStudentMembership('${p.id}', this.value)" style="background:#18181b; border:1px solid rgba(255,255,255,0.15); color:#fff; font-size:11.5px; font-weight:700; padding:4px 8px; border-radius:6px; cursor:pointer;">
+                <option value="Mensual" ${m === 'Mensual' ? 'selected' : ''}>🟢 Mensual</option>
+                <option value="Anual" ${m === 'Anual' ? 'selected' : ''}>🔵 Anual</option>
+                <option value="Lifetime" ${m === 'Lifetime' ? 'selected' : ''}>🟣 Lifetime</option>
+                <option value="VIP" ${m === 'VIP' ? 'selected' : ''}>🟡 VIP</option>
+              </select>
+            </td>
+            <td style="padding:12px 14px; font-family:var(--mono);">
+              <div style="color:#fff; font-weight:700;">${bal}</div>
+              <div style="font-size:11px; color:${pnlCol};">${pnl >= 0 ? '+' : ''}${pnl}%</div>
+            </td>
+            <td style="padding:12px 14px;">
+              <span style="font-size:10px; font-weight:800; padding:2px 7px; border-radius:8px; text-transform:uppercase; background:${isDisq ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)'}; color:${isDisq ? '#ef4444' : '#4ade80'}; border:1px solid ${isDisq ? 'rgba(239,68,68,0.3)' : 'rgba(34,197,94,0.3)'};">
+                ${isDisq ? 'Descalificado' : 'Activo'}
+              </span>
+            </td>
+            <td style="padding:12px 14px; text-align:right;">
+              <button type="button" class="btn-grey" onclick="openAdminEditModal('${p.id}')" style="font-size:11px; padding:4px 10px; border-radius:6px;">
+                Editar MT5
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.filterMembershipTable = function(filter) {
+      if (filter) {
+        currentMembershipFilter = filter;
+        document.querySelectorAll('#membership-filter-btns .mfilter-btn').forEach(b => {
+          if (b.dataset.mfilter === filter) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+      }
+      const search = document.getElementById('membership-search-input');
+      currentMembershipSearch = search ? search.value : '';
+      renderAdminMembershipsTable();
+    };
+
+    window.updateStudentMembership = async function(pid, newMembership) {
+      const p = adminParticipantsData.find(x => x.id === pid);
+      if (!p) return;
+
+      // Actualizar badges array conservando otros badges
+      let existingBadges = Array.isArray(p.badges) ? [...p.badges] : [];
+      // Quitar membresía anterior si existe
+      existingBadges = existingBadges.filter(b => !(b && b.membership));
+      // Agregar nueva membresía
+      existingBadges.push({
+        membership: newMembership,
+        label: newMembership,
+        updated_at: new Date().toISOString()
+      });
+
+      p.badges = existingBadges;
+
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: { badges: existingBadges }
+        });
+        toast(`Membresía de ${p.user_name || 'estudiante'} actualizada a ${newMembership}.`, 'success');
+        renderAdminMembershipsTable();
+      } catch (e) {
+        console.error('Error guardando membresía:', e);
+        toast('Error al actualizar la membresía en la base de datos.', 'error');
+      }
+    };
+
+    // ── Pestaña 3: Gestión del Torneo ──
+    function renderAdminTournamentTable() {
+      const tbody = document.getElementById('admin-tournament-tbody');
+      if (!tbody) return;
+
+      const term = (currentTournamentSearch || '').toLowerCase().trim();
+      let items = [...adminParticipantsData];
+
+      if (term) {
+        items = items.filter(p => {
+          const name = (p.user_name || '').toLowerCase();
+          const login = String(p.mt5_login || '');
+          return name.includes(term) || login.includes(term);
+        });
+      }
+
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="padding:28px; text-align:center; color:#94a3b8;">No hay participantes que coincidan con la búsqueda.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map((p, idx) => {
+        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+        const violations = parseInt(p.violations_count || 0, 10);
+        const maxDd = parseFloat(p.dd_max_pct || 0).toFixed(2);
+        const trades = parseInt(p.trades_count || 0, 10);
+
+        return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+            <td style="padding:12px 16px; color:#64748b; font-family:var(--mono);">#${idx + 1}</td>
+            <td style="padding:12px 14px;">
+              <div style="font-weight:700; color:#fff;">${escapeHtml(p.user_name || 'Participante')}</div>
+            </td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:#cbd5e1;">${p.mt5_login}</td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:#94a3b8;">
+              <span title="Clave guardada">${p.mt5_password ? '••••••••' : '<span style="color:#ef4444;">Sin clave</span>'}</span>
+            </td>
+            <td style="padding:12px 14px; font-family:var(--mono); text-align:center;">${trades}</td>
+            <td style="padding:12px 14px; font-family:var(--mono); text-align:center; color:${violations > 0 ? '#f97316' : '#94a3b8'}; font-weight:${violations > 0 ? '800' : 'normal'};">${violations}</td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:${parseFloat(maxDd) >= 5.0 ? '#ef4444' : '#94a3b8'};">${maxDd}%</td>
+            <td style="padding:12px 14px;">
+              <span style="font-size:10px; font-weight:800; padding:2px 7px; border-radius:8px; text-transform:uppercase; background:${isDisq ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)'}; color:${isDisq ? '#ef4444' : '#4ade80'}; border:1px solid ${isDisq ? 'rgba(239,68,68,0.3)' : 'rgba(34,197,94,0.3)'};">
+                ${isDisq ? 'Descalificado' : 'Activo'}
+              </span>
+            </td>
+            <td style="padding:12px 16px; text-align:right;">
+              <div style="display:inline-flex; gap:6px;">
+                <button type="button" class="btn-grey" onclick="openAdminEditModal('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px;" title="Editar credenciales MT5">✏️</button>
+                ${isDisq ? `
+                  <button type="button" class="btn-grey" onclick="adminReactivateParticipant('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px; color:#4ade80;" title="Reactivar">🔄</button>
+                ` : `
+                  <button type="button" class="btn-grey" onclick="openAdminDisqualifyModal('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px; color:#ef4444;" title="Descalificar">🛑</button>
+                `}
+                <button type="button" class="btn-grey" onclick="adminDeleteParticipant('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px; color:#64748b;" title="Eliminar del torneo">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.filterTournamentManagementTable = function() {
+      const input = document.getElementById('tournament-manage-search');
+      currentTournamentSearch = input ? input.value : '';
+      renderAdminTournamentTable();
+    };
+
+    // ── Modales de Administración ──
+    window.openAdminEditModal = function(pid) {
+      const p = adminParticipantsData.find(x => x.id === pid);
+      if (!p) return;
+
+      document.getElementById('aedit-pid').value = pid;
+      document.getElementById('aedit-student-name').textContent = p.user_name || 'Participante';
+      document.getElementById('aedit-login').value = p.mt5_login || '';
+      document.getElementById('aedit-password').value = p.mt5_password || '';
+      document.getElementById('aedit-server').value = p.mt5_server || 'WeTrade-MT5';
+      document.getElementById('aedit-initial-balance').value = p.initial_balance || 10000;
+
+      openModal('admin-edit-modal');
+    };
+
+    window.toggleEditPwdVisibility = function() {
+      const inp = document.getElementById('aedit-password');
+      if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+    };
+
+    window.saveAdminEditParticipant = async function() {
+      const pid = document.getElementById('aedit-pid').value;
+      const login = document.getElementById('aedit-login').value.trim();
+      const pwd = document.getElementById('aedit-password').value.trim();
+      const initBal = parseFloat(document.getElementById('aedit-initial-balance').value || 10000);
+
+      if (!login || !pwd) {
+        toast('El login y la contraseña de MT5 son obligatorios.', 'error');
+        return;
+      }
+
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: {
+            mt5_login: login,
+            mt5_password: pwd,
+            initial_balance: initBal
+          }
+        });
+        toast('Credenciales actualizadas exitosamente.', 'success');
+        closeModal('admin-edit-modal');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error guardando credenciales:', e);
+        toast('Error al guardar credenciales.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    window.openAdminDisqualifyModal = function(pid) {
+      const p = adminParticipantsData.find(x => x.id === pid);
+      if (!p) return;
+
+      document.getElementById('adisq-pid').value = pid;
+      document.getElementById('adisq-student-name').textContent = p.user_name || 'Estudiante';
+      document.getElementById('adisq-reason-select').value = 'Superó el 5% de Drawdown Máximo';
+      document.getElementById('adisq-reason-custom').style.display = 'none';
+      document.getElementById('adisq-reason-custom').value = '';
+
+      openModal('admin-disqualify-modal');
+    };
+
+    window.handleDisqReasonSelect = function(sel) {
+      const custom = document.getElementById('adisq-reason-custom');
+      if (custom) {
+        custom.style.display = (sel.value === 'Otro motivo') ? 'block' : 'none';
+      }
+    };
+
+    window.confirmAdminDisqualify = async function() {
+      const pid = document.getElementById('adisq-pid').value;
+      const sel = document.getElementById('adisq-reason-select').value;
+      const custom = document.getElementById('adisq-reason-custom').value.trim();
+      const reason = (sel === 'Otro motivo' && custom) ? custom : sel;
+
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: {
+            status: 'Descalificado: ' + reason
+          }
+        });
+        toast('Participante descalificado.', 'success');
+        closeModal('admin-disqualify-modal');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error descalificando:', e);
+        toast('Error al descalificar participante.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    window.adminReactivateParticipant = async function(pid) {
+      if (!confirm('¿Deseas reactivar a este participante en el torneo?')) return;
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'PATCH',
+          filter: 'id=eq.' + pid,
+          body: {
+            status: 'Activo'
+          }
+        });
+        toast('Participante reactivado exitosamente.', 'success');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error reactivando participante:', e);
+        toast('Error al reactivar participante.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    window.adminDeleteParticipant = async function(pid) {
+      if (!confirm('¿Estás segura de eliminar permanentemente a este participante del torneo? Esta acción no se puede deshacer.')) return;
+      showLoading(true);
+      try {
+        await sb.query('tournament_participants', {
+          method: 'DELETE',
+          filter: 'id=eq.' + pid
+        });
+        toast('Participante eliminado del torneo.', 'success');
+        await loadAdminParticipants();
+        renderAdminDashboard();
+      } catch (e) {
+        console.error('Error eliminando participante:', e);
+        toast('Error al eliminar participante.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    // ── Pestaña 4: Anuncios Globales ──
+    const ANNOUNCEMENT_STORAGE_KEY = 'syntracker_global_announcement';
+
+    window.loadAdminAnnouncementInput = function() {
+      const text = localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY) || '';
+      const inp = document.getElementById('admin-announcement-input');
+      const status = document.getElementById('admin-announcement-status');
+      if (inp) inp.value = text;
+      if (status) {
+        status.textContent = text ? 'Aviso activo actualmente visible para los estudiantes.' : 'No hay ningún aviso activo en este momento.';
+      }
+    };
+
+    window.publishGlobalAnnouncement = function() {
+      const inp = document.getElementById('admin-announcement-input');
+      const text = inp ? inp.value.trim() : '';
+      if (!text) {
+        toast('Escribe el texto del comunicado antes de publicar.', 'error');
+        return;
+      }
+      localStorage.setItem(ANNOUNCEMENT_STORAGE_KEY, text);
+      loadGlobalAnnouncement();
+      loadAdminAnnouncementInput();
+      toast('Comunicado publicado y visible para todos los estudiantes.', 'success');
+    };
+
+    window.clearGlobalAnnouncement = function() {
+      localStorage.removeItem(ANNOUNCEMENT_STORAGE_KEY);
+      loadGlobalAnnouncement();
+      loadAdminAnnouncementInput();
+      toast('Comunicado eliminado.', 'success');
+    };
+
+    function loadGlobalAnnouncement() {
+      const banner = document.getElementById('global-announcement-banner');
+      const bannerText = document.getElementById('announcement-banner-text');
+      const text = localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY);
+      if (banner && bannerText) {
+        if (text) {
+          bannerText.textContent = text;
+          banner.style.display = 'flex';
+        } else {
+          banner.style.display = 'none';
+        }
+      }
+    }
+
+    window.dismissAnnouncement = function() {
+      const banner = document.getElementById('global-announcement-banner');
+      if (banner) banner.style.display = 'none';
+    };
+
+
       window.doLogout = doLogout;
 
       // ── Init con Auto-Login & Persistencia de Sesión ──
