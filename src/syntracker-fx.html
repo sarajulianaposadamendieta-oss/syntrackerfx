@@ -4305,6 +4305,10 @@
 
         <!-- Tarjetas Resumen Métricas -->
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div style="background:#13161f; border:1px solid rgba(56,189,248,0.25); padding:8px 16px; border-radius:12px; text-align:center; min-width:105px;">
+            <div style="font-size:9.5px; color:#38bdf8; font-weight:700; text-transform:uppercase;">Alumnos Academia</div>
+            <div id="admin-metric-students" style="font-size:18px; font-weight:900; color:#38bdf8; font-family:var(--mono);">0</div>
+          </div>
           <div style="background:#13161f; border:1px solid rgba(255,255,255,0.08); padding:8px 16px; border-radius:12px; text-align:center; min-width:90px;">
             <div style="font-size:9.5px; color:#64748b; font-weight:700; text-transform:uppercase;">En Torneo</div>
             <div id="admin-metric-total" style="font-size:18px; font-weight:900; color:#ffffff; font-family:var(--mono);">0</div>
@@ -4374,10 +4378,11 @@
           <!-- Filtros de Membresía -->
           <div style="display:flex; gap:6px; flex-wrap:wrap;" id="membership-filter-btns">
             <button class="mfilter-btn active" data-mfilter="all" onclick="filterMembershipTable('all')">Todos (<span id="mcount-all">0</span>)</button>
+            <button class="mfilter-btn" data-mfilter="VIP" onclick="filterMembershipTable('VIP')">🟡 VIP (<span id="mcount-vip">0</span>)</button>
             <button class="mfilter-btn" data-mfilter="Mensual" onclick="filterMembershipTable('Mensual')">🟢 Mensual (<span id="mcount-mensual">0</span>)</button>
             <button class="mfilter-btn" data-mfilter="Anual" onclick="filterMembershipTable('Anual')">🔵 Anual (<span id="mcount-anual">0</span>)</button>
             <button class="mfilter-btn" data-mfilter="Lifetime" onclick="filterMembershipTable('Lifetime')">🟣 Lifetime (<span id="mcount-lifetime">0</span>)</button>
-            <button class="mfilter-btn" data-mfilter="VIP" onclick="filterMembershipTable('VIP')">🟡 VIP (<span id="mcount-vip">0</span>)</button>
+            <button class="mfilter-btn" data-mfilter="Ninguna" onclick="filterMembershipTable('Ninguna')">⚪ Sin Asignar (<span id="mcount-ninguna">0</span>)</button>
           </div>
         </div>
 
@@ -4390,12 +4395,11 @@
             <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">
               <thead>
                 <tr style="background:#13161f; color:#94a3b8; font-size:10.5px; font-weight:800; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.08);">
-                  <th style="padding:12px 16px;">Estudiante</th>
-                  <th style="padding:12px 14px;">Cuenta MT5</th>
+                  <th style="padding:12px 16px;">Estudiante Academia</th>
+                  <th style="padding:12px 14px;">Fecha Registro</th>
+                  <th style="padding:12px 14px;">Plataforma / Torneo</th>
                   <th style="padding:12px 14px;">Membresía Asignada</th>
-                  <th style="padding:12px 14px;">Balance / PnL</th>
-                  <th style="padding:12px 14px;">Estado</th>
-                  <th style="padding:12px 14px; text-align:right;">Acción</th>
+                  <th style="padding:12px 14px; text-align:right;">Estado Guardado</th>
                 </tr>
               </thead>
               <tbody id="admin-memberships-tbody">
@@ -10666,8 +10670,21 @@ function _renderAnalisis_orig() {
     //                      MÓDULO: PANEL DE ADMINISTRACIÓN
     // =========================================================================
 
+    const ADMIN_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51dm9lYXFvcmx6cnJoc2Nvc2ltIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTk1NTU2NywiZXhwIjoyMDk3NTMxNTY3fQ.dNxaUeXs_RjlD-HlezKA0MMlc3Z7jkdbRhdDrlDMV08';
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     let activeAdminSubtab = 'auditoria';
     let adminParticipantsData = [];
+    let adminStudentsData = [];
     let currentAuditSearch = '';
     let currentMembershipSearch = '';
     let currentMembershipFilter = 'all';
@@ -10678,11 +10695,9 @@ function _renderAnalisis_orig() {
       if (!u) return null;
       const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
       const userId = (u.id || '').trim();
-      // Sara superadmin check (by email, id, or metadata)
       if (email === 'parkjiminfromsara@gmail.com' || userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' || (u.user_metadata && u.user_metadata.role === 'superadmin')) {
         return 'superadmin';
       }
-      // Academy admins (not active yet unless configured)
       const admins = ['estebangoldfx@gmail.com', 'infogoldfx@gmail.com'];
       if (admins.includes(email) || (u.user_metadata && u.user_metadata.role === 'admin')) {
         return 'admin';
@@ -10747,21 +10762,73 @@ function _renderAnalisis_orig() {
       if (tabName === 'membresias') renderAdminMembershipsTable();
       if (tabName === 'torneo') renderAdminTournamentTable();
       if (tabName === 'anuncios') loadAdminAnnouncementInput();
+      if (tabName === 'bot') loadAdminBotTab();
     };
 
-    async function loadAdminParticipants() {
+    async function loadAdminData() {
       try {
-        const data = await sb.query('tournament_participants', { select: '*', order: 'return_pct.desc' });
-        if (Array.isArray(data)) {
-          adminParticipantsData = data;
+        // 1. Cargar participantes de torneo
+        const tpData = await sb.query('tournament_participants', { select: '*', order: 'return_pct.desc' });
+        adminParticipantsData = Array.isArray(tpData) ? tpData : [];
+
+        // Mapa de participantes por user_id y user_email
+        const tpMap = new Map();
+        adminParticipantsData.forEach(p => {
+          if (p.user_id) tpMap.set(p.user_id, p);
+          if (p.user_email) tpMap.set(p.user_email.toLowerCase(), p);
+        });
+
+        // 2. Cargar TODOS los alumnos registrados en Supabase Auth
+        let authUsers = [];
+        try {
+          const authRes = await fetch(SUPABASE_URL + '/auth/v1/admin/users?per_page=1000', {
+            headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+          });
+          if (authRes.ok) {
+            const authJson = await authRes.json();
+            authUsers = authJson.users || [];
+          }
+        } catch (eAuth) {
+          console.warn('Fallback cargando profiles:', eAuth);
         }
-      } catch (e) {
-        console.error('Error cargando participantes admin:', e);
-        if (Array.isArray(tournamentParticipants) && tournamentParticipants.length > 0) {
-          adminParticipantsData = [...tournamentParticipants];
+
+        if (authUsers.length === 0) {
+          const profilesData = await sb.query('profiles', { select: '*', order: 'created_at.desc' });
+          if (Array.isArray(profilesData) && profilesData.length > 0) {
+            authUsers = profilesData.map(pr => ({
+              id: pr.id,
+              email: pr.email,
+              created_at: pr.created_at,
+              user_metadata: { full_name: pr.full_name, country: pr.country }
+            }));
+          }
         }
+
+        // 3. Cruzar datos de alumnos y torneo
+        adminStudentsData = authUsers.map(u => {
+          const meta = u.user_metadata || {};
+          const name = meta.full_name || meta.name || (u.email ? u.email.split('@')[0] : 'Estudiante');
+          const tp = tpMap.get(u.id) || tpMap.get((u.email || '').toLowerCase()) || null;
+          let membership = meta.membership || null;
+          if (!membership && tp && Array.isArray(tp.badges)) {
+            const mBadge = tp.badges.find(b => b && b.membership);
+            if (mBadge) membership = mBadge.membership;
+          }
+          if (!membership) membership = 'Ninguna';
+
+          return {
+            id: u.id,
+            email: u.email || 'Sin correo',
+            name: name,
+            membership: membership,
+            created_at: u.created_at || new Date().toISOString(),
+            tp: tp
+          };
+        });
+
+      } catch (err) {
+        console.error('Error cargando datos de administración:', err);
       }
-      return adminParticipantsData;
     }
 
     async function renderAdminDashboard() {
@@ -10772,39 +10839,40 @@ function _renderAnalisis_orig() {
       }
 
       showLoading(true);
-      await loadAdminParticipants();
+      await loadAdminData();
       showLoading(false);
 
-      // 1. Actualizar métricas de cabecera
-      const total = adminParticipantsData.length;
-      const active = adminParticipantsData.filter(p => !((p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0)).length;
-      const disq = total - active;
-      const withViolations = adminParticipantsData.filter(p => parseInt(p.violations_count || 0, 10) > 0).length;
+      // Actualizar métricas de cabecera
+      const totalStudents = adminStudentsData.length;
+      const totalInTournament = adminParticipantsData.length;
+      const activeTournament = adminParticipantsData.filter(p => !((p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0)).length;
+      const disqTournament = totalInTournament - activeTournament;
+      const withViolations = adminParticipantsData.filter(p => (parseInt(p.violations_count || 0, 10) > 0) || (p.status && p.status.startsWith('Descalificado')) || (parseFloat(p.dd_max_pct || 0) >= 5.0)).length;
 
+      const elStudents = document.getElementById('admin-metric-students');
       const elTotal = document.getElementById('admin-metric-total');
       const elActive = document.getElementById('admin-metric-active');
       const elDisq = document.getElementById('admin-metric-disq');
       const elViol = document.getElementById('admin-metric-violations');
       const elBotMon = document.getElementById('bot-monitored-count');
 
-      if (elTotal) elTotal.textContent = total;
-      if (elActive) elActive.textContent = active;
-      if (elDisq) elDisq.textContent = disq;
+      if (elStudents) elStudents.textContent = totalStudents;
+      if (elTotal) elTotal.textContent = totalInTournament;
+      if (elActive) elActive.textContent = activeTournament;
+      if (elDisq) elDisq.textContent = disqTournament;
       if (elViol) elViol.textContent = withViolations;
-      if (elBotMon) elBotMon.textContent = total + ' Cuentas';
+      if (elBotMon) elBotMon.textContent = totalInTournament + ' Cuentas';
 
-      // 2. Renderizar la subpestaña activa
       switchAdminSubtab(activeAdminSubtab);
     }
     window.renderAdminDashboard = renderAdminDashboard;
 
-    // ── Pestaña 1: Auditoría de Faltas ──
+    // ── Pestaña 1: Radar de Faltas & Auditoría en Vivo ──
     function renderAdminAuditFeed() {
       const container = document.getElementById('admin-audit-feed-container');
       if (!container) return;
 
       const term = (currentAuditSearch || '').toLowerCase().trim();
-      // Filtrar participantes con faltas o descalificados
       let items = adminParticipantsData.filter(p => {
         const hasViolations = parseInt(p.violations_count || 0, 10) > 0;
         const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
@@ -10831,7 +10899,6 @@ function _renderAnalisis_orig() {
         return;
       }
 
-      // Ordenar: primero los descalificados, luego por número de faltas descendente
       items.sort((a, b) => {
         const vA = parseInt(a.violations_count || 0, 10);
         const vB = parseInt(b.violations_count || 0, 10);
@@ -10858,7 +10925,7 @@ function _renderAnalisis_orig() {
         if (p.disqualification_reason) motiveDescription.push(`Motivo manual: <em>"${escapeHtml(p.disqualification_reason)}"</em>`);
 
         return `
-          <div class="audit-card" style="border-left: 4px solid ${isDisq ? '#ef4444' : '#f97316'};">
+          <div class="audit-card" style="border-left: 4px solid ${isDisq ? '#ef4444' : '#f97316'}; background:#11131a; border-radius:12px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:10px; border-top:1px solid rgba(255,255,255,0.05); border-right:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05);">
             <div style="flex:1; min-width:240px;">
               <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <span style="font-size:14px; font-weight:800; color:#fff;">${escapeHtml(p.user_name || 'Estudiante')}</span>
@@ -10875,7 +10942,6 @@ function _renderAnalisis_orig() {
               </div>
             </div>
 
-            <!-- Acciones de Auditoría -->
             <div style="display:flex; flex-direction:column; gap:6px; flex-shrink:0;">
               ${violations > 0 ? `
                 <button type="button" class="btn-green" onclick="forgiveParticipantViolation('${p.id}')" style="font-size:11px; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="Resetear contador de faltas y restaurar puntaje de disciplina">
@@ -10917,7 +10983,7 @@ function _renderAnalisis_orig() {
           }
         });
         toast('Faltas perdonadas y disciplina restaurada al 100%.', 'success');
-        await loadAdminParticipants();
+        await loadAdminData();
         renderAdminDashboard();
       } catch (e) {
         console.error('Error perdonando faltas:', e);
@@ -10927,95 +10993,93 @@ function _renderAnalisis_orig() {
       }
     };
 
-    // ── Pestaña 2: Estudiantes & Membresías ──
-    function getParticipantMembership(p) {
-      // 1. Check if badge has membership
-      if (Array.isArray(p.badges)) {
-        const mb = p.badges.find(b => b && b.membership);
-        if (mb && mb.membership) return mb.membership;
-      }
-      if (p.membership) return p.membership;
-      return 'Mensual'; // Por defecto
-    }
-
+    // ── Pestaña 2: Estudiantes & Membresías (Todos los 201 alumnos) ──
     function renderAdminMembershipsTable() {
       const tbody = document.getElementById('admin-memberships-tbody');
       if (!tbody) return;
 
       const term = (currentMembershipSearch || '').toLowerCase().trim();
-      let items = [...adminParticipantsData];
+      let items = [...adminStudentsData];
 
-      // Contadores por plan
-      const counts = { all: items.length, Mensual: 0, Anual: 0, Lifetime: 0, VIP: 0 };
-      items.forEach(p => {
-        const m = getParticipantMembership(p);
+      // Contadores por membresía
+      const counts = { all: items.length, VIP: 0, Mensual: 0, Anual: 0, Lifetime: 0, Ninguna: 0 };
+      items.forEach(s => {
+        const m = s.membership || 'Ninguna';
         if (counts[m] !== undefined) counts[m]++;
-        else counts.Mensual++;
+        else counts.Ninguna++;
       });
 
-      ['all', 'mensual', 'anual', 'lifetime', 'vip'].forEach(k => {
+      ['all', 'vip', 'mensual', 'anual', 'lifetime', 'ninguna'].forEach(k => {
         const el = document.getElementById('mcount-' + k);
-        const mapKey = k === 'all' ? 'all' : (k.charAt(0).toUpperCase() + k.slice(1));
+        const mapKey = k === 'all' ? 'all' : (k === 'vip' ? 'VIP' : (k.charAt(0).toUpperCase() + k.slice(1)));
         if (el) el.textContent = counts[mapKey] || 0;
       });
 
-      // Filtrar por botón activo
+      // Filtrar por plan
       if (currentMembershipFilter !== 'all') {
-        items = items.filter(p => getParticipantMembership(p) === currentMembershipFilter);
+        items = items.filter(s => (s.membership || 'Ninguna') === currentMembershipFilter);
       }
 
       // Filtrar por término de búsqueda
       if (term) {
-        items = items.filter(p => {
-          const name = (p.user_name || '').toLowerCase();
-          const email = (p.user_email || '').toLowerCase();
-          const login = String(p.mt5_login || '');
-          return name.includes(term) || email.includes(term) || login.includes(term);
+        items = items.filter(s => {
+          const name = (s.name || '').toLowerCase();
+          const email = (s.email || '').toLowerCase();
+          return name.includes(term) || email.includes(term);
         });
       }
 
       if (items.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="padding:28px; text-align:center; color:#94a3b8;">No se encontraron estudiantes para este filtro.</td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="5" style="padding:28px; text-align:center; color:#94a3b8;">No se encontraron estudiantes para los filtros seleccionados.</td></tr>';
         return;
       }
 
-      tbody.innerHTML = items.map(p => {
-        const m = getParticipantMembership(p);
-        const bal = parseFloat(p.current_balance || p.initial_balance || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-        const pnl = parseFloat(p.return_pct || 0).toFixed(2);
-        const pnlCol = pnl >= 0 ? '#4ade80' : '#f87171';
-        const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
+      const badgeStyles = {
+        'VIP': 'background:rgba(234,179,8,0.18); color:#facc15; border:1px solid rgba(234,179,8,0.4);',
+        'Mensual': 'background:rgba(34,197,94,0.18); color:#4ade80; border:1px solid rgba(34,197,94,0.4);',
+        'Anual': 'background:rgba(59,130,246,0.18); color:#60a5fa; border:1px solid rgba(59,130,246,0.4);',
+        'Lifetime': 'background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.4);',
+        'Ninguna': 'background:rgba(148,163,184,0.12); color:#94a3b8; border:1px solid rgba(148,163,184,0.25);'
+      };
+
+      tbody.innerHTML = items.map((s, idx) => {
+        const currentM = s.membership || 'Ninguna';
+        const stClass = badgeStyles[currentM] || badgeStyles.Ninguna;
+
+        let dateStr = 'Reciente';
+        if (s.created_at) {
+          try {
+            dateStr = new Date(s.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+          } catch (eD) {}
+        }
+
+        const tpBadge = s.tp 
+          ? `<span style="background:rgba(234,179,8,0.12); color:#eab308; border:1px solid rgba(234,179,8,0.3); font-size:10px; font-weight:700; padding:2px 7px; border-radius:6px; font-family:var(--mono);">🏆 Torneo #${s.tp.mt5_login}</span>`
+          : `<span style="background:rgba(255,255,255,0.05); color:#94a3b8; border:1px solid rgba(255,255,255,0.08); font-size:10px; font-weight:600; padding:2px 7px; border-radius:6px;">📖 Trading Journal</span>`;
 
         return `
           <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
             <td style="padding:12px 16px;">
-              <div style="font-weight:700; color:#fff;">${escapeHtml(p.user_name || 'Estudiante')}</div>
-              <div style="font-size:11px; color:#64748b;">${escapeHtml(p.user_email || 'Sin correo registrado')}</div>
+              <div style="font-weight:700; color:#fff;">${escapeHtml(s.name)}</div>
+              <div style="font-size:11px; color:#64748b;">${escapeHtml(s.email)}</div>
             </td>
-            <td style="padding:12px 14px; font-family:var(--mono); color:#cbd5e1;">
-              #${p.mt5_login}
+            <td style="padding:12px 14px; font-family:var(--mono); color:#94a3b8; font-size:11.5px;">
+              ${dateStr}
             </td>
             <td style="padding:12px 14px;">
-              <select onchange="updateStudentMembership('${p.id}', this.value)" style="background:#18181b; border:1px solid rgba(255,255,255,0.15); color:#fff; font-size:11.5px; font-weight:700; padding:4px 8px; border-radius:6px; cursor:pointer;">
-                <option value="Mensual" ${m === 'Mensual' ? 'selected' : ''}>🟢 Mensual</option>
-                <option value="Anual" ${m === 'Anual' ? 'selected' : ''}>🔵 Anual</option>
-                <option value="Lifetime" ${m === 'Lifetime' ? 'selected' : ''}>🟣 Lifetime</option>
-                <option value="VIP" ${m === 'VIP' ? 'selected' : ''}>🟡 VIP</option>
+              ${tpBadge}
+            </td>
+            <td style="padding:12px 14px;">
+              <select onchange="updateStudentMembership('${s.id}', this.value)" style="${stClass} font-size:11px; font-weight:800; padding:4px 8px; border-radius:8px; outline:none; cursor:pointer;">
+                <option value="Ninguna" ${currentM === 'Ninguna' ? 'selected' : ''}>⚪ Sin Asignar</option>
+                <option value="VIP" ${currentM === 'VIP' ? 'selected' : ''}>🟡 VIP</option>
+                <option value="Mensual" ${currentM === 'Mensual' ? 'selected' : ''}>🟢 Mensual</option>
+                <option value="Anual" ${currentM === 'Anual' ? 'selected' : ''}>🔵 Anual</option>
+                <option value="Lifetime" ${currentM === 'Lifetime' ? 'selected' : ''}>🟣 Lifetime</option>
               </select>
             </td>
-            <td style="padding:12px 14px; font-family:var(--mono);">
-              <div style="color:#fff; font-weight:700;">${bal}</div>
-              <div style="font-size:11px; color:${pnlCol};">${pnl >= 0 ? '+' : ''}${pnl}%</div>
-            </td>
-            <td style="padding:12px 14px;">
-              <span style="font-size:10px; font-weight:800; padding:2px 7px; border-radius:8px; text-transform:uppercase; background:${isDisq ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)'}; color:${isDisq ? '#ef4444' : '#4ade80'}; border:1px solid ${isDisq ? 'rgba(239,68,68,0.3)' : 'rgba(34,197,94,0.3)'};">
-                ${isDisq ? 'Descalificado' : 'Activo'}
-              </span>
-            </td>
             <td style="padding:12px 14px; text-align:right;">
-              <button type="button" class="btn-grey" onclick="openAdminEditModal('${p.id}')" style="font-size:11px; padding:4px 10px; border-radius:6px;">
-                Editar MT5
-              </button>
+              <span id="mstatus-${s.id}" style="font-size:10.5px; color:#4ade80; font-weight:700;">✓ Guardado</span>
             </td>
           </tr>
         `;
@@ -11025,48 +11089,77 @@ function _renderAnalisis_orig() {
     window.filterMembershipTable = function(filter) {
       if (filter) {
         currentMembershipFilter = filter;
-        document.querySelectorAll('#membership-filter-btns .mfilter-btn').forEach(b => {
-          if (b.dataset.mfilter === filter) b.classList.add('active');
+        document.querySelectorAll('.mfilter-btn').forEach(b => {
+          if (b.getAttribute('data-mfilter') === filter) b.classList.add('active');
           else b.classList.remove('active');
         });
       }
-      const search = document.getElementById('membership-search-input');
-      currentMembershipSearch = search ? search.value : '';
+      const searchInput = document.getElementById('membership-search-input');
+      currentMembershipSearch = searchInput ? searchInput.value : '';
       renderAdminMembershipsTable();
     };
 
-    window.updateStudentMembership = async function(pid, newMembership) {
-      const p = adminParticipantsData.find(x => x.id === pid);
-      if (!p) return;
+    window.updateStudentMembership = async function(userId, newMembership) {
+      const student = adminStudentsData.find(s => s.id === userId);
+      if (!student) return;
 
-      // Actualizar badges array conservando otros badges
-      let existingBadges = Array.isArray(p.badges) ? [...p.badges] : [];
-      // Quitar membresía anterior si existe
-      existingBadges = existingBadges.filter(b => !(b && b.membership));
-      // Agregar nueva membresía
-      existingBadges.push({
-        membership: newMembership,
-        label: newMembership,
-        updated_at: new Date().toISOString()
-      });
-
-      p.badges = existingBadges;
+      const statusEl = document.getElementById('mstatus-' + userId);
+      if (statusEl) {
+        statusEl.textContent = 'Guardando...';
+        statusEl.style.color = '#eab308';
+      }
 
       try {
-        await sb.query('tournament_participants', {
-          method: 'PATCH',
-          filter: 'id=eq.' + pid,
-          body: { badges: existingBadges }
+        // 1. Persistir membresía en user_metadata de Auth (Supabase Admin API)
+        const res = await fetch(SUPABASE_URL + '/auth/v1/admin/users/' + userId, {
+          method: 'PUT',
+          headers: {
+            'apikey': ADMIN_SERVICE_KEY,
+            'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_metadata: {
+              membership: newMembership,
+              membership_updated_at: new Date().toISOString()
+            }
+          })
         });
-        toast(`Membresía de ${p.user_name || 'estudiante'} actualizada a ${newMembership}.`, 'success');
+
+        // 2. Si participa en el torneo, actualizar también su badge en tournament_participants
+        if (student.tp && student.tp.id) {
+          const tpObj = adminParticipantsData.find(p => p.id === student.tp.id);
+          let badges = tpObj && Array.isArray(tpObj.badges) ? [...tpObj.badges] : [];
+          badges = badges.filter(b => !(b && b.membership));
+          if (newMembership !== 'Ninguna') {
+            badges.push({ membership: newMembership, label: newMembership, updated_at: new Date().toISOString() });
+          }
+          await sb.query('tournament_participants', {
+            method: 'PATCH',
+            filter: 'id=eq.' + student.tp.id,
+            body: { badges: badges }
+          });
+          if (tpObj) tpObj.badges = badges;
+        }
+
+        student.membership = newMembership;
+        if (statusEl) {
+          statusEl.textContent = '✓ Guardado';
+          statusEl.style.color = '#4ade80';
+        }
+        toast(`Membresía de ${student.name} actualizada a ${newMembership}.`, 'success');
         renderAdminMembershipsTable();
-      } catch (e) {
-        console.error('Error guardando membresía:', e);
-        toast('Error al actualizar la membresía en la base de datos.', 'error');
+      } catch (err) {
+        console.error('Error guardando membresía:', err);
+        if (statusEl) {
+          statusEl.textContent = 'Error al guardar';
+          statusEl.style.color = '#ef4444';
+        }
+        toast('Error al actualizar membresía en Supabase.', 'error');
       }
     };
 
-    // ── Pestaña 3: Gestión del Torneo ──
+    // ── Pestaña 3: Gestión del Torneo (74 Participantes MT5) ──
     function renderAdminTournamentTable() {
       const tbody = document.getElementById('admin-tournament-tbody');
       if (!tbody) return;
@@ -11083,35 +11176,35 @@ function _renderAnalisis_orig() {
       }
 
       if (items.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="padding:28px; text-align:center; color:#94a3b8;">No hay participantes que coincidan con la búsqueda.</td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="9" style="padding:28px; text-align:center; color:#94a3b8;">No hay participantes que coincidan con la búsqueda.</td></tr>';
         return;
       }
 
       tbody.innerHTML = items.map((p, idx) => {
         const isDisq = (p.status && p.status.startsWith('Descalificado')) || parseFloat(p.dd_max_pct || 0) >= 5.0;
         const violations = parseInt(p.violations_count || 0, 10);
+        const pnl = parseFloat(p.return_pct || 0).toFixed(2);
+        const pnlCol = pnl >= 0 ? '#4ade80' : '#f87171';
         const maxDd = parseFloat(p.dd_max_pct || 0).toFixed(2);
-        const trades = parseInt(p.trades_count || 0, 10);
 
         return `
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); font-size:12px; transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
             <td style="padding:12px 16px; color:#64748b; font-family:var(--mono);">#${idx + 1}</td>
             <td style="padding:12px 14px;">
               <div style="font-weight:700; color:#fff;">${escapeHtml(p.user_name || 'Participante')}</div>
             </td>
             <td style="padding:12px 14px; font-family:var(--mono); color:#cbd5e1;">${p.mt5_login}</td>
-            <td style="padding:12px 14px; font-family:var(--mono); color:#94a3b8;">
-              <span title="Clave guardada">${p.mt5_password ? '••••••••' : '<span style="color:#ef4444;">Sin clave</span>'}</span>
-            </td>
-            <td style="padding:12px 14px; font-family:var(--mono); text-align:center;">${trades}</td>
-            <td style="padding:12px 14px; font-family:var(--mono); text-align:center; color:${violations > 0 ? '#f97316' : '#94a3b8'}; font-weight:${violations > 0 ? '800' : 'normal'};">${violations}</td>
-            <td style="padding:12px 14px; font-family:var(--mono); color:${parseFloat(maxDd) >= 5.0 ? '#ef4444' : '#94a3b8'};">${maxDd}%</td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:#94a3b8; font-size:11px;">${p.mt5_server || 'WeTrade-MT5'}</td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:#cbd5e1;">${parseFloat(p.initial_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:#cbd5e1;">${parseFloat(p.current_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+            <td style="padding:12px 14px; font-family:var(--mono); font-weight:800; color:${pnlCol};">${pnl >= 0 ? '+' : ''}${pnl}%</td>
+            <td style="padding:12px 14px; font-family:var(--mono); color:${parseFloat(maxDd) >= 5.0 ? '#ef4444' : '#cbd5e1'};">${maxDd}%</td>
             <td style="padding:12px 14px;">
-              <span style="font-size:10px; font-weight:800; padding:2px 7px; border-radius:8px; text-transform:uppercase; background:${isDisq ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.12)'}; color:${isDisq ? '#ef4444' : '#4ade80'}; border:1px solid ${isDisq ? 'rgba(239,68,68,0.3)' : 'rgba(34,197,94,0.3)'};">
-                ${isDisq ? 'Descalificado' : 'Activo'}
-              </span>
+              ${isDisq 
+                ? '<span style="background:rgba(239,68,68,0.18); color:#ef4444; border:1px solid rgba(239,68,68,0.4); font-size:10px; font-weight:800; padding:2px 7px; border-radius:10px; text-transform:uppercase;">🚫 Descalificado</span>' 
+                : '<span style="background:rgba(34,197,94,0.18); color:#4ade80; border:1px solid rgba(34,197,94,0.4); font-size:10px; font-weight:800; padding:2px 7px; border-radius:10px; text-transform:uppercase;">Activo</span>'}
             </td>
-            <td style="padding:12px 16px; text-align:right;">
+            <td style="padding:12px 14px; text-align:right;">
               <div style="display:inline-flex; gap:6px;">
                 <button type="button" class="btn-grey" onclick="openAdminEditModal('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px;" title="Editar credenciales MT5">✏️</button>
                 ${isDisq ? `
@@ -11119,7 +11212,6 @@ function _renderAnalisis_orig() {
                 ` : `
                   <button type="button" class="btn-grey" onclick="openAdminDisqualifyModal('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px; color:#ef4444;" title="Descalificar">🛑</button>
                 `}
-                <button type="button" class="btn-grey" onclick="adminDeleteParticipant('${p.id}')" style="font-size:11px; padding:4px 8px; border-radius:6px; color:#64748b;" title="Eliminar del torneo">🗑️</button>
               </div>
             </td>
           </tr>
@@ -11127,42 +11219,36 @@ function _renderAnalisis_orig() {
       }).join('');
     }
 
-    window.filterTournamentManagementTable = function() {
-      const input = document.getElementById('tournament-manage-search');
+    window.filterAdminTournament = function() {
+      const input = document.getElementById('admin-tourney-search');
       currentTournamentSearch = input ? input.value : '';
       renderAdminTournamentTable();
     };
 
-    // ── Modales de Administración ──
     window.openAdminEditModal = function(pid) {
-      const p = adminParticipantsData.find(x => x.id === pid);
+      const p = adminParticipantsData.find(item => item.id === pid);
       if (!p) return;
-
-      document.getElementById('aedit-pid').value = pid;
-      document.getElementById('aedit-student-name').textContent = p.user_name || 'Participante';
+      document.getElementById('aedit-pid').value = p.id;
+      document.getElementById('aedit-name').value = p.user_name || '';
       document.getElementById('aedit-login').value = p.mt5_login || '';
-      document.getElementById('aedit-password').value = p.mt5_password || '';
+      document.getElementById('aedit-pass').value = p.mt5_password || '';
       document.getElementById('aedit-server').value = p.mt5_server || 'WeTrade-MT5';
-      document.getElementById('aedit-initial-balance').value = p.initial_balance || 10000;
-
+      document.getElementById('aedit-balance').value = p.initial_balance || 0;
       openModal('admin-edit-modal');
     };
 
-    window.toggleEditPwdVisibility = function() {
-      const inp = document.getElementById('aedit-password');
-      if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+    window.toggleAdminPassVisibility = function() {
+      const input = document.getElementById('aedit-pass');
+      if (input) input.type = input.type === 'password' ? 'text' : 'password';
     };
 
-    window.saveAdminEditParticipant = async function() {
+    window.submitAdminParticipantEdit = async function(e) {
+      if (e) e.preventDefault();
       const pid = document.getElementById('aedit-pid').value;
       const login = document.getElementById('aedit-login').value.trim();
-      const pwd = document.getElementById('aedit-password').value.trim();
-      const initBal = parseFloat(document.getElementById('aedit-initial-balance').value || 10000);
-
-      if (!login || !pwd) {
-        toast('El login y la contraseña de MT5 son obligatorios.', 'error');
-        return;
-      }
+      const pass = document.getElementById('aedit-pass').value.trim();
+      const server = document.getElementById('aedit-server').value.trim();
+      const balance = parseFloat(document.getElementById('aedit-balance').value) || 0;
 
       showLoading(true);
       try {
@@ -11170,48 +11256,39 @@ function _renderAnalisis_orig() {
           method: 'PATCH',
           filter: 'id=eq.' + pid,
           body: {
-            mt5_login: login,
-            mt5_password: pwd,
-            initial_balance: initBal
+            mt5_login: parseInt(login, 10),
+            mt5_password: pass,
+            mt5_server: server,
+            initial_balance: balance
           }
         });
-        toast('Credenciales actualizadas exitosamente.', 'success');
+        toast('Credenciales MT5 actualizadas correctamente.', 'success');
         closeModal('admin-edit-modal');
-        await loadAdminParticipants();
-        renderAdminDashboard();
-      } catch (e) {
-        console.error('Error guardando credenciales:', e);
-        toast('Error al guardar credenciales.', 'error');
+        await loadAdminData();
+        renderAdminTournamentTable();
+      } catch (err) {
+        console.error('Error actualizando participante:', err);
+        toast('Error al guardar credenciales en Supabase.', 'error');
       } finally {
         showLoading(false);
       }
     };
 
     window.openAdminDisqualifyModal = function(pid) {
-      const p = adminParticipantsData.find(x => x.id === pid);
+      const p = adminParticipantsData.find(item => item.id === pid);
       if (!p) return;
-
-      document.getElementById('adisq-pid').value = pid;
-      document.getElementById('adisq-student-name').textContent = p.user_name || 'Estudiante';
-      document.getElementById('adisq-reason-select').value = 'Superó el 5% de Drawdown Máximo';
-      document.getElementById('adisq-reason-custom').style.display = 'none';
-      document.getElementById('adisq-reason-custom').value = '';
-
+      document.getElementById('adisq-pid').value = p.id;
+      document.getElementById('adisq-name-display').textContent = p.user_name + ' (#' + p.mt5_login + ')';
+      document.getElementById('adisq-custom-reason').value = '';
       openModal('admin-disqualify-modal');
     };
 
-    window.handleDisqReasonSelect = function(sel) {
-      const custom = document.getElementById('adisq-reason-custom');
-      if (custom) {
-        custom.style.display = (sel.value === 'Otro motivo') ? 'block' : 'none';
-      }
-    };
-
-    window.confirmAdminDisqualify = async function() {
+    window.submitAdminDisqualification = async function(e) {
+      if (e) e.preventDefault();
       const pid = document.getElementById('adisq-pid').value;
-      const sel = document.getElementById('adisq-reason-select').value;
-      const custom = document.getElementById('adisq-reason-custom').value.trim();
-      const reason = (sel === 'Otro motivo' && custom) ? custom : sel;
+      const selectReason = document.getElementById('adisq-reason-select').value;
+      const customReason = document.getElementById('adisq-custom-reason').value.trim();
+      const finalReason = customReason ? customReason : selectReason;
 
       showLoading(true);
       try {
@@ -11219,74 +11296,57 @@ function _renderAnalisis_orig() {
           method: 'PATCH',
           filter: 'id=eq.' + pid,
           body: {
-            status: 'Descalificado: ' + reason
+            status: 'Descalificado: ' + finalReason,
+            disqualification_reason: finalReason
           }
         });
-        toast('Participante descalificado.', 'success');
+        toast('Participante descalificado correctamente.', 'success');
         closeModal('admin-disqualify-modal');
-        await loadAdminParticipants();
+        await loadAdminData();
         renderAdminDashboard();
-      } catch (e) {
-        console.error('Error descalificando:', e);
-        toast('Error al descalificar participante.', 'error');
+      } catch (err) {
+        console.error('Error descalificando participante:', err);
+        toast('Error al registrar descalificación.', 'error');
       } finally {
         showLoading(false);
       }
     };
 
     window.adminReactivateParticipant = async function(pid) {
-      if (!confirm('¿Deseas reactivar a este participante en el torneo?')) return;
+      if (!confirm('¿Deseas reactivar a este participante y devolverle el estado Activo?')) return;
       showLoading(true);
       try {
         await sb.query('tournament_participants', {
           method: 'PATCH',
           filter: 'id=eq.' + pid,
           body: {
-            status: 'Activo'
+            status: 'Activo',
+            disqualification_reason: null
           }
         });
         toast('Participante reactivado exitosamente.', 'success');
-        await loadAdminParticipants();
+        await loadAdminData();
         renderAdminDashboard();
-      } catch (e) {
-        console.error('Error reactivando participante:', e);
+      } catch (err) {
+        console.error('Error reactivando participante:', err);
         toast('Error al reactivar participante.', 'error');
       } finally {
         showLoading(false);
       }
     };
 
-    window.adminDeleteParticipant = async function(pid) {
-      if (!confirm('¿Estás segura de eliminar permanentemente a este participante del torneo? Esta acción no se puede deshacer.')) return;
-      showLoading(true);
-      try {
-        await sb.query('tournament_participants', {
-          method: 'DELETE',
-          filter: 'id=eq.' + pid
-        });
-        toast('Participante eliminado del torneo.', 'success');
-        await loadAdminParticipants();
-        renderAdminDashboard();
-      } catch (e) {
-        console.error('Error eliminando participante:', e);
-        toast('Error al eliminar participante.', 'error');
-      } finally {
-        showLoading(false);
-      }
-    };
-
-    // ── Pestaña 4: Anuncios Globales ──
+    // ── Pestaña 4: Comunicados y Anuncios Globales ──
     const ANNOUNCEMENT_STORAGE_KEY = 'syntracker_global_announcement';
 
-    window.loadAdminAnnouncementInput = function() {
-      const text = localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY) || '';
+    function loadAdminAnnouncementInput() {
       const inp = document.getElementById('admin-announcement-input');
-      const status = document.getElementById('admin-announcement-status');
-      if (inp) inp.value = text;
+      const status = document.getElementById('announcement-status-text');
+      const text = localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY);
+      if (inp) inp.value = text || '';
       if (status) {
         status.textContent = text ? 'Aviso activo actualmente visible para los estudiantes.' : 'No hay ningún aviso activo en este momento.';
       }
-    };
+    }
 
     window.publishGlobalAnnouncement = function() {
       const inp = document.getElementById('admin-announcement-input');
@@ -11327,8 +11387,35 @@ function _renderAnalisis_orig() {
       if (banner) banner.style.display = 'none';
     };
 
+    // ── Pestaña 5: Monitor de Salud del Bot (Superadmin Sara) ──
+    async function loadAdminBotTab() {
+      if (!isSuperAdminUser()) {
+        const botSec = document.getElementById('admin-sec-bot');
+        if (botSec) botSec.style.display = 'none';
+        return;
+      }
+      const t0 = performance.now();
+      try {
+        const testRes = await sb.query('tournaments', { select: 'id', limit: 1 });
+        const latency = Math.round(performance.now() - t0);
+        const latEl = document.getElementById('db-ping-display');
+        const statEl = document.getElementById('bot-db-status');
+        if (latEl) latEl.textContent = latency + ' ms';
+        if (statEl) {
+          statEl.textContent = '● Operativo';
+          statEl.style.color = '#4ade80';
+        }
+      } catch (e) {
+        const statEl = document.getElementById('bot-db-status');
+        if (statEl) {
+          statEl.textContent = '● Conectividad lenta';
+          statEl.style.color = '#facc15';
+        }
+      }
+    }
 
-      window.doLogout = doLogout;
+
+    window.doLogout = doLogout;
 
       // ── Init con Auto-Login & Persistencia de Sesión ──
       async function autoInit() {
