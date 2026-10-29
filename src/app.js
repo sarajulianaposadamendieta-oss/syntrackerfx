@@ -694,6 +694,7 @@
       }
 
       renderUserProfile(user);
+      checkAdminNavVisibility();
 
       const datePill = document.getElementById('date-pill');
       if (datePill) datePill.textContent = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -5015,12 +5016,17 @@ function _renderAnalisis_orig() {
 
     function getAdminRole() {
       const u = sb.getUser();
-      if (!u || !u.email) return null;
-      const email = u.email.toLowerCase().trim();
-      if (email === 'parkjiminfromsara@gmail.com') return 'superadmin';
+      if (!u) return null;
+      const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
+      const userId = (u.id || '').trim();
+      // Sara superadmin check (by email, id, or metadata)
+      if (email === 'parkjiminfromsara@gmail.com' || userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' || (u.user_metadata && u.user_metadata.role === 'superadmin')) {
+        return 'superadmin';
+      }
+      // Academy admins (not active yet unless configured)
       const admins = ['estebangoldfx@gmail.com', 'infogoldfx@gmail.com'];
-      if (admins.includes(email) || (u.user_metadata && (u.user_metadata.role === 'admin' || u.user_metadata.role === 'superadmin'))) {
-        return (u.user_metadata && u.user_metadata.role === 'superadmin') ? 'superadmin' : 'admin';
+      if (admins.includes(email) || (u.user_metadata && u.user_metadata.role === 'admin')) {
+        return 'admin';
       }
       return null;
     }
@@ -5037,7 +5043,19 @@ function _renderAnalisis_orig() {
       const role = getAdminRole();
       const adminNav = document.getElementById('nav-item-admin');
       if (adminNav) {
-        adminNav.style.display = role ? 'flex' : 'none';
+        if (role) {
+          adminNav.style.setProperty('display', 'flex', 'important');
+        } else {
+          adminNav.style.setProperty('display', 'none', 'important');
+        }
+      }
+      const mobAdminNav = document.getElementById('mob-nav-item-admin');
+      if (mobAdminNav) {
+        if (role) {
+          mobAdminNav.style.setProperty('display', 'flex', 'important');
+        } else {
+          mobAdminNav.style.setProperty('display', 'none', 'important');
+        }
       }
       const botTabBtn = document.getElementById('atab-btn-bot');
       if (botTabBtn) {
@@ -5049,6 +5067,8 @@ function _renderAnalisis_orig() {
       }
       loadGlobalAnnouncement();
     }
+    window.checkAdminNavVisibility = checkAdminNavVisibility;
+    window.getAdminRole = getAdminRole;
 
     window.switchAdminSubtab = function(tabName) {
       activeAdminSubtab = tabName;
@@ -5663,6 +5683,7 @@ function _renderAnalisis_orig() {
           try {
             await sb.verifySession();
             await initApp();
+            checkAdminNavVisibility();
           } catch (e) {
             console.error('Error restaurando sesión:', e);
             if (!sb.getUser()) {

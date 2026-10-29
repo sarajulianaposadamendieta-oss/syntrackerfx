@@ -3702,12 +3702,9 @@
       <div class="nav-item" onclick="goTo('torneo',this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-.98 1.2A3.5 3.5 0 0 0 7 21.5h10a3.5 3.5 0 0 0-2.02-3.3c-.53-.2-.98-.65-.98-1.2v-2.34"/><path d="M6 4h12v5a6 6 0 0 1-12 0V4z"/></svg></span> Torneo
       </div>
-      <div id="nav-item-admin" class="nav-item" style="display:none; color:#eab308; font-weight:700; border-left: 3px solid transparent;" onclick="goTo('admin',this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Panel Admin
-      </div>
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-.98 1.2A3.5 3.5 0 0 0 7 21.5h10a3.5 3.5 0 0 0-2.02-3.3c-.53-.2-.98-.65-.98-1.2v-2.34"/><path d="M6 4h12v5a6 6 0 0 1-12 0V4z"/></svg></span> Torneo
-      </div>
-    </nav>
+      <div id="nav-item-admin" class="nav-item" style="display:none; color:#eab308; font-weight:700; border-left: 3px solid #eab308; background: rgba(234, 179, 8, 0.08);" onclick="goTo('admin',this)">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> 🛡️ Panel Admin
+      </div></nav>
     <div class="sidebar-section" style="padding-bottom:10px;">CUENTA ACTIVA</div>
     <div class="acct-dropdown" id="sidebar-account-selector">
       <div class="acct-dropdown-toggle" onclick="toggleAcctDropdown()">
@@ -5504,9 +5501,15 @@
       </div>
       <span>Torneo</span>
     </div>
+      <div class="mob-nav-item" id="mob-nav-item-admin" data-page="admin" style="display:none; color:#eab308;" onclick="goTo('admin', this)">
+      <div class="mob-nav-icon">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <span>Admin</span>
+    </div>
   </nav>
 
-  <script src="app.js?v=1793290911328"></script>
+  <script src="app.js?v=1793291362829"></script>
 </body>
 
 </html>
