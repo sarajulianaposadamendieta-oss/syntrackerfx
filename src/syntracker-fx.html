@@ -10758,7 +10758,8 @@ function _renderAnalisis_orig() {
         return 'superadmin';
       }
       const admins = ['estebangoldfx@gmail.com', 'infogoldfx@gmail.com'];
-      if (admins.includes(email) || (u.user_metadata && u.user_metadata.role === 'admin')) {
+      const adminIds = ['26b36306-b12c-481c-b43e-fe4f1452a210', '84061dcc-f1dd-4a1f-8e2a-bbbe63045787'];
+      if (admins.includes(email) || adminIds.includes(userId) || (u.user_metadata && u.user_metadata.role === 'admin')) {
         return 'admin';
       }
       return null;
