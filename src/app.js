@@ -5086,7 +5086,7 @@ function _renderAnalisis_orig() {
       }
       const botTabBtn = document.getElementById('atab-btn-bot');
       if (botTabBtn) {
-        botTabBtn.style.display = role === 'superadmin' ? 'inline-flex' : 'none';
+        botTabBtn.style.display = role ? 'inline-flex' : 'none';
       }
       const roleBadge = document.getElementById('admin-role-badge');
       if (roleBadge) {
@@ -5836,7 +5836,7 @@ function _renderAnalisis_orig() {
 
     // ── Pestaña 5: Monitor de Salud del Bot (Superadmin Sara) ──
     async function loadAdminBotTab() {
-      if (!isSuperAdminUser()) {
+      if (!isAdminUser()) {
         const botSec = document.getElementById('admin-sec-bot');
         if (botSec) botSec.style.display = 'none';
         return;

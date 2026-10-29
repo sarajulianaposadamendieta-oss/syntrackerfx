@@ -4343,7 +4343,7 @@
           <span>📢</span> Publicar Anuncios
         </button>
         <button type="button" class="admin-tab-btn" id="atab-btn-bot" style="display:none; color:#38bdf8; border-color:rgba(56,189,248,0.3);" onclick="switchAdminSubtab('bot')">
-          <span>🤖</span> Salud del Bot (Sara)
+          <span>🤖</span> Salud del Bot
         </button>
       </div>
 
@@ -4483,7 +4483,7 @@
       </div>
 
       <!-- ============================================== -->
-      <!-- PESTAÑA 5: MONITOR DE SALUD (SARA ONLY)       -->
+      <!-- PESTAÑA 5: MONITOR DE SALUD DEL BOT -->
       <!-- ============================================== -->
       
 <div id="admin-sec-bot" class="admin-sec-content" style="display:none;">
@@ -4491,7 +4491,7 @@
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
               <h3 style="margin:0; font-size:16px; font-weight:800; color:#38bdf8;">🤖 Monitor de Salud del Sincronizador MT5</h3>
-              <span style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px;">🔒 EXCLUSIVO SARA</span>
+              
             </div>
             <div style="font-size:11.5px; color:#94a3b8; margin-top:3px;">Diagnóstico en vivo de cuentas MT5 con error de acceso, estado del bot y base de datos.</div>
           </div>
@@ -10793,7 +10793,7 @@ function _renderAnalisis_orig() {
       }
       const botTabBtn = document.getElementById('atab-btn-bot');
       if (botTabBtn) {
-        botTabBtn.style.display = role === 'superadmin' ? 'inline-flex' : 'none';
+        botTabBtn.style.display = role ? 'inline-flex' : 'none';
       }
       const roleBadge = document.getElementById('admin-role-badge');
       if (roleBadge) {
@@ -11543,7 +11543,7 @@ function _renderAnalisis_orig() {
 
     // ── Pestaña 5: Monitor de Salud del Bot (Superadmin Sara) ──
     async function loadAdminBotTab() {
-      if (!isSuperAdminUser()) {
+      if (!isAdminUser()) {
         const botSec = document.getElementById('admin-sec-bot');
         if (botSec) botSec.style.display = 'none';
         return;
