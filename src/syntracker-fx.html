@@ -4330,14 +4330,14 @@
 
       <!-- NAVEGACIÓN SECUNDARIA DEL PANEL ADMIN -->
       <div style="display:flex; gap:8px; margin-bottom:22px; overflow-x:auto; padding-bottom:6px;">
-        <button type="button" class="admin-tab-btn active" id="atab-btn-auditoria" onclick="switchAdminSubtab('auditoria')">
-          <span>🚨</span> Radar de Faltas & Auditoría
-        </button>
-        <button type="button" class="admin-tab-btn" id="atab-btn-membresias" onclick="switchAdminSubtab('membresias')">
+        <button type="button" class="admin-tab-btn active" id="atab-btn-membresias" onclick="switchAdminSubtab('membresias')">
           <span>👥</span> Estudiantes & Membresías
         </button>
         <button type="button" class="admin-tab-btn" id="atab-btn-torneo" onclick="switchAdminSubtab('torneo')">
           <span>🏆</span> Gestión del Torneo
+        </button>
+        <button type="button" class="admin-tab-btn" id="atab-btn-auditoria" onclick="switchAdminSubtab('auditoria')">
+          <span>🚨</span> Radar de Faltas & Auditoría
         </button>
         <button type="button" class="admin-tab-btn" id="atab-btn-anuncios" onclick="switchAdminSubtab('anuncios')">
           <span>📢</span> Publicar Anuncios
@@ -4475,34 +4475,66 @@
       <!-- PESTAÑA 5: MONITOR DE SALUD (SARA ONLY)       -->
       <!-- ============================================== -->
       <div id="admin-sec-bot" class="admin-sec-content" style="display:none;">
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:20px;">
-          <div style="background:#0d0f14; border:1px solid rgba(56,189,248,0.25); border-radius:14px; padding:18px; box-shadow:0 0 20px rgba(56,189,248,0.06);">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
-              <div style="font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase;">Estado Sincronizador</div>
-              <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#4ade80; box-shadow:0 0 8px #4ade80;"></span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h3 style="margin:0; font-size:16px; font-weight:800; color:#38bdf8;">🤖 Monitor de Salud del Sincronizador MT5</h3>
+              <span style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px;">🔒 EXCLUSIVO SARA</span>
             </div>
-            <div style="font-size:20px; font-weight:900; color:#fff; margin-top:8px;">MetaTrader 5 Activo</div>
-            <div style="font-size:11.5px; color:#94a3b8; margin-top:4px;">Broker: <strong style="color:#eab308;">WeTrade-MT5</strong></div>
+            <div style="font-size:11.5px; color:#94a3b8; margin-top:3px;">Diagnóstico en vivo de cuentas MT5 con error de acceso, estado del bot y base de datos.</div>
+          </div>
+          <button type="button" class="btn-grey" onclick="loadAdminBotTab()" style="font-size:11px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px;">
+            <span>🔄</span> Actualizar Diagnóstico
+          </button>
+        </div>
+
+        <!-- Tarjetas de Estado General -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:20px;">
+          <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Estado Sincronizador</div>
+              <span id="bot-status-dot" style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#4ade80; box-shadow:0 0 8px #4ade80;"></span>
+            </div>
+            <div id="bot-status-text" style="font-size:18px; font-weight:900; color:#4ade80; margin-top:8px;">En Línea</div>
+            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Último ciclo: <strong id="bot-last-sync" style="color:#cbd5e1;">Consultando...</strong></div>
           </div>
 
           <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
-            <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Consumo de Base de Datos</div>
-            <div style="font-size:20px; font-weight:900; color:#4ade80; margin-top:8px;">0.1% Disk IO (Saludable)</div>
-            <div style="font-size:11.5px; color:#94a3b8; margin-top:4px;">Dirty Checking activado: 99.8% ahorro</div>
+            <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Cuentas Conectadas</div>
+            <div style="font-size:18px; font-weight:900; color:#ffffff; margin-top:8px;">
+              <span id="bot-success-count" style="color:#4ade80;">0</span> / <span id="bot-total-count">0</span>
+            </div>
+            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Conectando sin errores al broker</div>
           </div>
 
           <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
-            <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Cuentas Monitoreadas</div>
-            <div style="font-size:20px; font-weight:900; color:#eab308; margin-top:8px;" id="bot-monitored-count">74 Cuentas</div>
-            <div style="font-size:11.5px; color:#94a3b8; margin-top:4px;">Ciclo continuo activo</div>
+            <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Cuentas con Fallas</div>
+            <div id="bot-failed-badge" style="font-size:18px; font-weight:900; color:#ef4444; margin-top:8px;">0</div>
+            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Clave incorrecta o servidor caído</div>
+          </div>
+
+          <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
+            <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Salud Supabase</div>
+            <div style="font-size:18px; font-weight:900; color:#38bdf8; margin-top:8px;" id="bot-db-status">● Protegida</div>
+            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Latencia: <strong id="db-ping-display" style="color:#cbd5e1;">—</strong> | Ahorro: 99.8%</div>
           </div>
         </div>
 
+        <!-- Tabla de Cuentas MT5 con Errores -->
+        <div style="margin-bottom:20px;">
+          <h4 style="margin:0 0 10px 0; font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+            <span>⚠️</span> Cuentas MT5 con Error de Acceso (Requieren Atención)
+          </h4>
+          <div id="bot-failed-accounts-container" style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; overflow:hidden;">
+            <!-- Renderizado dinámico de cuentas fallidas o banner verde de todo ok -->
+          </div>
+        </div>
+
+        <!-- Guía de Operación para Sara -->
         <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px;">
-          <h4 style="margin:0 0 8px 0; font-size:13px; font-weight:800; color:#38bdf8;">Instrucción de Ejecución Local</h4>
+          <h4 style="margin:0 0 8px 0; font-size:13px; font-weight:800; color:#38bdf8;">📌 Recordatorio de Operación del Bot</h4>
           <div style="font-size:12px; color:#cbd5e1; line-height:1.6;">
-            El bot de sincronización corre en tu computador mediante el acceso directo: <code style="background:#13161f; padding:2px 6px; border-radius:4px; color:#fef08a;">Iniciar_Bot_Torneo.bat</code>.<br>
-            Cualquier cuenta con contraseña incorrecta se marcará en la tabla del torneo para que el alumno o tú puedan corregirla.
+            El bot sincroniza automáticamente las cuentas de los estudiantes cada 2 minutos en tu computador. Cuando un estudiante ingrese mal su contraseña o cambie su clave en MT5, aparecerá arriba en la tabla de errores con el botón directo de <strong>✏️ Corregir Clave</strong> para que puedas actualizarla sin salir de esta pantalla.
           </div>
         </div>
       </div>
@@ -10682,7 +10714,7 @@ function _renderAnalisis_orig() {
         .replace(/'/g, '&#39;');
     }
 
-    let activeAdminSubtab = 'auditoria';
+    let activeAdminSubtab = 'membresias';
     let adminParticipantsData = [];
     let adminStudentsData = [];
     let currentAuditSearch = '';
@@ -11394,26 +11426,130 @@ function _renderAnalisis_orig() {
         if (botSec) botSec.style.display = 'none';
         return;
       }
+
+      const statusDot = document.getElementById('bot-status-dot');
+      const statusText = document.getElementById('bot-status-text');
+      const lastSyncText = document.getElementById('bot-last-sync');
+      const succEl = document.getElementById('bot-success-count');
+      const totEl = document.getElementById('bot-total-count');
+      const failBadge = document.getElementById('bot-failed-badge');
+      const pingEl = document.getElementById('db-ping-display');
+      const container = document.getElementById('bot-failed-accounts-container');
+
+      showLoading(true);
       const t0 = performance.now();
       try {
-        const testRes = await sb.query('tournaments', { select: 'id', limit: 1 });
+        const tourneys = await sb.query('tournaments', { select: '*', filter: 'status=eq.Activo', order: 'created_at.desc' });
         const latency = Math.round(performance.now() - t0);
-        const latEl = document.getElementById('db-ping-display');
-        const statEl = document.getElementById('bot-db-status');
-        if (latEl) latEl.textContent = latency + ' ms';
-        if (statEl) {
-          statEl.textContent = '● Operativo';
-          statEl.style.color = '#4ade80';
+        if (pingEl) pingEl.textContent = latency + ' ms';
+
+        let heartbeat = null;
+        if (Array.isArray(tourneys) && tourneys.length > 0 && tourneys[0].rules && tourneys[0].rules.bot_heartbeat) {
+          heartbeat = tourneys[0].rules.bot_heartbeat;
         }
-      } catch (e) {
-        const statEl = document.getElementById('bot-db-status');
-        if (statEl) {
-          statEl.textContent = '● Conectividad lenta';
-          statEl.style.color = '#facc15';
+
+        const totalMonitored = adminParticipantsData.length || 74;
+        if (totEl) totEl.textContent = totalMonitored;
+
+        if (heartbeat) {
+          const lastDate = new Date(heartbeat.last_sync);
+          const diffMinutes = Math.round((Date.now() - lastDate.getTime()) / 60000);
+          let timeAgo = diffMinutes <= 0 ? 'Hace menos de 1 min' : (diffMinutes === 1 ? 'Hace 1 min' : 'Hace ' + diffMinutes + ' min');
+          if (diffMinutes > 120) timeAgo = lastDate.toLocaleDateString('es-CO', { hour: '2-digit', minute: '2-digit' });
+
+          if (lastSyncText) lastSyncText.textContent = timeAgo;
+
+          const isOnline = diffMinutes <= 15;
+          if (statusText) {
+            statusText.textContent = isOnline ? 'En Línea' : 'Inactivo';
+            statusText.style.color = isOnline ? '#4ade80' : '#f87171';
+          }
+          if (statusDot) {
+            statusDot.style.background = isOnline ? '#4ade80' : '#ef4444';
+            statusDot.style.boxShadow = isOnline ? '0 0 8px #4ade80' : '0 0 8px #ef4444';
+          }
+
+          const failedList = Array.isArray(heartbeat.failed_accounts) ? heartbeat.failed_accounts : [];
+          const successCount = heartbeat.success_count !== undefined ? heartbeat.success_count : (totalMonitored - failedList.length);
+
+          if (succEl) succEl.textContent = successCount;
+          if (failBadge) failBadge.textContent = failedList.length;
+
+          if (container) {
+            if (failedList.length === 0) {
+              container.innerHTML = `
+                <div style="text-align:center; padding:32px 20px; color:#94a3b8; font-size:13px;">
+                  <div style="font-size:32px; margin-bottom:8px;">✅</div>
+                  <strong style="color:#4ade80; font-size:15px;">¡Todas las cuentas MT5 están conectando perfectamente!</strong>
+                  <div style="margin-top:6px; font-size:12px; color:#cbd5e1;">No se detectaron errores de contraseña ni caídas de broker en la última sincronización.</div>
+                </div>
+              `;
+            } else {
+              container.innerHTML = `
+                <div style="overflow-x:auto;">
+                  <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">
+                    <thead>
+                      <tr style="background:#13161f; color:#94a3b8; font-size:10.5px; font-weight:800; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <th style="padding:12px 16px;">Estudiante</th>
+                        <th style="padding:12px 14px;">Cuenta MT5</th>
+                        <th style="padding:12px 14px;">Servidor</th>
+                        <th style="padding:12px 14px;">Diagnóstico del Error</th>
+                        <th style="padding:12px 14px; text-align:right;">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${failedList.map(f => {
+                        const pMatch = adminParticipantsData.find(p => String(p.mt5_login) === String(f.login));
+                        const pid = pMatch ? pMatch.id : '';
+                        return `
+                          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                            <td style="padding:12px 16px;">
+                              <div style="font-weight:700; color:#fff;">${escapeHtml(f.name || 'Estudiante')}</div>
+                            </td>
+                            <td style="padding:12px 14px; font-family:var(--mono); color:#ef4444; font-weight:700;">#${f.login}</td>
+                            <td style="padding:12px 14px; font-family:var(--mono); color:#94a3b8; font-size:11px;">${f.server || 'WeTrade-MT5'}</td>
+                            <td style="padding:12px 14px;">
+                              <span style="background:rgba(239,68,68,0.15); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); font-size:11px; font-weight:600; padding:2px 8px; border-radius:6px;">
+                                ⚠️ ${escapeHtml(f.reason || 'Error de conexión')}
+                              </span>
+                            </td>
+                            <td style="padding:12px 14px; text-align:right;">
+                              ${pid ? `
+                                <button type="button" class="btn-gold" onclick="openAdminEditModal('${pid}')" style="font-size:11px; padding:4px 10px; border-radius:6px; font-weight:700;">
+                                  ✏️ Corregir Clave
+                                </button>
+                              ` : '—'}
+                            </td>
+                          </tr>
+                        `;
+                      }).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `;
+            }
+          }
+        } else {
+          if (statusText) statusText.textContent = 'Sin Datos';
+          if (lastSyncText) lastSyncText.textContent = 'Esperando primer ciclo';
+          if (succEl) succEl.textContent = totalMonitored;
+          if (failBadge) failBadge.textContent = '0';
+          if (container) {
+            container.innerHTML = `
+              <div style="text-align:center; padding:32px 20px; color:#94a3b8; font-size:13px;">
+                <div style="font-size:32px; margin-bottom:8px;">⏳</div>
+                <strong style="color:#cbd5e1;">El bot registrará su primer ciclo de salud al arrancar.</strong>
+              </div>
+            `;
+          }
         }
+      } catch (err) {
+        console.error('Error cargando salud del bot:', err);
+      } finally {
+        showLoading(false);
       }
     }
-
+    window.loadAdminBotTab = loadAdminBotTab;
 
     window.doLogout = doLogout;
 

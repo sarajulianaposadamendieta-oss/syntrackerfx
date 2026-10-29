@@ -5019,7 +5019,7 @@ function _renderAnalisis_orig() {
         .replace(/'/g, '&#39;');
     }
 
-    let activeAdminSubtab = 'auditoria';
+    let activeAdminSubtab = 'membresias';
     let adminParticipantsData = [];
     let adminStudentsData = [];
     let currentAuditSearch = '';
@@ -5731,26 +5731,130 @@ function _renderAnalisis_orig() {
         if (botSec) botSec.style.display = 'none';
         return;
       }
+
+      const statusDot = document.getElementById('bot-status-dot');
+      const statusText = document.getElementById('bot-status-text');
+      const lastSyncText = document.getElementById('bot-last-sync');
+      const succEl = document.getElementById('bot-success-count');
+      const totEl = document.getElementById('bot-total-count');
+      const failBadge = document.getElementById('bot-failed-badge');
+      const pingEl = document.getElementById('db-ping-display');
+      const container = document.getElementById('bot-failed-accounts-container');
+
+      showLoading(true);
       const t0 = performance.now();
       try {
-        const testRes = await sb.query('tournaments', { select: 'id', limit: 1 });
+        const tourneys = await sb.query('tournaments', { select: '*', filter: 'status=eq.Activo', order: 'created_at.desc' });
         const latency = Math.round(performance.now() - t0);
-        const latEl = document.getElementById('db-ping-display');
-        const statEl = document.getElementById('bot-db-status');
-        if (latEl) latEl.textContent = latency + ' ms';
-        if (statEl) {
-          statEl.textContent = '● Operativo';
-          statEl.style.color = '#4ade80';
+        if (pingEl) pingEl.textContent = latency + ' ms';
+
+        let heartbeat = null;
+        if (Array.isArray(tourneys) && tourneys.length > 0 && tourneys[0].rules && tourneys[0].rules.bot_heartbeat) {
+          heartbeat = tourneys[0].rules.bot_heartbeat;
         }
-      } catch (e) {
-        const statEl = document.getElementById('bot-db-status');
-        if (statEl) {
-          statEl.textContent = '● Conectividad lenta';
-          statEl.style.color = '#facc15';
+
+        const totalMonitored = adminParticipantsData.length || 74;
+        if (totEl) totEl.textContent = totalMonitored;
+
+        if (heartbeat) {
+          const lastDate = new Date(heartbeat.last_sync);
+          const diffMinutes = Math.round((Date.now() - lastDate.getTime()) / 60000);
+          let timeAgo = diffMinutes <= 0 ? 'Hace menos de 1 min' : (diffMinutes === 1 ? 'Hace 1 min' : 'Hace ' + diffMinutes + ' min');
+          if (diffMinutes > 120) timeAgo = lastDate.toLocaleDateString('es-CO', { hour: '2-digit', minute: '2-digit' });
+
+          if (lastSyncText) lastSyncText.textContent = timeAgo;
+
+          const isOnline = diffMinutes <= 15;
+          if (statusText) {
+            statusText.textContent = isOnline ? 'En Línea' : 'Inactivo';
+            statusText.style.color = isOnline ? '#4ade80' : '#f87171';
+          }
+          if (statusDot) {
+            statusDot.style.background = isOnline ? '#4ade80' : '#ef4444';
+            statusDot.style.boxShadow = isOnline ? '0 0 8px #4ade80' : '0 0 8px #ef4444';
+          }
+
+          const failedList = Array.isArray(heartbeat.failed_accounts) ? heartbeat.failed_accounts : [];
+          const successCount = heartbeat.success_count !== undefined ? heartbeat.success_count : (totalMonitored - failedList.length);
+
+          if (succEl) succEl.textContent = successCount;
+          if (failBadge) failBadge.textContent = failedList.length;
+
+          if (container) {
+            if (failedList.length === 0) {
+              container.innerHTML = `
+                <div style="text-align:center; padding:32px 20px; color:#94a3b8; font-size:13px;">
+                  <div style="font-size:32px; margin-bottom:8px;">✅</div>
+                  <strong style="color:#4ade80; font-size:15px;">¡Todas las cuentas MT5 están conectando perfectamente!</strong>
+                  <div style="margin-top:6px; font-size:12px; color:#cbd5e1;">No se detectaron errores de contraseña ni caídas de broker en la última sincronización.</div>
+                </div>
+              `;
+            } else {
+              container.innerHTML = `
+                <div style="overflow-x:auto;">
+                  <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">
+                    <thead>
+                      <tr style="background:#13161f; color:#94a3b8; font-size:10.5px; font-weight:800; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <th style="padding:12px 16px;">Estudiante</th>
+                        <th style="padding:12px 14px;">Cuenta MT5</th>
+                        <th style="padding:12px 14px;">Servidor</th>
+                        <th style="padding:12px 14px;">Diagnóstico del Error</th>
+                        <th style="padding:12px 14px; text-align:right;">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${failedList.map(f => {
+                        const pMatch = adminParticipantsData.find(p => String(p.mt5_login) === String(f.login));
+                        const pid = pMatch ? pMatch.id : '';
+                        return `
+                          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                            <td style="padding:12px 16px;">
+                              <div style="font-weight:700; color:#fff;">${escapeHtml(f.name || 'Estudiante')}</div>
+                            </td>
+                            <td style="padding:12px 14px; font-family:var(--mono); color:#ef4444; font-weight:700;">#${f.login}</td>
+                            <td style="padding:12px 14px; font-family:var(--mono); color:#94a3b8; font-size:11px;">${f.server || 'WeTrade-MT5'}</td>
+                            <td style="padding:12px 14px;">
+                              <span style="background:rgba(239,68,68,0.15); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); font-size:11px; font-weight:600; padding:2px 8px; border-radius:6px;">
+                                ⚠️ ${escapeHtml(f.reason || 'Error de conexión')}
+                              </span>
+                            </td>
+                            <td style="padding:12px 14px; text-align:right;">
+                              ${pid ? `
+                                <button type="button" class="btn-gold" onclick="openAdminEditModal('${pid}')" style="font-size:11px; padding:4px 10px; border-radius:6px; font-weight:700;">
+                                  ✏️ Corregir Clave
+                                </button>
+                              ` : '—'}
+                            </td>
+                          </tr>
+                        `;
+                      }).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `;
+            }
+          }
+        } else {
+          if (statusText) statusText.textContent = 'Sin Datos';
+          if (lastSyncText) lastSyncText.textContent = 'Esperando primer ciclo';
+          if (succEl) succEl.textContent = totalMonitored;
+          if (failBadge) failBadge.textContent = '0';
+          if (container) {
+            container.innerHTML = `
+              <div style="text-align:center; padding:32px 20px; color:#94a3b8; font-size:13px;">
+                <div style="font-size:32px; margin-bottom:8px;">⏳</div>
+                <strong style="color:#cbd5e1;">El bot registrará su primer ciclo de salud al arrancar.</strong>
+              </div>
+            `;
+          }
         }
+      } catch (err) {
+        console.error('Error cargando salud del bot:', err);
+      } finally {
+        showLoading(false);
       }
     }
-
+    window.loadAdminBotTab = loadAdminBotTab;
 
     window.doLogout = doLogout;
 

@@ -41,6 +41,20 @@ def update_participant(pid, data):
     except Exception as e:
         print(f"[Supabase] Error actualizando participante {pid}: {e}")
 
+def update_bot_heartbeat(data):
+    try:
+        url = f"{SUPABASE_URL}/rest/v1/tournaments?select=id,rules&status=eq.Activo&limit=1"
+        r = requests.get(url, headers=HEADERS, timeout=8)
+        if r.status_code == 200:
+            tourneys = r.json()
+            if tourneys:
+                t = tourneys[0]
+                rules = t.get('rules') or {}
+                rules['bot_heartbeat'] = data
+                requests.patch(f"{SUPABASE_URL}/rest/v1/tournaments?id=eq.{t['id']}", headers=HEADERS, json={'rules': rules}, timeout=8)
+    except Exception as e:
+        print(f"[Supabase] Error heartbeat: {e}")
+
 def ensure_mt5():
     """Verifica conexion con MT5. Si no esta abierto, lo abre con su ruta exacta SIN matar nada."""
     try:
@@ -207,6 +221,9 @@ def run_synchronizer():
             hora = datetime.datetime.now().strftime("%H:%M:%S")
             print(f"\n[{hora} | Ciclo #{ciclo}] Sincronizando {len(participants)} cuentas...")
 
+            failed_accounts = []
+            success_count = 0
+
             for idx, p in enumerate(participants, 1):
                 pid = p['id']
                 name = p.get('user_name') or p.get('full_name') or 'Participante'
@@ -215,6 +232,13 @@ def run_synchronizer():
                 server = str(p.get('mt5_server', '')).strip() or "WeTrade-MT5"
 
                 if not login_raw.isdigit() or len(login_raw) not in [7, 8]:
+                    failed_accounts.append({
+                        "login": login_raw or "Sin número",
+                        "name": name,
+                        "server": server,
+                        "reason": "Número de cuenta MT5 inválido o incompleto",
+                        "last_attempt": datetime.datetime.now(datetime.timezone.utc).isoformat()
+                    })
                     continue
 
                 login = int(login_raw)
@@ -235,6 +259,15 @@ def run_synchronizer():
                     err = mt5.last_error()
                     err_code = err[0] if isinstance(err, tuple) and len(err) > 0 else 0
                     print(f"[{idx}/{len(participants)}] [SALTAR] #{login} ({name}) no conecto: {err}")
+
+                    reason_msg = "Contraseña o login incorrecto" if err_code == -10003 else f"Error ({err_code}): No conecta al broker"
+                    failed_accounts.append({
+                        "login": login,
+                        "name": name,
+                        "server": server,
+                        "reason": reason_msg,
+                        "last_attempt": datetime.datetime.now(datetime.timezone.utc).isoformat()
+                    })
 
                     # Si el error fue timeout de IPC, refrescar el canal de Python a MT5
                     # SIN matar el programa para que la siguiente cuenta entre 100% limpia
@@ -308,7 +341,20 @@ def run_synchronizer():
                 # Pausa de 2 segundos entre cuentas
                 time.sleep(2)
 
-            print(f"\n⏳ Ciclo #{ciclo} completado con exito. Pausa de 2 minutos antes de la siguiente vuelta...")
+            # Registrar pulso de salud del bot en Supabase
+            try:
+                update_bot_heartbeat({
+                    "status": "online",
+                    "last_sync": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                    "monitored_count": len(participants),
+                    "success_count": success_count,
+                    "errors_count": len(failed_accounts),
+                    "failed_accounts": failed_accounts
+                })
+            except Exception as hb_err:
+                print(f"[Supabase] Error actualizando salud del bot: {hb_err}")
+
+            print(f"\n⏳ Ciclo #{ciclo} completado con exito ({success_count} OK, {len(failed_accounts)} fallas). Pausa de 2 minutos...")
             ciclo += 1
             time.sleep(120)
 
