@@ -5880,10 +5880,41 @@ function _renderAnalisis_orig() {
     window.submitAdminDisqualification = window.confirmAdminDisqualify;
 
     // ── Pestaña 4: Comunicados y Anuncios Globales (Sincronizado en Supabase) ──
-    const DISMISSED_ANNOUNCEMENTS_KEY = 'syntracker_dismissed_announcements_v1';
+    const DISMISSED_ANNOUNCEMENTS_KEY = 'syntracker_dismissed_announcements_v3';
     let currentAnnouncementType = 'info';
     let activeAnnouncementsList = [];
     let currentBannerIndex = 0;
+
+    // Limpieza de claves viejas de dismissal compartidas
+    try {
+      localStorage.removeItem('syntracker_dismissed_announcements_v1');
+      localStorage.removeItem('syntracker_dismissed_announcements_v2');
+      localStorage.removeItem('syntracker_global_announcement');
+    } catch (e) {}
+
+    function getDismissedList() {
+      try {
+        const u = sb.getUser();
+        const userSuffix = u ? ('_' + u.id) : '';
+        const raw = sessionStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY + userSuffix);
+        return JSON.parse(raw || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function addDismissedId(annId) {
+      if (!annId) return;
+      try {
+        const u = sb.getUser();
+        const userSuffix = u ? ('_' + u.id) : '';
+        const list = getDismissedList();
+        if (!list.includes(annId)) {
+          list.push(annId);
+          sessionStorage.setItem(DISMISSED_ANNOUNCEMENTS_KEY + userSuffix, JSON.stringify(list));
+        }
+      } catch (e) {}
+    }
 
     window.setAnnouncementType = function(type) {
       currentAnnouncementType = type;
@@ -5922,8 +5953,16 @@ function _renderAnalisis_orig() {
 
     async function getActiveTournamentWithRules() {
       try {
-        const data = await sb.query('tournaments', { select: 'id,rules', filter: 'status=eq.Activo', order: 'created_at.desc' });
-        if (Array.isArray(data) && data.length > 0) return data[0];
+        const res = await fetch(SUPABASE_URL + '/rest/v1/tournaments?status=eq.Activo&select=id,rules&order=created_at.desc', {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) return data[0];
+        }
       } catch (e) {
         console.warn('Error obteniendo torneo activo:', e);
       }
@@ -5933,7 +5972,7 @@ function _renderAnalisis_orig() {
     async function fetchServerAnnouncements() {
       const tourney = await getActiveTournamentWithRules();
       if (!tourney || !tourney.rules || !Array.isArray(tourney.rules.announcements)) {
-        return [];
+        return null;
       }
       return [...tourney.rules.announcements]
         .filter(a => a && a.active !== false)
@@ -6011,11 +6050,7 @@ function _renderAnalisis_orig() {
       const banner = document.getElementById('global-announcement-banner');
       if (!banner) return;
 
-      let dismissed = [];
-      try {
-        dismissed = JSON.parse(localStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY) || '[]');
-      } catch (e) {}
-
+      const dismissed = getDismissedList();
       const visible = (activeAnnouncementsList || []).filter(a => a && a.active !== false && !dismissed.includes(a.id));
 
       if (visible.length === 0) {
@@ -6083,16 +6118,10 @@ function _renderAnalisis_orig() {
     };
 
     window.dismissCurrentAnnouncement = function() {
-      let dismissed = [];
-      try {
-        dismissed = JSON.parse(localStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY) || '[]');
-      } catch (e) {}
-
+      const dismissed = getDismissedList();
       const visible = (activeAnnouncementsList || []).filter(a => a && !dismissed.includes(a.id));
       if (visible[currentBannerIndex]) {
-        const idToDismiss = visible[currentBannerIndex].id;
-        dismissed.push(idToDismiss);
-        localStorage.setItem(DISMISSED_ANNOUNCEMENTS_KEY, JSON.stringify(dismissed));
+        addDismissedId(visible[currentBannerIndex].id);
       }
       renderStudentBannerUI();
     };
@@ -6176,8 +6205,11 @@ function _renderAnalisis_orig() {
 
     async function loadGlobalAnnouncement() {
       try {
-        activeAnnouncementsList = await fetchServerAnnouncements();
-        renderStudentBannerUI();
+        const res = await fetchServerAnnouncements();
+        if (Array.isArray(res)) {
+          activeAnnouncementsList = res;
+          renderStudentBannerUI();
+        }
       } catch (e) {
         console.warn('Error cargando anuncios globales:', e);
       }
@@ -6196,8 +6228,11 @@ function _renderAnalisis_orig() {
 
       renderAdminAnnouncementsUI();
       try {
-        activeAnnouncementsList = await fetchServerAnnouncements();
-        renderAdminAnnouncementsUI();
+        const res = await fetchServerAnnouncements();
+        if (Array.isArray(res)) {
+          activeAnnouncementsList = res;
+          renderAdminAnnouncementsUI();
+        }
       } catch (e) {}
     }
     window.loadAdminAnnouncementInput = loadAdminAnnouncementInput;
@@ -6207,8 +6242,9 @@ function _renderAnalisis_orig() {
       window._announcementSyncInterval = setInterval(async () => {
         try {
           const latest = await fetchServerAnnouncements();
+          if (!Array.isArray(latest)) return; // No sobreescribir si hubo error de red
           const currentIds = (activeAnnouncementsList || []).map(a => a.id).join(',');
-          const latestIds = (latest || []).map(a => a.id).join(',');
+          const latestIds = latest.map(a => a.id).join(',');
           if (currentIds !== latestIds) {
             activeAnnouncementsList = latest;
             renderAdminAnnouncementsUI();
