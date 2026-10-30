@@ -6035,6 +6035,7 @@ function _renderAnalisis_orig() {
         : 'linear-gradient(90deg, rgba(234,179,8,0.18), rgba(245,158,11,0.08))';
       banner.style.borderColor = isUrgent ? 'rgba(239,68,68,0.45)' : 'rgba(234,179,8,0.35)';
 
+      const iconBox = document.getElementById('announcement-banner-icon-box');
       const iconEl = document.getElementById('announcement-banner-icon');
       const badgeEl = document.getElementById('announcement-banner-badge');
       const metaEl = document.getElementById('announcement-banner-meta');
@@ -6042,6 +6043,10 @@ function _renderAnalisis_orig() {
       const navPills = document.getElementById('announcement-nav-pills');
       const navCounter = document.getElementById('announcement-nav-counter');
 
+      if (iconBox) {
+        iconBox.style.background = isUrgent ? 'rgba(239,68,68,0.18)' : 'rgba(234,179,8,0.15)';
+        iconBox.style.borderColor = isUrgent ? 'rgba(239,68,68,0.4)' : 'rgba(234,179,8,0.35)';
+      }
       if (iconEl) iconEl.textContent = isUrgent ? '🚨' : '📢';
       if (badgeEl) {
         badgeEl.textContent = isUrgent ? 'ALERTA URGENTE' : 'COMUNICADO OFICIAL';
