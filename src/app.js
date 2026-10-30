@@ -1206,11 +1206,19 @@
     }
 
     // ── Navigation ──
-    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading', admin: 'Panel de Administración' };
+    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading', admin: 'Panel de Administración', vip: 'Bitácora VIP' };
     function goTo(id, el) {
       document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
       document.querySelectorAll('.mob-nav-item').forEach(function (m) { m.classList.remove('active'); });
+
+      // Verificación de Stealth Mode para Bitácora VIP
+      if (id === 'vip') {
+        if (!isSaraUser()) {
+          goTo('dashboard');
+          return;
+        }
+      }
 
       const targetPage = document.getElementById('page-' + id);
       if (targetPage) targetPage.classList.add('active');
@@ -1237,6 +1245,9 @@
       if (id === 'cuentas') renderAccounts();
       if (id === 'admin') {
         renderAdminDashboard();
+      }
+      if (id === 'vip') {
+        renderVipModule();
       }
       if (id === 'torneo') {
         loadTournamentData();
@@ -5124,6 +5135,15 @@ function _renderAnalisis_orig() {
       return getAdminRole() === 'superadmin';
     }
 
+    function isSaraUser() {
+      const u = sb.getUser();
+      if (!u) return false;
+      const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
+      const userId = (u.id || '').trim();
+      return email === 'parkjiminfromsara@gmail.com' || userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' || (u.user_metadata && u.user_metadata.role === 'superadmin');
+    }
+    window.isSaraUser = isSaraUser;
+
     function checkAdminNavVisibility() {
       const role = getAdminRole();
       const adminNav = document.getElementById('nav-item-admin');
@@ -5142,6 +5162,18 @@ function _renderAnalisis_orig() {
           mobAdminNav.style.setProperty('display', 'none', 'important');
         }
       }
+
+      // Stealth Mode: Bitácora VIP visible única y exclusivamente para Sara
+      const isSara = isSaraUser();
+      const vipNav = document.getElementById('nav-item-vip');
+      if (vipNav) {
+        vipNav.style.setProperty('display', isSara ? 'flex' : 'none', 'important');
+      }
+      const mobVipNav = document.getElementById('mob-nav-item-vip');
+      if (mobVipNav) {
+        mobVipNav.style.setProperty('display', isSara ? 'flex' : 'none', 'important');
+      }
+
       const botTabBtn = document.getElementById('atab-btn-bot');
       if (botTabBtn) {
         botTabBtn.style.display = role ? 'inline-flex' : 'none';
@@ -6463,6 +6495,252 @@ function _renderAnalisis_orig() {
       }
     }
     window.loadAdminBotTab = loadAdminBotTab;
+
+    // ══════════════════════════════════════════════
+    // 💎 MÓDULO: BITÁCORA VIP (MODO DESARROLLO PRIVADO - SARA)
+    // ══════════════════════════════════════════════
+    let activeVipSubtab = 'perfil';
+    let currentVipStudentId = 'me';
+    let vipStudentProfiles = {};
+
+    window.switchVipSubtab = function(tabName) {
+      activeVipSubtab = tabName;
+      ['perfil', 'operativa', 'psico', 'calendario', 'tareas', 'evaluaciones', 'evolucion'].forEach(t => {
+        const btn = document.getElementById('viptab-btn-' + t);
+        const sec = document.getElementById('vip-sec-' + t);
+        if (btn) {
+          if (t === tabName) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+        if (sec) {
+          sec.style.display = (t === tabName) ? 'block' : 'none';
+        }
+      });
+      if (tabName === 'operativa') renderVipOperativa();
+    };
+
+    window.onVipStudentChange = function(studentId) {
+      currentVipStudentId = studentId;
+      loadVipStudentData(studentId);
+    };
+
+    window.refreshVipData = async function() {
+      showLoading(true);
+      try {
+        await renderVipModule();
+        if (typeof toast === 'function') toast('Datos de la Bitácora VIP actualizados.', 'success');
+      } catch (e) {
+        console.error('Error refrescando VIP:', e);
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    async function loadVipStudentData(studentId) {
+      const u = sb.getUser();
+      const isMe = (studentId === 'me' || (u && studentId === u.id));
+      const emailTag = document.getElementById('vip-selected-email-tag');
+
+      if (isMe) {
+        if (emailTag && u) emailTag.textContent = u.email || 'parkjiminfromsara@gmail.com';
+        const p = vipStudentProfiles['me'] || {};
+        const nivelEl = document.getElementById('vip-field-nivel');
+        if (nivelEl) nivelEl.value = p.nivel || 'Trader Profesional / Superadmin';
+        const capEl = document.getElementById('vip-field-objetivo-capital');
+        if (capEl) capEl.value = p.objetivoCapital || 'Consolidación de Capital Institucional';
+        const expEl = document.getElementById('vip-field-experiencia');
+        if (expEl) expEl.value = p.experiencia || '3+ años en Mercados Sintéticos';
+        const difTecEl = document.getElementById('vip-field-dif-tecnica');
+        if (difTecEl) difTecEl.value = p.difTecnica || 'Ninguna registrada';
+        const difEmocEl = document.getElementById('vip-field-dif-emocional');
+        if (difEmocEl) difEmocEl.value = p.difEmocional || 'Excelente disciplina operativa';
+        const diagEl = document.getElementById('vip-field-diagnostico-mentor');
+        if (diagEl) diagEl.value = p.diagnosticoMentor || 'Perfil fundador y auditor principal de Syntracker FX.';
+      } else {
+        const student = (adminStudentsData || []).find(s => s.id === studentId);
+        if (student) {
+          if (emailTag) emailTag.textContent = student.email || 'Sin correo';
+          const p = vipStudentProfiles[studentId] || {};
+          const nivelEl = document.getElementById('vip-field-nivel');
+          if (nivelEl) nivelEl.value = p.nivel || 'Estudiante VIP';
+          const capEl = document.getElementById('vip-field-objetivo-capital');
+          if (capEl) capEl.value = p.objetivoCapital || 'Cuenta de Fondeo $50,000 FTMO';
+          const expEl = document.getElementById('vip-field-experiencia');
+          if (expEl) expEl.value = p.experiencia || '1 año en la Academia Gold FX';
+          const difTecEl = document.getElementById('vip-field-dif-tecnica');
+          if (difTecEl) difTecEl.value = p.difTecnica || '';
+          const difEmocEl = document.getElementById('vip-field-dif-emocional');
+          if (difEmocEl) difEmocEl.value = p.difEmocional || '';
+          const diagEl = document.getElementById('vip-field-diagnostico-mentor');
+          if (diagEl) diagEl.value = p.diagnosticoMentor || '';
+        }
+      }
+      renderVipOperativa();
+    }
+
+    function renderVipOperativa() {
+      const tradesList = Array.isArray(trades) ? trades : [];
+      let totalTrades = tradesList.length;
+      let wins = tradesList.filter(t => (t.pnl || 0) > 0).length;
+      let winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : '70.0';
+      let totalPnl = tradesList.reduce((acc, t) => acc + (t.pnl || 0), 0);
+
+      const wrEl = document.getElementById('vip-metric-winrate');
+      if (wrEl) wrEl.textContent = winRate + '%';
+      const pnlEl = document.getElementById('vip-metric-pnl');
+      if (pnlEl) pnlEl.textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+      const tbody = document.getElementById('vip-audit-trades-tbody');
+      if (tbody) {
+        if (tradesList.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="padding:24px; text-align:center; color:#94a3b8;">No hay operaciones registradas aún para este perfil.</td></tr>';
+        } else {
+          tbody.innerHTML = tradesList.slice(0, 10).map(t => {
+            const pnlVal = t.pnl || 0;
+            const pnlColor = pnlVal >= 0 ? '#4ade80' : '#ef4444';
+            const pnlText = (pnlVal >= 0 ? '+' : '') + '$' + pnlVal.toFixed(2);
+            const dateStr = t.date || (t.created_at ? new Date(t.created_at).toLocaleDateString('es-CO') : 'Hoy');
+            const asset = t.symbol || t.asset || 'Vol 75';
+            const dir = (t.direction || t.type || 'BUY').toUpperCase();
+            const dirColor = dir.includes('BUY') ? '#4ade80' : '#ef4444';
+            return `
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding:10px 14px; color:#94a3b8; font-family:var(--mono);">${escapeHtml(dateStr)}</td>
+                <td style="padding:10px 14px; font-weight:700; color:#fff;">${escapeHtml(asset)}</td>
+                <td style="padding:10px 14px; font-weight:800; color:${dirColor};">${escapeHtml(dir)}</td>
+                <td style="padding:10px 14px; font-weight:700; color:${pnlColor}; font-family:var(--mono);">${pnlText}</td>
+                <td style="padding:10px 14px; color:#cbd5e1; font-family:var(--mono);">1 : 2.5</td>
+                <td style="padding:10px 14px;">
+                  <span style="background:rgba(74,222,128,0.12); color:#4ade80; border:1px solid rgba(74,222,128,0.3); font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">✓ Válida</span>
+                </td>
+                <td style="padding:10px 14px; color:#94a3b8; font-size:11.5px;">
+                  <span style="color:#facc15; font-weight:600;">Esteban:</span> Buena entrada en retroceso.
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+    }
+
+    window.saveVipDiagnosis = function() {
+      const p = vipStudentProfiles[currentVipStudentId] || {};
+      p.nivel = document.getElementById('vip-field-nivel')?.value || '';
+      p.objetivoCapital = document.getElementById('vip-field-objetivo-capital')?.value || '';
+      p.experiencia = document.getElementById('vip-field-experiencia')?.value || '';
+      p.difTecnica = document.getElementById('vip-field-dif-tecnica')?.value || '';
+      p.difEmocional = document.getElementById('vip-field-dif-emocional')?.value || '';
+      p.diagnosticoMentor = document.getElementById('vip-field-diagnostico-mentor')?.value || '';
+      vipStudentProfiles[currentVipStudentId] = p;
+      try {
+        localStorage.setItem('syntracker_vip_profiles', JSON.stringify(vipStudentProfiles));
+      } catch (e) {}
+      if (typeof toast === 'function') toast('Diagnóstico guardado exitosamente.', 'success');
+    };
+
+    window.saveVipPsychologyNotes = function() {
+      const p = vipStudentProfiles[currentVipStudentId] || {};
+      p.notasPsicologia = document.getElementById('vip-field-notas-psicologa')?.value || '';
+      vipStudentProfiles[currentVipStudentId] = p;
+      try {
+        localStorage.setItem('syntracker_vip_profiles', JSON.stringify(vipStudentProfiles));
+      } catch (e) {}
+      if (typeof toast === 'function') toast('Observación psicológica guardada en área protegida.', 'success');
+    };
+
+    window.saveVipEvalConfig = function() {
+      const name = document.getElementById('vip-eval-name')?.value || '';
+      const url = document.getElementById('vip-eval-url')?.value || '';
+      try {
+        localStorage.setItem('syntracker_vip_eval_config', JSON.stringify({ name, url }));
+      } catch (e) {}
+      const extBtn = document.getElementById('vip-eval-external-btn');
+      if (extBtn && url) extBtn.href = url;
+      if (typeof toast === 'function') toast('Configuración de evaluación bimestral guardada.', 'success');
+    };
+
+    window.openNewSessionModal = function() {
+      const fecha = prompt('Fecha y hora de la sesión (Ej. 2026-11-05 18:00):');
+      if (!fecha) return;
+      const tipo = prompt('Tipo de sesión (1 a 1 Esteban / Psicología / Steven):', '1 a 1 Esteban Ochoa');
+      const link = prompt('Enlace de Zoom o Google Meet:', 'https://meet.google.com/abc-defg-hij');
+      const tbody = document.getElementById('vip-sessions-tbody');
+      if (tbody) {
+        const row = `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:10px 14px; color:#fff; font-weight:700;">${escapeHtml(fecha)}</td>
+            <td style="padding:10px 14px; color:#facc15; font-weight:600;">${escapeHtml(tipo || 'Sesión')}</td>
+            <td style="padding:10px 14px; color:#cbd5e1;">Esteban Ochoa</td>
+            <td style="padding:10px 14px;"><a href="${escapeHtml(link || '#')}" target="_blank" style="color:#60a5fa; text-decoration:underline;">Unirse a sesión</a></td>
+            <td style="padding:10px 14px;"><span style="background:rgba(234,179,8,0.15); color:#facc15; padding:2px 7px; border-radius:4px; font-size:10.5px; font-weight:700;">Agendada</span></td>
+            <td style="padding:10px 14px; text-align:right;"><button class="btn-grey" style="font-size:11px; padding:3px 8px; border-radius:5px;" onclick="this.closest('tr').remove()">Cancelar</button></td>
+          </tr>
+        `;
+        if (tbody.innerHTML.includes('No hay sesiones')) tbody.innerHTML = row;
+        else tbody.innerHTML += row;
+      }
+      if (typeof toast === 'function') toast('Sesión agendada correctamente.', 'success');
+    };
+
+    window.openNewHomeworkModal = function() {
+      const titulo = prompt('Título de la tarea / homework:');
+      if (!titulo) return;
+      const objetivo = prompt('Objetivo de mejora:', 'Corregir entradas anticipadas en M5');
+      const deadline = prompt('Fecha límite (Ej. 2026-11-10):', 'Próxima semana');
+      const tbody = document.getElementById('vip-homeworks-tbody');
+      if (tbody) {
+        const row = `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:10px 14px; color:#fff; font-weight:700;">${escapeHtml(titulo)}</td>
+            <td style="padding:10px 14px; color:#cbd5e1;">${escapeHtml(objetivo || 'Mejora continua')}</td>
+            <td style="padding:10px 14px; color:#facc15; font-weight:600;">Esteban Ochoa</td>
+            <td style="padding:10px 14px; color:#94a3b8; font-family:var(--mono);">${escapeHtml(deadline || 'Sin fecha')}</td>
+            <td style="padding:10px 14px;"><span style="background:rgba(234,179,8,0.15); color:#facc15; padding:2px 7px; border-radius:4px; font-size:10.5px; font-weight:700;">Pendiente</span></td>
+            <td style="padding:10px 14px; text-align:right;"><span style="color:#64748b; font-size:11px;">En espera de entrega</span></td>
+          </tr>
+        `;
+        if (tbody.innerHTML.includes('No hay tareas')) tbody.innerHTML = row;
+        else tbody.innerHTML += row;
+      }
+      if (typeof toast === 'function') toast('Tarea asignada al alumno VIP.', 'success');
+    };
+
+    window.renderVipModule = async function() {
+      if (!isSaraUser()) return;
+      try {
+        const raw = localStorage.getItem('syntracker_vip_profiles');
+        if (raw) vipStudentProfiles = JSON.parse(raw);
+        const evalRaw = localStorage.getItem('syntracker_vip_eval_config');
+        if (evalRaw) {
+          const cfg = JSON.parse(evalRaw);
+          const nameEl = document.getElementById('vip-eval-name');
+          const urlEl = document.getElementById('vip-eval-url');
+          const extBtn = document.getElementById('vip-eval-external-btn');
+          if (nameEl && cfg.name) nameEl.value = cfg.name;
+          if (urlEl && cfg.url) {
+            urlEl.value = cfg.url;
+            if (extBtn) extBtn.href = cfg.url;
+          }
+        }
+      } catch (e) {}
+
+      // Poblar selector con alumnos VIP
+      const selector = document.getElementById('vip-student-selector');
+      if (selector) {
+        const u = sb.getUser();
+        let opts = `<option value="me">👤 Mi Bitácora (${(u && u.user_metadata && u.user_metadata.full_name) || 'Sara Posada'})</option>`;
+        const vipStudents = (adminStudentsData || []).filter(s => (s.membership === 'VIP' || s.membership === 'Lifetime'));
+        vipStudents.forEach(s => {
+          opts += `<option value="${s.id}">★ ${escapeHtml(s.name)} (${escapeHtml(s.email)})</option>`;
+        });
+        selector.innerHTML = opts;
+        selector.value = currentVipStudentId || 'me';
+      }
+
+      await loadVipStudentData(currentVipStudentId);
+    };
+    window.loadVipStudentData = loadVipStudentData;
+    window.renderVipOperativa = renderVipOperativa;
 
     window.doLogout = doLogout;
 
