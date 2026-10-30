@@ -3523,6 +3523,24 @@
 </head>
 
 <body>
+<!-- BANNER SUPERIOR DE MODO AUDITOR (ADMIN / SARA) -->
+  <div id="vip-audit-mode-banner" style="display:none; position:fixed; top:0; left:0; width:100%; z-index:999999; background:linear-gradient(90deg, #ca8a04 0%, #a855f7 100%); color:#000; padding:10px 24px; box-shadow:0 4px 20px rgba(0,0,0,0.6); align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span style="font-size:18px;">👁️</span>
+      <span style="font-size:13px; font-weight:800; letter-spacing:0.3px; color:#000;">
+        MODO AUDITOR ACTIVO: Estás viendo el Journal completo de <span id="vip-audit-banner-student-name" style="text-decoration:underline;">Estudiante</span> (<span id="vip-audit-banner-student-email" style="font-family:var(--mono);">correo</span>)
+      </span>
+      <span style="background:rgba(0,0,0,0.25); color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px; text-transform:uppercase;">Solo Lectura</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button type="button" onclick="goTo('vip')" style="background:rgba(0,0,0,0.35); color:#fff; border:1px solid rgba(255,255,255,0.3); padding:5px 12px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">
+        💎 Volver a Bitácora VIP
+      </button>
+      <button type="button" onclick="exitAuditStudentJournal()" style="background:#000; color:#facc15; border:none; padding:6px 14px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+        <span>✕</span> Salir de Modo Auditor
+      </button>
+    </div>
+  </div>
 
 
 
@@ -4643,6 +4661,9 @@
     <!-- ============================================== -->
     <!--            PÁGINA: BITÁCORA VIP                -->
     <!-- ============================================== -->
+    <!-- ============================================== -->
+    <!--            PÁGINA: BITÁCORA VIP                -->
+    <!-- ============================================== -->
     <div class="page" id="page-vip">
       <!-- CABECERA VIP -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:18px;">
@@ -4669,7 +4690,7 @@
         </div>
       </div>
 
-      <!-- BARRA DE SELECCIÓN DE ALUMNO VIP (MODO AUDITOR) -->
+      <!-- BARRA DE SELECCIÓN DE ALUMNO VIP & AUDITORÍA 360 -->
       <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:16px 20px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
         <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
           <div style="font-size:12px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Auditar Alumno VIP:</div>
@@ -4678,6 +4699,9 @@
               <option value="me">👤 Mi Bitácora (Sara Posada)</option>
             </select>
           </div>
+          <button type="button" class="btn-primary" onclick="launchAuditStudentJournal()" style="font-size:12px; padding:8px 14px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; background:linear-gradient(135deg, #eab308, #ca8a04); color:#000; font-weight:800; border:none; box-shadow:0 4px 12px rgba(234,179,8,0.25);" title="Entrar y ver el journal completo de este alumno">
+            <span>👁️</span> Auditar Journal Completo
+          </button>
         </div>
         <div id="vip-student-badge-info" style="display:flex; align-items:center; gap:10px; font-size:12px;">
           <span style="background:rgba(234,179,8,0.15); color:#facc15; border:1px solid rgba(234,179,8,0.3); padding:4px 9px; border-radius:6px; font-weight:700;">★ Alumno VIP Activo</span>
@@ -4759,14 +4783,25 @@
         <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px; margin-bottom:20px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
             <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
-              <span>📝</span> Plan de Diagnóstico & Metas del Mentor (Esteban Ochoa / Sara)
+              <span>📝</span> Agregar Nueva Evaluación / Diagnóstico al Historial
             </div>
-            <button type="button" class="btn-primary" onclick="saveVipDiagnosis()" style="font-size:12px; padding:6px 14px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
-              <span>💾</span> Guardar Diagnóstico
+            <button type="button" class="btn-primary" onclick="saveVipDiagnosis()" style="font-size:12px; padding:7px 16px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#facc15; color:#000; font-weight:800; border:none;">
+              <span>💾</span> Guardar en Historial
             </button>
           </div>
           <div>
-            <textarea id="vip-field-diagnostico-mentor" rows="3" class="input-dark" placeholder="Escribe el diagnóstico inicial del alumno, los puntos clave a trabajar en las sesiones 1 a 1 y los hitos esperados para el primer mes..." style="width:100%; padding:10px 12px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; resize:vertical; font-family:inherit; font-size:13px; line-height:1.5;"></textarea>
+            <textarea id="vip-field-diagnostico-mentor" rows="3" class="input-dark" placeholder="Escribe el nuevo diagnóstico del alumno, acuerdos de la sesión y pautas técnicas para que quede registrado en su timeline histórico..." style="width:100%; padding:10px 12px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; resize:vertical; font-family:inherit; font-size:13px; line-height:1.5;"></textarea>
+          </div>
+        </div>
+
+        <!-- HISTORIAL DE DIAGNÓSTICOS DEL TRADER (TIMELINE) -->
+        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
+          <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+            <span>⏳</span> Historial Cronológico de Diagnósticos & Evolución
+          </div>
+          <div id="vip-profile-history-container" style="display:flex; flex-direction:column; gap:12px;">
+            <!-- Renderizado dinámico de diagnósticos pasados -->
+            <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px;">Cargando historial de diagnósticos...</div>
           </div>
         </div>
       </div>
@@ -4777,7 +4812,7 @@
           <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px;">
             <div style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Win Rate Operativo</div>
             <div id="vip-metric-winrate" style="font-size:24px; font-weight:800; color:#4ade80; margin-top:6px; font-family:var(--mono);">68.4%</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">Últimas 50 operaciones</div>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">Operaciones auditadas</div>
           </div>
           <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px;">
             <div style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">PnL Acumulado</div>
@@ -4796,9 +4831,24 @@
           </div>
         </div>
 
+        <!-- Banner de Auditoría 360 al Journal Completo -->
+        <div style="background:linear-gradient(135deg, rgba(234,179,8,0.12), rgba(168,85,247,0.08)); border:1px solid rgba(234,179,8,0.3); border-radius:14px; padding:18px 22px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div style="font-size:15px; font-weight:800; color:#facc15; display:flex; align-items:center; gap:8px;">
+              <span>👁️</span> Auditoría Completa del Journal del Estudiante
+            </div>
+            <div style="font-size:12px; color:#cbd5e1; margin-top:4px;">
+              Entra directamente al Dashboard, Trade Log, Calendario y Estadísticas completas de este alumno en modo auditor en vivo.
+            </div>
+          </div>
+          <button type="button" class="btn-primary" onclick="launchAuditStudentJournal()" style="background:#facc15; color:#000; font-weight:800; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-size:12.5px; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(234,179,8,0.3);">
+            <span>🚀</span> Entrar al Journal de este Alumno
+          </button>
+        </div>
+
         <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
           <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-            <span>🔍</span> Historial de Operaciones Auditadas por el Mentor
+            <span>🔍</span> Operaciones Recientes Auditadas
           </div>
           <div style="overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
@@ -4829,52 +4879,69 @@
           <!-- Registro de Emociones -->
           <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
             <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-              <span>🧠</span> Autoevaluación Emocional de Sesión
+              <span>🧠</span> Registrar Estado Emocional de Sesión
             </div>
             <div style="display:flex; flex-direction:column; gap:12px; font-size:12.5px;">
               <div>
                 <label style="color:#94a3b8; font-size:11px; font-weight:700;">ANTES DE OPERAR (Preparación Mental):</label>
                 <select id="vip-psico-antes" style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; outline:none;">
-                  <option value="calma">Tranquilo, enfocado y con plan claro</option>
-                  <option value="ansiedad">Con ansiedad o prisa por ver entradas</option>
-                  <option value="fatiga">Cansado o distraído por factores externos</option>
+                  <option value="calma">🟢 Tranquilo, enfocado y con plan claro</option>
+                  <option value="ansiedad">🟡 Con ansiedad o prisa por ver entradas</option>
+                  <option value="fatiga">🔴 Cansado o distraído por factores externos</option>
                 </select>
               </div>
               <div>
                 <label style="color:#94a3b8; font-size:11px; font-weight:700;">DURANTE LA OPERACIÓN (Gestión en Vivo):</label>
                 <select id="vip-psico-durante" style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; outline:none;">
-                  <option value="disciplina">Respeté el Stop Loss y el Take Profit sin intervenir</option>
-                  <option value="duda">Duda / Mover Stop Loss prematuramente</option>
-                  <option value="fomo">Entrada por FOMO fuera de la zona</option>
+                  <option value="disciplina">🟢 Respeté el Stop Loss y el Take Profit sin intervenir</option>
+                  <option value="duda">🟡 Duda / Mover Stop Loss prematuramente</option>
+                  <option value="fomo">🔴 Entrada por FOMO fuera de la zona</option>
                 </select>
               </div>
               <div>
                 <label style="color:#94a3b8; font-size:11px; font-weight:700;">DESPUÉS DE CERRAR (Cierre de Jornada):</label>
                 <select id="vip-psico-despues" style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; outline:none;">
-                  <option value="aceptacion">Aceptación total del resultado sin importar PnL</option>
-                  <option value="euforia">Euforia tras ganar (tentación de sobreoperar)</option>
-                  <option value="frustracion">Frustración o deseo de revancha (Revenge trading)</option>
+                  <option value="aceptacion">🟢 Aceptación total del resultado sin importar PnL</option>
+                  <option value="euforia">🟡 Euforia tras ganar (tentación de sobreoperar)</option>
+                  <option value="frustracion">🔴 Frustración o deseo de revancha (Revenge trading)</option>
                 </select>
+              </div>
+              <div style="margin-top:6px; text-align:right;">
+                <button type="button" class="btn-primary" onclick="saveVipEmotionalSession()" style="font-size:11.5px; padding:6px 14px; border-radius:6px; cursor:pointer; background:#facc15; color:#000; font-weight:800; border:none;">
+                  <span>💾</span> Guardar en Historial Psicológico
+                </button>
               </div>
             </div>
           </div>
 
           <!-- Zona Confidencial de la Psicóloga -->
-          <div style="background:#121214; border:1px solid rgba(168,85,247,0.25); border-radius:14px; padding:20px; position:relative;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-              <div style="font-size:14px; font-weight:800; color:#c084fc; display:flex; align-items:center; gap:8px;">
-                <span>🔒</span> Diagnóstico Confidencial de Psicología
-              </div>
-              <span style="font-size:10px; font-weight:700; background:rgba(168,85,247,0.15); color:#d8b4fe; padding:2px 8px; border-radius:4px; border:1px solid rgba(168,85,247,0.3);">Área Protegida</span>
-            </div>
+          <div style="background:#121214; border:1px solid rgba(168,85,247,0.25); border-radius:14px; padding:20px; position:relative; display:flex; flex-direction:column; justify-content:space-between;">
             <div>
-              <textarea id="vip-field-notas-psicologa" rows="6" class="input-dark" placeholder="Observaciones y pautas psicológicas redactadas por la profesional de psicología (patrones de autosabotaje, tolerancia al riesgo, control de impulsos)..." style="width:100%; padding:10px 12px; background:#18181b; border:1px solid rgba(168,85,247,0.2); border-radius:8px; color:#fff; resize:vertical; font-family:inherit; font-size:12.5px; line-height:1.5;"></textarea>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <div style="font-size:14px; font-weight:800; color:#c084fc; display:flex; align-items:center; gap:8px;">
+                  <span>🔒</span> Diagnóstico Confidencial de Psicología
+                </div>
+                <span style="font-size:10px; font-weight:700; background:rgba(168,85,247,0.15); color:#d8b4fe; padding:2px 8px; border-radius:4px; border:1px solid rgba(168,85,247,0.3);">Área Protegida</span>
+              </div>
+              <div>
+                <textarea id="vip-field-notas-psicologa" rows="6" class="input-dark" placeholder="Observaciones y pautas redactadas por la profesional de psicología (patrones de autosabotaje, tolerancia a la pérdida, control de impulsos)..." style="width:100%; padding:10px 12px; background:#18181b; border:1px solid rgba(168,85,247,0.2); border-radius:8px; color:#fff; resize:vertical; font-family:inherit; font-size:12.5px; line-height:1.5;"></textarea>
+              </div>
             </div>
-            <div style="margin-top:10px; text-align:right;">
-              <button type="button" class="btn-primary" onclick="saveVipPsychologyNotes()" style="font-size:11.5px; padding:5px 12px; border-radius:6px; cursor:pointer;">
-                <span>💾</span> Guardar Observación Psicológica
+            <div style="margin-top:12px; text-align:right;">
+              <button type="button" class="btn-primary" onclick="saveVipPsychologyNotes()" style="font-size:11.5px; padding:6px 14px; border-radius:6px; cursor:pointer; background:#a855f7; color:#fff; font-weight:700; border:none;">
+                <span>💾</span> Guardar Nota Confidencial
               </button>
             </div>
+          </div>
+        </div>
+
+        <!-- HISTORIAL DE SESIONES EMOCIONALES & NOTAS PSICOLÓGICAS -->
+        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
+          <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+            <span>⏳</span> Historial de Evaluaciones de Psicotrading
+          </div>
+          <div id="vip-psico-history-container" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px;">Cargando historial de psicotrading...</div>
           </div>
         </div>
       </div>
@@ -4883,13 +4950,28 @@
       <div id="vip-sec-calendario" class="vip-sec-content" style="display:none;">
         <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px; margin-bottom:20px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
-            <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
-              <span>📅</span> Sesiones Personalizadas Agendadas
+            <div>
+              <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+                <span>📅</span> Calendario de Sesiones Personalizadas
+              </div>
+              <div style="font-size:12px; color:#94a3b8; margin-top:2px;">Sesiones 1 a 1 agendadas con Esteban Ochoa, Steven y Psicóloga</div>
             </div>
-            <button type="button" class="btn-primary" onclick="openNewSessionModal()" style="font-size:12px; padding:6px 14px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <button type="button" class="btn-primary" onclick="openNewSessionModal()" style="font-size:12px; padding:8px 16px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#facc15; color:#000; font-weight:800; border:none;">
               <span>➕</span> Agendar Nueva Sesión
             </button>
           </div>
+
+          <!-- Mini Cuadrícula Visual de Calendario -->
+          <div style="background:#18181b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span id="vip-calendar-month-name" style="font-size:13px; font-weight:800; color:#facc15; text-transform:uppercase;">Noviembre 2026</span>
+              <span style="font-size:11px; color:#94a3b8;">● Días con sesiones personalizadas programadas</span>
+            </div>
+            <div id="vip-calendar-mini-grid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; text-align:center; font-size:11.5px;">
+              <!-- Generado dinámicamente -->
+            </div>
+          </div>
+
           <div style="overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
               <thead>
@@ -4897,14 +4979,14 @@
                   <th style="padding:10px 14px;">Fecha & Hora</th>
                   <th style="padding:10px 14px;">Tipo de Sesión</th>
                   <th style="padding:10px 14px;">Mentor Responsable</th>
-                  <th style="padding:10px 14px;">Enlace de Conexión (Zoom/Meet)</th>
+                  <th style="padding:10px 14px;">Enlace (Zoom/Meet)</th>
                   <th style="padding:10px 14px;">Estado</th>
                   <th style="padding:10px 14px; text-align:right;">Acciones</th>
                 </tr>
               </thead>
               <tbody id="vip-sessions-tbody">
                 <tr>
-                  <td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay sesiones agendadas para este estudiante. Haz clic en "Agendar Nueva Sesión".</td>
+                  <td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay sesiones agendadas para este estudiante.</td>
                 </tr>
               </tbody>
             </table>
@@ -4916,10 +4998,13 @@
       <div id="vip-sec-tareas" class="vip-sec-content" style="display:none;">
         <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px; margin-bottom:20px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
-            <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
-              <span>📝</span> Plan Individual de Tareas & Homeworks
+            <div>
+              <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+                <span>📝</span> Plan Individual de Tareas & Homeworks
+              </div>
+              <div style="font-size:12px; color:#94a3b8; margin-top:2px;">Asignación de actividades, entrega de evidencias y correcciones del mentor</div>
             </div>
-            <button type="button" class="btn-primary" onclick="openNewHomeworkModal()" style="font-size:12px; padding:6px 14px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <button type="button" class="btn-primary" onclick="openNewHomeworkModal()" style="font-size:12px; padding:8px 16px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#facc15; color:#000; font-weight:800; border:none;">
               <span>➕</span> Asignar Homework
             </button>
           </div>
@@ -4932,7 +5017,7 @@
                   <th style="padding:10px 14px;">Asignada Por</th>
                   <th style="padding:10px 14px;">Fecha Límite</th>
                   <th style="padding:10px 14px;">Estado</th>
-                  <th style="padding:10px 14px; text-align:right;">Retroalimentación</th>
+                  <th style="padding:10px 14px; text-align:right;">Resolución & Feedback</th>
                 </tr>
               </thead>
               <tbody id="vip-homeworks-tbody">
@@ -4963,31 +5048,46 @@
                 <input type="url" id="vip-eval-url" class="input-dark" placeholder="https://forms.gle/..." style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff;">
               </div>
               <div style="margin-top:6px;">
-                <button type="button" class="btn-primary" onclick="saveVipEvalConfig()" style="font-size:11.5px; padding:6px 12px; border-radius:6px; cursor:pointer;">
+                <button type="button" class="btn-primary" onclick="saveVipEvalConfig()" style="font-size:11.5px; padding:6px 14px; border-radius:6px; cursor:pointer; background:#facc15; color:#000; font-weight:800; border:none;">
                   <span>💾</span> Guardar Configuración
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- Vista para el Alumno -->
+          <!-- Vista para el Alumno y Registro de Historial -->
           <div style="background:#121214; border:1px solid rgba(234,179,8,0.25); border-radius:14px; padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
             <div>
-              <div style="font-size:14px; font-weight:800; color:#facc15; display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-                <span>📋</span> Evaluación Activa para el Trader
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-size:14px; font-weight:800; color:#facc15; display:flex; align-items:center; gap:8px;">
+                  <span>📋</span> Evaluación Activa para el Trader
+                </div>
+                <button type="button" class="btn-primary" onclick="openNewEvaluationModal()" style="font-size:11.5px; padding:5px 12px; border-radius:6px; cursor:pointer; background:#a855f7; color:#fff; font-weight:700; border:none;">
+                  <span>➕</span> Registrar Evaluación
+                </button>
               </div>
               <p style="font-size:12.5px; color:#cbd5e1; line-height:1.5; margin:0 0 14px 0;">
                 Completa tu formulario bimestral para que el equipo de mentores evalúe tu avance técnico, psicológico y disciplinario.
               </p>
               <div id="vip-eval-current-card" style="background:#18181b; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px; font-size:12px; color:#94a3b8;">
-                Estado: <span style="color:#facc15; font-weight:700;">Pendiente por realizar</span>
+                Estado: <span style="color:#facc15; font-weight:700;">Formulario Oficial de Evaluación</span>
               </div>
             </div>
             <div style="margin-top:16px;">
-              <a id="vip-eval-external-btn" href="#" target="_blank" class="btn-primary" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; width:100%; padding:10px; border-radius:8px; font-weight:700;">
+              <a id="vip-eval-external-btn" href="#" target="_blank" class="btn-primary" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; width:100%; padding:10px; border-radius:8px; font-weight:700; background:#facc15; color:#000;">
                 <span>🚀</span> Abrir Formulario de Evaluación
               </a>
             </div>
+          </div>
+        </div>
+
+        <!-- HISTORIAL DE EVALUACIONES BIMESTRALES -->
+        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
+          <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+            <span>⏳</span> Historial Comparativo de Evaluaciones Bimestrales
+          </div>
+          <div id="vip-eval-history-container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:14px;">
+            <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px;">Cargando historial de evaluaciones bimestrales...</div>
           </div>
         </div>
       </div>
@@ -5003,18 +5103,18 @@
               <div style="font-size:12px; font-weight:700; color:#94a3b8; margin-bottom:8px;">Cumplimiento de Tareas:</div>
               <div style="display:flex; align-items:center; gap:10px;">
                 <div style="flex:1; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden;">
-                  <div style="width:85%; height:100%; background:#4ade80;"></div>
+                  <div id="vip-evolucion-tasks-bar" style="width:85%; height:100%; background:#4ade80;"></div>
                 </div>
-                <span style="font-size:12px; font-weight:800; color:#4ade80; font-family:var(--mono);">85%</span>
+                <span id="vip-evolucion-tasks-val" style="font-size:12px; font-weight:800; color:#4ade80; font-family:var(--mono);">85%</span>
               </div>
             </div>
             <div style="background:#18181b; border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:16px;">
               <div style="font-size:12px; font-weight:700; color:#94a3b8; margin-bottom:8px;">Asistencia a Sesiones:</div>
               <div style="display:flex; align-items:center; gap:10px;">
                 <div style="flex:1; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden;">
-                  <div style="width:100%; height:100%; background:#60a5fa;"></div>
+                  <div id="vip-evolucion-sessions-bar" style="width:100%; height:100%; background:#60a5fa;"></div>
                 </div>
-                <span style="font-size:12px; font-weight:800; color:#60a5fa; font-family:var(--mono);">100%</span>
+                <span id="vip-evolucion-sessions-val" style="font-size:12px; font-weight:800; color:#60a5fa; font-family:var(--mono);">100%</span>
               </div>
             </div>
           </div>
@@ -5096,6 +5196,208 @@
     </div>
 
   </div><!-- /main -->
+
+  <!-- ============================================== -->
+  <!-- MODALES DE LA BITÁCORA VIP                     -->
+  <!-- ============================================== -->
+
+  <!-- MODAL: Agendar / Editar Sesión VIP -->
+  <div class="overlay" id="vip-modal-session" onclick="closeOnBg(event,'vip-modal-session')">
+    <div class="modal" style="max-width:480px;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:8px; color:#facc15;">
+        <span>📅</span> Agendar Sesión Personalizada VIP
+      </div>
+      <div class="form-g" style="margin-bottom:14px;">
+        <label class="form-l">Fecha y Hora de la Sesión</label>
+        <input type="datetime-local" class="form-i" id="vip-form-session-datetime" style="background:#18181b; color:#fff; border-color:rgba(255,255,255,0.15);">
+      </div>
+      <div class="form-row2" style="margin-bottom:14px;">
+        <div class="form-g">
+          <label class="form-l">Mentor Responsable</label>
+          <select class="form-i" id="vip-form-session-mentor" style="background:#18181b; color:#fff;">
+            <option value="Esteban Ochoa">Esteban Ochoa</option>
+            <option value="Steven">Steven</option>
+            <option value="Psicóloga Gold FX">Psicóloga Gold FX</option>
+            <option value="Sara Posada">Sara Posada</option>
+          </select>
+        </div>
+        <div class="form-g">
+          <label class="form-l">Tipo de Sesión</label>
+          <select class="form-i" id="vip-form-session-type" style="background:#18181b; color:#fff;">
+            <option value="1 a 1 Estrategia & Entradas">1 a 1 Estrategia & Entradas</option>
+            <option value="Sesión de Psicotrading">Sesión de Psicotrading</option>
+            <option value="Revisión de Gestión y Riesgo">Revisión de Gestión y Riesgo</option>
+            <option value="Auditoría de Plan y Metas">Auditoría de Plan y Metas</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-g" style="margin-bottom:14px;">
+        <label class="form-l">Enlace de Reunión (Zoom / Google Meet)</label>
+        <input type="url" class="form-i" id="vip-form-session-link" placeholder="https://meet.google.com/..." style="background:#18181b; color:#fff;">
+      </div>
+      <div class="form-g" style="margin-bottom:18px;">
+        <label class="form-l">Notas / Temas a Tratar</label>
+        <textarea class="form-i" id="vip-form-session-notes" rows="2" placeholder="Puntos específicos a revisar durante la sesión..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-session')">Cancelar</button>
+        <button type="button" class="btn-primary" onclick="confirmSaveVipSession()" style="background:#facc15; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar Sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Asignar Homework / Tarea -->
+  <div class="overlay" id="vip-modal-homework" onclick="closeOnBg(event,'vip-modal-homework')">
+    <div class="modal" style="max-width:500px;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:8px; color:#facc15;">
+        <span>📝</span> Asignar Nueva Tarea / Homework
+      </div>
+      <div class="form-g" style="margin-bottom:12px;">
+        <label class="form-l">Título de la Actividad</label>
+        <input type="text" class="form-i" id="vip-form-hw-title" placeholder="Ej. Esperar confirmación en M5 durante 10 trades" style="background:#18181b; color:#fff;">
+      </div>
+      <div class="form-g" style="margin-bottom:12px;">
+        <label class="form-l">Objetivo de Aprendizaje o Mejora</label>
+        <input type="text" class="form-i" id="vip-form-hw-objective" placeholder="Ej. Erradicar entradas impulsivas antes de zona" style="background:#18181b; color:#fff;">
+      </div>
+      <div class="form-row2" style="margin-bottom:12px;">
+        <div class="form-g">
+          <label class="form-l">Asignado Por</label>
+          <select class="form-i" id="vip-form-hw-assigned-by" style="background:#18181b; color:#fff;">
+            <option value="Esteban Ochoa">Esteban Ochoa</option>
+            <option value="Steven">Steven</option>
+            <option value="Psicóloga Gold FX">Psicóloga Gold FX</option>
+            <option value="Sara Posada">Sara Posada</option>
+          </select>
+        </div>
+        <div class="form-g">
+          <label class="form-l">Fecha Límite</label>
+          <input type="date" class="form-i" id="vip-form-hw-deadline" style="background:#18181b; color:#fff;">
+        </div>
+      </div>
+      <div class="form-g" style="margin-bottom:18px;">
+        <label class="form-l">Instrucciones Específicas</label>
+        <textarea class="form-i" id="vip-form-hw-instructions" rows="3" placeholder="Detalla el paso a paso que el alumno debe cumplir..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-homework')">Cancelar</button>
+        <button type="button" class="btn-primary" onclick="confirmSaveVipHomework()" style="background:#facc15; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Asignar Tarea</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Resolución de Tarea (Alumno) -->
+  <div class="overlay" id="vip-modal-hw-submission" onclick="closeOnBg(event,'vip-modal-hw-submission')">
+    <div class="modal" style="max-width:480px;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:8px; color:#4ade80;">
+        <span>📤</span> Entrega / Resolución de Tarea
+      </div>
+      <input type="hidden" id="vip-sub-hw-id">
+      <div id="vip-sub-hw-title" style="font-size:13.5px; font-weight:800; color:#fff; margin-bottom:12px;">-</div>
+      <div class="form-g" style="margin-bottom:12px;">
+        <label class="form-l">Enlace de Evidencia (TradingView / Imagen / Drive)</label>
+        <input type="url" class="form-i" id="vip-sub-hw-link" placeholder="https://www.tradingview.com/x/..." style="background:#18181b; color:#fff;">
+      </div>
+      <div class="form-g" style="margin-bottom:18px;">
+        <label class="form-l">Respuestas y Observaciones del Alumno</label>
+        <textarea class="form-i" id="vip-sub-hw-notes" rows="4" placeholder="Explica cómo resolviste la tarea, qué dificultades encontraste y tus conclusiones..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-hw-submission')">Cancelar</button>
+        <button type="button" class="btn-primary" onclick="confirmSubmitVipHomework()" style="background:#4ade80; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Enviar Resolución</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Retroalimentación / Calificación del Mentor -->
+  <div class="overlay" id="vip-modal-hw-feedback" onclick="closeOnBg(event,'vip-modal-hw-feedback')">
+    <div class="modal" style="max-width:480px;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:8px; color:#60a5fa;">
+        <span>✍️</span> Calificación & Feedback del Mentor
+      </div>
+      <input type="hidden" id="vip-fb-hw-id">
+      <div id="vip-fb-hw-title" style="font-size:13.5px; font-weight:800; color:#fff; margin-bottom:12px;">-</div>
+      <div class="form-row2" style="margin-bottom:12px;">
+        <div class="form-g">
+          <label class="form-l">Estado de la Tarea</label>
+          <select class="form-i" id="vip-fb-status" style="background:#18181b; color:#fff;">
+            <option value="aprobada">✓ Aprobada / Cumplida</option>
+            <option value="corregir">⚠️ Necesita Correcciones</option>
+            <option value="en_proceso">⏳ En Proceso</option>
+          </select>
+        </div>
+        <div class="form-g">
+          <label class="form-l">Mentor Evaluador</label>
+          <select class="form-i" id="vip-fb-mentor" style="background:#18181b; color:#fff;">
+            <option value="Esteban Ochoa">Esteban Ochoa</option>
+            <option value="Steven">Steven</option>
+            <option value="Psicóloga Gold FX">Psicóloga Gold FX</option>
+            <option value="Sara Posada">Sara Posada</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-g" style="margin-bottom:18px;">
+        <label class="form-l">Comentarios y Retroalimentación</label>
+        <textarea class="form-i" id="vip-fb-comments" rows="3" placeholder="Puntos positivos, correcciones y pautas para seguir mejorando..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-hw-feedback')">Cancelar</button>
+        <button type="button" class="btn-primary" onclick="confirmSaveVipFeedback()" style="background:#60a5fa; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar Calificación</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Registrar Evaluación Bimestral en Historial -->
+  <div class="overlay" id="vip-modal-evaluation" onclick="closeOnBg(event,'vip-modal-evaluation')">
+    <div class="modal" style="max-width:520px;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:8px; color:#facc15;">
+        <span>📋</span> Registrar Evaluación Bimestral
+      </div>
+      <div class="form-row2" style="margin-bottom:12px;">
+        <div class="form-g">
+          <label class="form-l">Período Bimestral</label>
+          <select class="form-i" id="vip-form-eval-period" style="background:#18181b; color:#fff;">
+            <option value="Bimestre 1">Bimestre 1 (Mes 1 y 2)</option>
+            <option value="Bimestre 2">Bimestre 2 (Mes 3 y 4)</option>
+            <option value="Bimestre 3">Bimestre 3 (Mes 5 y 6)</option>
+            <option value="Bimestre 4">Bimestre 4 (Mes 7 y 8)</option>
+            <option value="Bimestre 5">Bimestre 5 (Mes 9 y 10)</option>
+            <option value="Bimestre 6">Bimestre 6 (Mes 11 y 12)</option>
+          </select>
+        </div>
+        <div class="form-g">
+          <label class="form-l">Fecha de Evaluación</label>
+          <input type="date" class="form-i" id="vip-form-eval-date" style="background:#18181b; color:#fff;">
+        </div>
+      </div>
+      <div class="form-g" style="margin-bottom:12px;">
+        <label class="form-l">Puntaje / Calificación Obtenida</label>
+        <input type="text" class="form-i" id="vip-form-eval-score" placeholder="Ej. 88 / 100 — Sobresaliente" style="background:#18181b; color:#fff;">
+      </div>
+      <div class="form-g" style="margin-bottom:12px;">
+        <label class="form-l">Diagnóstico Individual del Bimestre</label>
+        <textarea class="form-i" id="vip-form-eval-diagnosis" rows="2" placeholder="Resumen del rendimiento y madurez operativa del alumno..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
+      </div>
+      <div class="form-row2" style="margin-bottom:12px;">
+        <div class="form-g">
+          <label class="form-l">Principales Fortalezas</label>
+          <textarea class="form-i" id="vip-form-eval-strengths" rows="2" placeholder="Puntos fuertes consolidados..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
+        </div>
+        <div class="form-g">
+          <label class="form-l">Aspectos por Mejorar</label>
+          <textarea class="form-i" id="vip-form-eval-weaknesses" rows="2" placeholder="Fallas que aún se repiten..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
+        </div>
+      </div>
+      <div class="form-g" style="margin-bottom:18px;">
+        <label class="form-l">Plan de Acción para el Siguiente Bimestre</label>
+        <textarea class="form-i" id="vip-form-eval-action" rows="2" placeholder="Compromisos y metas para el próximo ciclo..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-evaluation')">Cancelar</button>
+        <button type="button" class="btn-primary" onclick="confirmSaveVipEvaluation()" style="background:#facc15; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar en Historial</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: Añadir Trade -->
   <div class="overlay" id="trade-modal" onclick="closeOnBg(event,'trade-modal')">

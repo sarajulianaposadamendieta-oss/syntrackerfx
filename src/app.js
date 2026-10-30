@@ -778,11 +778,29 @@
       }
     }
 
+    let auditedStudent = null;
+    window.auditedStudent = auditedStudent;
+
     async function loadTrades() {
       const u = sb.getUser();
       if (!u) return;
       try {
-        const data = await sb.query('trades', { select: '*', filter: 'user_id=eq.' + u.id, order: 'date.asc,created_at.asc' });
+        let targetId = u.id;
+        let useAdmin = false;
+        if (auditedStudent && auditedStudent.id) {
+          targetId = auditedStudent.id;
+          useAdmin = true;
+        }
+
+        let data;
+        if (useAdmin) {
+          const res = await fetch(SUPABASE_URL + '/rest/v1/trades?select=*&user_id=eq.' + targetId + '&order=date.asc,created_at.asc', {
+            headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+          });
+          data = res.ok ? await res.json() : [];
+        } else {
+          data = await sb.query('trades', { select: '*', filter: 'user_id=eq.' + targetId, order: 'date.asc,created_at.asc' });
+        }
         trades = (Array.isArray(data) ? data : []).map(tradeFromRow);
       } catch (e) {
         console.error('Error cargando trades:', e);
@@ -794,7 +812,23 @@
       const u = sb.getUser();
       if (!u) return;
       try {
-        const data = await sb.query('accounts', { select: '*', filter: 'user_id=eq.' + u.id, order: 'created_at.asc' });
+        let targetId = u.id;
+        let useAdmin = false;
+        if (auditedStudent && auditedStudent.id) {
+          targetId = auditedStudent.id;
+          useAdmin = true;
+        }
+
+        let data;
+        if (useAdmin) {
+          const res = await fetch(SUPABASE_URL + '/rest/v1/accounts?select=*&user_id=eq.' + targetId + '&order=created_at.asc', {
+            headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+          });
+          data = res.ok ? await res.json() : [];
+        } else {
+          data = await sb.query('accounts', { select: '*', filter: 'user_id=eq.' + targetId, order: 'created_at.asc' });
+        }
+
         if (Array.isArray(data) && data.length > 0) {
           accounts = data.map(function (a) {
             return {
@@ -6536,48 +6570,252 @@ function _renderAnalisis_orig() {
       }
     };
 
+    // ── AUDITORÍA 360°: ENTRAR AL JOURNAL COMPLETO DEL ALUMNO ──
+    window.launchAuditStudentJournal = async function() {
+      if (!isSaraUser()) return;
+      let targetStudent = null;
+      const u = sb.getUser();
+      if (currentVipStudentId === 'me' || (u && currentVipStudentId === u.id)) {
+        if (typeof toast === 'function') toast('Selecciona a un estudiante de la lista para auditar su Journal.', 'info');
+        return;
+      }
+      targetStudent = (adminStudentsData || []).find(s => s.id === currentVipStudentId);
+      if (!targetStudent) {
+        if (typeof toast === 'function') toast('No se encontró al estudiante seleccionado.', 'warning');
+        return;
+      }
+
+      auditedStudent = targetStudent;
+      const banner = document.getElementById('vip-audit-mode-banner');
+      const nameEl = document.getElementById('vip-audit-banner-student-name');
+      const emailEl = document.getElementById('vip-audit-banner-student-email');
+      if (banner) {
+        banner.style.display = 'flex';
+        if (nameEl) nameEl.textContent = targetStudent.name;
+        if (emailEl) emailEl.textContent = targetStudent.email;
+      }
+
+      showLoading(true);
+      try {
+        await Promise.all([loadAccounts(), loadTrades()]);
+        buildAccountFilter();
+        renderAll();
+        goTo('dashboard');
+        if (typeof toast === 'function') toast(`Modo Auditor Activado: Viendo journal de ${targetStudent.name}`, 'success');
+      } catch (e) {
+        console.error('Error entrando en modo auditor:', e);
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    window.exitAuditStudentJournal = async function() {
+      auditedStudent = null;
+      const banner = document.getElementById('vip-audit-mode-banner');
+      if (banner) banner.style.display = 'none';
+
+      showLoading(true);
+      try {
+        await Promise.all([loadAccounts(), loadTrades()]);
+        buildAccountFilter();
+        renderAll();
+        goTo('vip');
+        if (typeof toast === 'function') toast('Has salido del modo auditor. Regresaste a tu cuenta.', 'info');
+      } catch (e) {
+        console.error('Error saliendo de modo auditor:', e);
+      } finally {
+        showLoading(false);
+      }
+    };
+
+    // ── PERSISTENCIA Y SINCRONIZACIÓN CLOUD EN SUPABASE ──
+    async function getStudentVipData(userId) {
+      if (vipStudentProfiles[userId]) return vipStudentProfiles[userId];
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/admin/users/' + userId, {
+          headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const vipData = (data.user_metadata && data.user_metadata.vip_data) || {};
+          vipStudentProfiles[userId] = vipData;
+          return vipData;
+        }
+      } catch (e) {
+        console.warn('Error leyendo metadata VIP de Supabase:', e);
+      }
+      return vipStudentProfiles[userId] || {};
+    }
+
+    async function saveStudentVipData(userId, vipData) {
+      vipStudentProfiles[userId] = vipData;
+      try {
+        localStorage.setItem('syntracker_vip_profiles', JSON.stringify(vipStudentProfiles));
+      } catch (e) {}
+
+      // Persistir en Supabase Auth metadata usando ADMIN_SERVICE_KEY
+      try {
+        await fetch(SUPABASE_URL + '/auth/v1/admin/users/' + userId, {
+          method: 'PUT',
+          headers: {
+            'apikey': ADMIN_SERVICE_KEY,
+            'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_metadata: {
+              vip_data: vipData
+            }
+          })
+        });
+      } catch (err) {
+        console.error('Error sincronizando vip_data en Supabase:', err);
+      }
+    }
+
+    function getTargetUserId() {
+      const u = sb.getUser();
+      if (currentVipStudentId === 'me' || (u && currentVipStudentId === u.id)) {
+        return u ? u.id : 'me';
+      }
+      return currentVipStudentId;
+    }
+
     async function loadVipStudentData(studentId) {
       const u = sb.getUser();
       const isMe = (studentId === 'me' || (u && studentId === u.id));
+      const targetId = isMe ? (u ? u.id : 'me') : studentId;
       const emailTag = document.getElementById('vip-selected-email-tag');
+
+      const vipData = await getStudentVipData(targetId);
 
       if (isMe) {
         if (emailTag && u) emailTag.textContent = u.email || 'parkjiminfromsara@gmail.com';
-        const p = vipStudentProfiles['me'] || {};
-        const nivelEl = document.getElementById('vip-field-nivel');
-        if (nivelEl) nivelEl.value = p.nivel || 'Trader Profesional / Superadmin';
-        const capEl = document.getElementById('vip-field-objetivo-capital');
-        if (capEl) capEl.value = p.objetivoCapital || 'Consolidación de Capital Institucional';
-        const expEl = document.getElementById('vip-field-experiencia');
-        if (expEl) expEl.value = p.experiencia || '3+ años en Mercados Sintéticos';
-        const difTecEl = document.getElementById('vip-field-dif-tecnica');
-        if (difTecEl) difTecEl.value = p.difTecnica || 'Ninguna registrada';
-        const difEmocEl = document.getElementById('vip-field-dif-emocional');
-        if (difEmocEl) difEmocEl.value = p.difEmocional || 'Excelente disciplina operativa';
-        const diagEl = document.getElementById('vip-field-diagnostico-mentor');
-        if (diagEl) diagEl.value = p.diagnosticoMentor || 'Perfil fundador y auditor principal de Syntracker FX.';
       } else {
         const student = (adminStudentsData || []).find(s => s.id === studentId);
-        if (student) {
-          if (emailTag) emailTag.textContent = student.email || 'Sin correo';
-          const p = vipStudentProfiles[studentId] || {};
-          const nivelEl = document.getElementById('vip-field-nivel');
-          if (nivelEl) nivelEl.value = p.nivel || 'Estudiante VIP';
-          const capEl = document.getElementById('vip-field-objetivo-capital');
-          if (capEl) capEl.value = p.objetivoCapital || 'Cuenta de Fondeo $50,000 FTMO';
-          const expEl = document.getElementById('vip-field-experiencia');
-          if (expEl) expEl.value = p.experiencia || '1 año en la Academia Gold FX';
-          const difTecEl = document.getElementById('vip-field-dif-tecnica');
-          if (difTecEl) difTecEl.value = p.difTecnica || '';
-          const difEmocEl = document.getElementById('vip-field-dif-emocional');
-          if (difEmocEl) difEmocEl.value = p.difEmocional || '';
-          const diagEl = document.getElementById('vip-field-diagnostico-mentor');
-          if (diagEl) diagEl.value = p.diagnosticoMentor || '';
-        }
+        if (student && emailTag) emailTag.textContent = student.email || 'Sin correo';
       }
+
+      // 1. Cargar campos actuales
+      const nivelEl = document.getElementById('vip-field-nivel');
+      if (nivelEl) nivelEl.value = vipData.nivel || (isMe ? 'Trader Profesional / Superadmin' : 'Estudiante VIP');
+      const capEl = document.getElementById('vip-field-objetivo-capital');
+      if (capEl) capEl.value = vipData.objetivoCapital || (isMe ? 'Consolidación de Capital Institucional' : 'Cuenta de Fondeo $50,000 FTMO');
+      const expEl = document.getElementById('vip-field-experiencia');
+      if (expEl) expEl.value = vipData.experiencia || (isMe ? '3+ años en Mercados Sintéticos' : '1 año en la Academia Gold FX');
+      const difTecEl = document.getElementById('vip-field-dif-tecnica');
+      if (difTecEl) difTecEl.value = vipData.difTecnica || '';
+      const difEmocEl = document.getElementById('vip-field-dif-emocional');
+      if (difEmocEl) difEmocEl.value = vipData.difEmocional || '';
+      const diagEl = document.getElementById('vip-field-diagnostico-mentor');
+      if (diagEl) diagEl.value = '';
+
+      // 2. Renderizar Historiales
+      renderVipProfileHistory(vipData);
+      renderVipPsicoHistory(vipData);
+      renderVipSessions(vipData);
+      renderVipHomeworks(vipData);
+      renderVipEvaluations(vipData);
+      renderVipEvolution(vipData);
       renderVipOperativa();
     }
 
+    // ── SUBPESTAÑA 1: PERFIL & DIAGNÓSTICO (HISTORIAL CRONOLÓGICO) ──
+    function renderVipProfileHistory(vipData) {
+      const container = document.getElementById('vip-profile-history-container');
+      if (!container) return;
+      const history = Array.isArray(vipData.diagnosis_history) ? vipData.diagnosis_history : [];
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:20px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
+            Aún no hay diagnósticos previos registrados. Escribe uno arriba y haz clic en <strong>"Guardar en Historial"</strong>.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = history.slice().reverse().map((item, idx) => {
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
+        return `
+          <div style="background:#18181b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:11px; font-weight:800; background:rgba(234,179,8,0.15); color:#facc15; padding:2px 8px; border-radius:4px; font-family:var(--mono);">📅 ${dateStr}</span>
+                <span style="font-size:12px; font-weight:700; color:#fff;">✍️ Por: ${escapeHtml(item.author || 'Mentor')}</span>
+              </div>
+              <button type="button" class="btn-grey" onclick="deleteVipDiagnosisEntry('${item.id}')" style="font-size:10.5px; padding:2px 7px; border-radius:4px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); cursor:pointer;">
+                🗑️ Borrar
+              </button>
+            </div>
+            ${item.objetivoCapital ? `<div style="font-size:11.5px; color:#94a3b8; margin-bottom:4px;"><strong>Meta de Capital:</strong> ${escapeHtml(item.objetivoCapital)}</div>` : ''}
+            ${item.difTecnica ? `<div style="font-size:11.5px; color:#fca5a5; margin-bottom:4px;"><strong>Dificultad Técnica:</strong> ${escapeHtml(item.difTecnica)}</div>` : ''}
+            ${item.difEmocional ? `<div style="font-size:11.5px; color:#fde047; margin-bottom:6px;"><strong>Bloqueo Emocional:</strong> ${escapeHtml(item.difEmocional)}</div>` : ''}
+            <div style="font-size:12.5px; color:#f8fafc; line-height:1.5; background:rgba(0,0,0,0.3); border-left:3px solid #facc15; padding:8px 12px; border-radius:4px;">
+              ${escapeHtml(item.diagnosis || 'Sin notas adicionales')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.saveVipDiagnosis = async function() {
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+
+      const nivel = document.getElementById('vip-field-nivel')?.value || '';
+      const objetivoCapital = document.getElementById('vip-field-objetivo-capital')?.value || '';
+      const experiencia = document.getElementById('vip-field-experiencia')?.value || '';
+      const difTecnica = document.getElementById('vip-field-dif-tecnica')?.value || '';
+      const difEmocional = document.getElementById('vip-field-dif-emocional')?.value || '';
+      const diagnosisText = document.getElementById('vip-field-diagnostico-mentor')?.value || '';
+
+      if (!diagnosisText.trim() && !difTecnica.trim() && !difEmocional.trim()) {
+        if (typeof toast === 'function') toast('Escribe algún detalle o diagnóstico para guardar en el historial.', 'warning');
+        return;
+      }
+
+      vipData.nivel = nivel;
+      vipData.objetivoCapital = objetivoCapital;
+      vipData.experiencia = experiencia;
+      vipData.difTecnica = difTecnica;
+      vipData.difEmocional = difEmocional;
+
+      if (!Array.isArray(vipData.diagnosis_history)) vipData.diagnosis_history = [];
+
+      const u = sb.getUser();
+      const authorName = (u && u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || 'Esteban Ochoa (Mentor)';
+
+      vipData.diagnosis_history.push({
+        id: 'diag_' + Date.now(),
+        date: new Date().toISOString(),
+        author: authorName,
+        nivel: nivel,
+        objetivoCapital: objetivoCapital,
+        difTecnica: difTecnica,
+        difEmocional: difEmocional,
+        diagnosis: diagnosisText
+      });
+
+      await saveStudentVipData(targetId, vipData);
+      const diagEl = document.getElementById('vip-field-diagnostico-mentor');
+      if (diagEl) diagEl.value = '';
+      renderVipProfileHistory(vipData);
+      if (typeof toast === 'function') toast('Diagnóstico guardado y registrado en el historial.', 'success');
+    };
+
+    window.deleteVipDiagnosisEntry = async function(entryId) {
+      if (!confirm('¿Eliminar esta entrada de diagnóstico del historial?')) return;
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (Array.isArray(vipData.diagnosis_history)) {
+        vipData.diagnosis_history = vipData.diagnosis_history.filter(d => d.id !== entryId);
+        await saveStudentVipData(targetId, vipData);
+        renderVipProfileHistory(vipData);
+        if (typeof toast === 'function') toast('Entrada eliminada del historial.', 'info');
+      }
+    };
+
+    // ── SUBPESTAÑA 2: OPERATIVA ──
     function renderVipOperativa() {
       const tradesList = Array.isArray(trades) ? trades : [];
       let totalTrades = tradesList.length;
@@ -6595,7 +6833,7 @@ function _renderAnalisis_orig() {
         if (tradesList.length === 0) {
           tbody.innerHTML = '<tr><td colspan="7" style="padding:24px; text-align:center; color:#94a3b8;">No hay operaciones registradas aún para este perfil.</td></tr>';
         } else {
-          tbody.innerHTML = tradesList.slice(0, 10).map(t => {
+          tbody.innerHTML = tradesList.slice(-10).reverse().map(t => {
             const pnlVal = t.pnl || 0;
             const pnlColor = pnlVal >= 0 ? '#4ade80' : '#ef4444';
             const pnlText = (pnlVal >= 0 ? '+' : '') + '$' + pnlVal.toFixed(2);
@@ -6609,12 +6847,12 @@ function _renderAnalisis_orig() {
                 <td style="padding:10px 14px; font-weight:700; color:#fff;">${escapeHtml(asset)}</td>
                 <td style="padding:10px 14px; font-weight:800; color:${dirColor};">${escapeHtml(dir)}</td>
                 <td style="padding:10px 14px; font-weight:700; color:${pnlColor}; font-family:var(--mono);">${pnlText}</td>
-                <td style="padding:10px 14px; color:#cbd5e1; font-family:var(--mono);">1 : 2.5</td>
+                <td style="padding:10px 14px; color:#cbd5e1; font-family:var(--mono);">${t.rr ? '1 : ' + t.rr : '1 : 2.5'}</td>
                 <td style="padding:10px 14px;">
                   <span style="background:rgba(74,222,128,0.12); color:#4ade80; border:1px solid rgba(74,222,128,0.3); font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">✓ Válida</span>
                 </td>
                 <td style="padding:10px 14px; color:#94a3b8; font-size:11.5px;">
-                  <span style="color:#facc15; font-weight:600;">Esteban:</span> Buena entrada en retroceso.
+                  <span style="color:#facc15; font-weight:600;">Esteban:</span> Buena confirmación.
                 </td>
               </tr>
             `;
@@ -6623,29 +6861,464 @@ function _renderAnalisis_orig() {
       }
     }
 
-    window.saveVipDiagnosis = function() {
-      const p = vipStudentProfiles[currentVipStudentId] || {};
-      p.nivel = document.getElementById('vip-field-nivel')?.value || '';
-      p.objetivoCapital = document.getElementById('vip-field-objetivo-capital')?.value || '';
-      p.experiencia = document.getElementById('vip-field-experiencia')?.value || '';
-      p.difTecnica = document.getElementById('vip-field-dif-tecnica')?.value || '';
-      p.difEmocional = document.getElementById('vip-field-dif-emocional')?.value || '';
-      p.diagnosticoMentor = document.getElementById('vip-field-diagnostico-mentor')?.value || '';
-      vipStudentProfiles[currentVipStudentId] = p;
-      try {
-        localStorage.setItem('syntracker_vip_profiles', JSON.stringify(vipStudentProfiles));
-      } catch (e) {}
-      if (typeof toast === 'function') toast('Diagnóstico guardado exitosamente.', 'success');
+    // ── SUBPESTAÑA 3: PSICOTRADING ──
+    function renderVipPsicoHistory(vipData) {
+      const container = document.getElementById('vip-psico-history-container');
+      if (!container) return;
+      const history = Array.isArray(vipData.psychology_history) ? vipData.psychology_history : [];
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:20px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
+            No hay registros emocionales ni notas de psicología guardadas aún.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = history.slice().reverse().map(item => {
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
+        return `
+          <div style="background:#18181b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+              <span style="font-size:11px; font-weight:800; background:rgba(168,85,247,0.15); color:#c084fc; padding:2px 8px; border-radius:4px; font-family:var(--mono);">📅 ${dateStr}</span>
+              <span style="font-size:12px; font-weight:700; color:#cbd5e1;">Por: ${escapeHtml(item.author || 'Psicología Gold FX')}</span>
+            </div>
+            ${item.before ? `
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                <span style="font-size:11px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Antes: <strong>${escapeHtml(item.before)}</strong></span>
+                <span style="font-size:11px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Durante: <strong>${escapeHtml(item.during)}</strong></span>
+                <span style="font-size:11px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Después: <strong>${escapeHtml(item.after)}</strong></span>
+              </div>
+            ` : ''}
+            ${item.notes ? `
+              <div style="background:rgba(168,85,247,0.08); border-left:3px solid #a855f7; padding:8px 12px; border-radius:4px; font-size:12.5px; color:#f3e8ff; line-height:1.5;">
+                <strong>Nota Profesional:</strong> ${escapeHtml(item.notes)}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.saveVipEmotionalSession = async function() {
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+
+      const before = document.getElementById('vip-psico-antes')?.value || '';
+      const during = document.getElementById('vip-psico-durante')?.value || '';
+      const after = document.getElementById('vip-psico-despues')?.value || '';
+
+      if (!Array.isArray(vipData.psychology_history)) vipData.psychology_history = [];
+
+      vipData.psychology_history.push({
+        id: 'psico_' + Date.now(),
+        date: new Date().toISOString(),
+        author: 'Trader (Autoevaluación)',
+        before: before,
+        during: during,
+        after: after
+      });
+
+      await saveStudentVipData(targetId, vipData);
+      renderVipPsicoHistory(vipData);
+      if (typeof toast === 'function') toast('Sesión emocional registrada en el historial.', 'success');
     };
 
-    window.saveVipPsychologyNotes = function() {
-      const p = vipStudentProfiles[currentVipStudentId] || {};
-      p.notasPsicologia = document.getElementById('vip-field-notas-psicologa')?.value || '';
-      vipStudentProfiles[currentVipStudentId] = p;
-      try {
-        localStorage.setItem('syntracker_vip_profiles', JSON.stringify(vipStudentProfiles));
-      } catch (e) {}
-      if (typeof toast === 'function') toast('Observación psicológica guardada en área protegida.', 'success');
+    window.saveVipPsychologyNotes = async function() {
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      const notes = document.getElementById('vip-field-notas-psicologa')?.value || '';
+
+      if (!notes.trim()) {
+        if (typeof toast === 'function') toast('Escribe la nota psicológica antes de guardar.', 'warning');
+        return;
+      }
+
+      if (!Array.isArray(vipData.psychology_history)) vipData.psychology_history = [];
+
+      vipData.psychology_history.push({
+        id: 'psiconote_' + Date.now(),
+        date: new Date().toISOString(),
+        author: 'Psicóloga Gold FX (Confidencial)',
+        notes: notes
+      });
+
+      await saveStudentVipData(targetId, vipData);
+      const inputEl = document.getElementById('vip-field-notas-psicologa');
+      if (inputEl) inputEl.value = '';
+      renderVipPsicoHistory(vipData);
+      if (typeof toast === 'function') toast('Observación psicológica guardada en el expediente protegido.', 'success');
+    };
+
+    // ── SUBPESTAÑA 4: CALENDARIO & SESIONES ──
+    function renderVipSessions(vipData) {
+      const tbody = document.getElementById('vip-sessions-tbody');
+      const sessions = Array.isArray(vipData.sessions) ? vipData.sessions : [];
+
+      // Mini Grid Calendario
+      const miniGrid = document.getElementById('vip-calendar-mini-grid');
+      if (miniGrid) {
+        const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        let gridHtml = days.map(d => `<div style="color:#64748b; font-weight:700; padding:4px;">${d}</div>`).join('');
+        for (let i = 1; i <= 30; i++) {
+          const hasSession = sessions.some(s => s.datetime && new Date(s.datetime).getDate() === i);
+          const bg = hasSession ? 'background:rgba(234,179,8,0.2); border:1px solid rgba(234,179,8,0.5); color:#facc15; font-weight:800;' : 'background:rgba(255,255,255,0.02); color:#94a3b8;';
+          gridHtml += `<div style="${bg} border-radius:6px; padding:6px 2px; position:relative;">${i} ${hasSession ? '●' : ''}</div>`;
+        }
+        miniGrid.innerHTML = gridHtml;
+      }
+
+      if (!tbody) return;
+      if (sessions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay sesiones agendadas para este estudiante. Haz clic en "Agendar Nueva Sesión".</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = sessions.slice().reverse().map(s => {
+        let dateFormatted = s.datetime ? new Date(s.datetime).toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Por definir';
+        const statusMap = {
+          agendada: { text: '🟡 Agendada', color: '#facc15' },
+          completada: { text: '🟢 Completada', color: '#4ade80' },
+          reprogramada: { text: '🔵 Reprogramada', color: '#60a5fa' },
+          cancelada: { text: '🔴 Cancelada', color: '#ef4444' }
+        };
+        const st = statusMap[s.status || 'agendada'] || statusMap.agendada;
+
+        return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:10px 14px; font-weight:700; color:#fff; font-family:var(--mono);">${dateFormatted}</td>
+            <td style="padding:10px 14px; color:#facc15; font-weight:600;">${escapeHtml(s.type || '1 a 1')}</td>
+            <td style="padding:10px 14px; color:#cbd5e1;">${escapeHtml(s.mentor || 'Esteban Ochoa')}</td>
+            <td style="padding:10px 14px;">
+              ${s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; font-weight:600;">🔗 Unirse a Sesión</a>` : '<span style="color:#64748b;">Sin enlace</span>'}
+            </td>
+            <td style="padding:10px 14px;">
+              <span style="font-size:11px; font-weight:700; color:${st.color}; cursor:pointer;" onclick="toggleVipSessionStatus('${s.id}')" title="Clic para cambiar estado">${st.text}</span>
+            </td>
+            <td style="padding:10px 14px; text-align:right;">
+              <button class="btn-grey" style="font-size:10.5px; padding:3px 8px; border-radius:5px; color:#ef4444;" onclick="deleteVipSession('${s.id}')">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.openNewSessionModal = function() {
+      const dtInput = document.getElementById('vip-form-session-datetime');
+      if (dtInput) {
+        // Establecer fecha por defecto a mañana a las 18:00
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        d.setHours(18, 0, 0, 0);
+        dtInput.value = d.toISOString().slice(0, 16);
+      }
+      openModal('vip-modal-session');
+    };
+
+    window.confirmSaveVipSession = async function() {
+      const dt = document.getElementById('vip-form-session-datetime')?.value;
+      const mentor = document.getElementById('vip-form-session-mentor')?.value;
+      const type = document.getElementById('vip-form-session-type')?.value;
+      const link = document.getElementById('vip-form-session-link')?.value;
+      const notes = document.getElementById('vip-form-session-notes')?.value;
+
+      if (!dt) {
+        if (typeof toast === 'function') toast('Por favor selecciona la fecha y hora de la sesión.', 'warning');
+        return;
+      }
+
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (!Array.isArray(vipData.sessions)) vipData.sessions = [];
+
+      vipData.sessions.push({
+        id: 'sess_' + Date.now(),
+        datetime: dt,
+        mentor: mentor,
+        type: type,
+        link: link,
+        notes: notes,
+        status: 'agendada'
+      });
+
+      await saveStudentVipData(targetId, vipData);
+      closeModal('vip-modal-session');
+      renderVipSessions(vipData);
+      renderVipEvolution(vipData);
+      if (typeof toast === 'function') toast('Sesión VIP agendada exitosamente.', 'success');
+    };
+
+    window.toggleVipSessionStatus = async function(sessionId) {
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (!Array.isArray(vipData.sessions)) return;
+      const sess = vipData.sessions.find(s => s.id === sessionId);
+      if (!sess) return;
+
+      const order = ['agendada', 'completada', 'reprogramada', 'cancelada'];
+      const nextIdx = (order.indexOf(sess.status || 'agendada') + 1) % order.length;
+      sess.status = order[nextIdx];
+
+      await saveStudentVipData(targetId, vipData);
+      renderVipSessions(vipData);
+      renderVipEvolution(vipData);
+    };
+
+    window.deleteVipSession = async function(sessionId) {
+      if (!confirm('¿Eliminar esta sesión agendada?')) return;
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (Array.isArray(vipData.sessions)) {
+        vipData.sessions = vipData.sessions.filter(s => s.id !== sessionId);
+        await saveStudentVipData(targetId, vipData);
+        renderVipSessions(vipData);
+        renderVipEvolution(vipData);
+        if (typeof toast === 'function') toast('Sesión eliminada.', 'info');
+      }
+    };
+
+    // ── SUBPESTAÑA 5: HOMEWORKS & TAREAS ──
+    function renderVipHomeworks(vipData) {
+      const tbody = document.getElementById('vip-homeworks-tbody');
+      if (!tbody) return;
+      const homeworks = Array.isArray(vipData.homeworks) ? vipData.homeworks : [];
+      if (homeworks.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay tareas asignadas actualmente. Haz clic en "Asignar Homework".</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = homeworks.slice().reverse().map(hw => {
+        const statusMap = {
+          pendiente: { text: '🟡 Pendiente', color: '#facc15' },
+          en_proceso: { text: '🔵 En Proceso', color: '#60a5fa' },
+          entregada: { text: '🟣 Entregada', color: '#c084fc' },
+          aprobada: { text: '🟢 Aprobada', color: '#4ade80' },
+          corregir: { text: '⚠️ Corregir', color: '#f87171' }
+        };
+        const st = statusMap[hw.status || 'pendiente'] || statusMap.pendiente;
+
+        return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:10px 14px;">
+              <div style="font-weight:700; color:#fff;">${escapeHtml(hw.title)}</div>
+              ${hw.instructions ? `<div style="font-size:11px; color:#94a3b8; margin-top:2px;">${escapeHtml(hw.instructions)}</div>` : ''}
+              ${hw.submission?.notes ? `<div style="font-size:11px; color:#4ade80; margin-top:4px; background:rgba(74,222,128,0.08); padding:3px 6px; border-radius:4px;"><strong>Entrega:</strong> ${escapeHtml(hw.submission.notes)} ${hw.submission.link ? `<a href="${escapeHtml(hw.submission.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; margin-left:4px;">[Ver Enlace]</a>` : ''}</div>` : ''}
+            </td>
+            <td style="padding:10px 14px; color:#cbd5e1;">${escapeHtml(hw.objective || 'Mejora continua')}</td>
+            <td style="padding:10px 14px; color:#facc15; font-weight:600;">${escapeHtml(hw.assigned_by || 'Esteban Ochoa')}</td>
+            <td style="padding:10px 14px; color:#94a3b8; font-family:var(--mono);">${escapeHtml(hw.deadline || 'Sin fecha')}</td>
+            <td style="padding:10px 14px;">
+              <span style="font-size:11px; font-weight:700; color:${st.color};">${st.text}</span>
+            </td>
+            <td style="padding:10px 14px; text-align:right;">
+              <div style="display:inline-flex; gap:6px;">
+                <button class="btn-grey" style="font-size:11px; padding:3px 8px; border-radius:5px; color:#4ade80;" onclick="openHomeworkSubmissionModal('${hw.id}')" title="Resolver o subir evidencias">📤 Entregar</button>
+                <button class="btn-grey" style="font-size:11px; padding:3px 8px; border-radius:5px; color:#60a5fa;" onclick="openHomeworkFeedbackModal('${hw.id}')" title="Calificar y dar feedback como mentor">✍️ Feedback</button>
+                <button class="btn-grey" style="font-size:11px; padding:3px 6px; border-radius:5px; color:#ef4444;" onclick="deleteVipHomework('${hw.id}')">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.openNewHomeworkModal = function() {
+      openModal('vip-modal-homework');
+    };
+
+    window.confirmSaveVipHomework = async function() {
+      const title = document.getElementById('vip-form-hw-title')?.value;
+      const objective = document.getElementById('vip-form-hw-objective')?.value;
+      const assigned_by = document.getElementById('vip-form-hw-assigned-by')?.value;
+      const deadline = document.getElementById('vip-form-hw-deadline')?.value;
+      const instructions = document.getElementById('vip-form-hw-instructions')?.value;
+
+      if (!title) {
+        if (typeof toast === 'function') toast('Por favor escribe el título de la tarea.', 'warning');
+        return;
+      }
+
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (!Array.isArray(vipData.homeworks)) vipData.homeworks = [];
+
+      vipData.homeworks.push({
+        id: 'hw_' + Date.now(),
+        title: title,
+        objective: objective,
+        assigned_by: assigned_by,
+        deadline: deadline,
+        instructions: instructions,
+        status: 'pendiente'
+      });
+
+      await saveStudentVipData(targetId, vipData);
+      closeModal('vip-modal-homework');
+      renderVipHomeworks(vipData);
+      renderVipEvolution(vipData);
+      if (typeof toast === 'function') toast('Tarea asignada al estudiante VIP.', 'success');
+    };
+
+    window.openHomeworkSubmissionModal = async function(hwId) {
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      const hw = (vipData.homeworks || []).find(h => h.id === hwId);
+      if (!hw) return;
+
+      document.getElementById('vip-sub-hw-id').value = hw.id;
+      document.getElementById('vip-sub-hw-title').textContent = hw.title;
+      document.getElementById('vip-sub-hw-link').value = hw.submission?.link || '';
+      document.getElementById('vip-sub-hw-notes').value = hw.submission?.notes || '';
+      openModal('vip-modal-hw-submission');
+    };
+
+    window.confirmSubmitVipHomework = async function() {
+      const hwId = document.getElementById('vip-sub-hw-id')?.value;
+      const link = document.getElementById('vip-sub-hw-link')?.value;
+      const notes = document.getElementById('vip-sub-hw-notes')?.value;
+
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      const hw = (vipData.homeworks || []).find(h => h.id === hwId);
+      if (!hw) return;
+
+      hw.submission = {
+        date: new Date().toISOString(),
+        link: link,
+        notes: notes
+      };
+      hw.status = 'entregada';
+
+      await saveStudentVipData(targetId, vipData);
+      closeModal('vip-modal-hw-submission');
+      renderVipHomeworks(vipData);
+      renderVipEvolution(vipData);
+      if (typeof toast === 'function') toast('Resolución enviada exitosamente.', 'success');
+    };
+
+    window.openHomeworkFeedbackModal = async function(hwId) {
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      const hw = (vipData.homeworks || []).find(h => h.id === hwId);
+      if (!hw) return;
+
+      document.getElementById('vip-fb-hw-id').value = hw.id;
+      document.getElementById('vip-fb-hw-title').textContent = hw.title;
+      document.getElementById('vip-fb-comments').value = hw.feedback?.comments || '';
+      openModal('vip-modal-hw-feedback');
+    };
+
+    window.confirmSaveVipFeedback = async function() {
+      const hwId = document.getElementById('vip-fb-hw-id')?.value;
+      const status = document.getElementById('vip-fb-status')?.value;
+      const mentor = document.getElementById('vip-fb-mentor')?.value;
+      const comments = document.getElementById('vip-fb-comments')?.value;
+
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      const hw = (vipData.homeworks || []).find(h => h.id === hwId);
+      if (!hw) return;
+
+      hw.status = status;
+      hw.feedback = {
+        date: new Date().toISOString(),
+        mentor: mentor,
+        comments: comments,
+        status: status
+      };
+
+      await saveStudentVipData(targetId, vipData);
+      closeModal('vip-modal-hw-feedback');
+      renderVipHomeworks(vipData);
+      renderVipEvolution(vipData);
+      if (typeof toast === 'function') toast('Feedback del mentor guardado exitosamente.', 'success');
+    };
+
+    window.deleteVipHomework = async function(hwId) {
+      if (!confirm('¿Eliminar esta tarea?')) return;
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (Array.isArray(vipData.homeworks)) {
+        vipData.homeworks = vipData.homeworks.filter(h => h.id !== hwId);
+        await saveStudentVipData(targetId, vipData);
+        renderVipHomeworks(vipData);
+        renderVipEvolution(vipData);
+        if (typeof toast === 'function') toast('Tarea eliminada.', 'info');
+      }
+    };
+
+    // ── SUBPESTAÑA 6: EVALUACIÓN BIMESTRAL (HISTORIAL COMPARATIVO) ──
+    function renderVipEvaluations(vipData) {
+      const container = document.getElementById('vip-eval-history-container');
+      if (!container) return;
+      const evaluations = Array.isArray(vipData.evaluations_history) ? vipData.evaluations_history : [];
+
+      if (evaluations.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:24px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
+            Aún no hay evaluaciones bimestrales registradas. Haz clic en <strong>"Registrar Evaluación"</strong> para documentar el primer período.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = evaluations.slice().reverse().map(ev => {
+        return `
+          <div style="background:#18181b; border:1px solid rgba(250,204,21,0.25); border-radius:12px; padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span style="font-size:13px; font-weight:800; color:#facc15;">${escapeHtml(ev.period)}</span>
+              <span style="font-size:12px; font-weight:800; color:#4ade80; background:rgba(74,222,128,0.12); padding:2px 8px; border-radius:6px; font-family:var(--mono);">${escapeHtml(ev.score || 'Aprobado')}</span>
+            </div>
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:8px;">Fecha: <strong>${escapeHtml(ev.date || 'Reciente')}</strong></div>
+            <div style="font-size:12px; color:#cbd5e1; line-height:1.4; margin-bottom:8px;">
+              <strong>Diagnóstico:</strong> ${escapeHtml(ev.diagnosis || 'Sin diagnóstico')}
+            </div>
+            ${ev.strengths ? `<div style="font-size:11.5px; color:#86efac; margin-bottom:4px;"><strong>Fortalezas:</strong> ${escapeHtml(ev.strengths)}</div>` : ''}
+            ${ev.weaknesses ? `<div style="font-size:11.5px; color:#fca5a5; margin-bottom:6px;"><strong>Por Mejorar:</strong> ${escapeHtml(ev.weaknesses)}</div>` : ''}
+            ${ev.action ? `
+              <div style="background:rgba(0,0,0,0.3); border-left:3px solid #60a5fa; padding:6px 10px; font-size:11.5px; color:#bfdbfe; border-radius:4px; margin-top:8px;">
+                <strong>Plan de Acción:</strong> ${escapeHtml(ev.action)}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.openNewEvaluationModal = function() {
+      const dtInput = document.getElementById('vip-form-eval-date');
+      if (dtInput) dtInput.value = new Date().toISOString().slice(0, 10);
+      openModal('vip-modal-evaluation');
+    };
+
+    window.confirmSaveVipEvaluation = async function() {
+      const period = document.getElementById('vip-form-eval-period')?.value;
+      const date = document.getElementById('vip-form-eval-date')?.value;
+      const score = document.getElementById('vip-form-eval-score')?.value;
+      const diagnosis = document.getElementById('vip-form-eval-diagnosis')?.value;
+      const strengths = document.getElementById('vip-form-eval-strengths')?.value;
+      const weaknesses = document.getElementById('vip-form-eval-weaknesses')?.value;
+      const action = document.getElementById('vip-form-eval-action')?.value;
+
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (!Array.isArray(vipData.evaluations_history)) vipData.evaluations_history = [];
+
+      vipData.evaluations_history.push({
+        id: 'eval_' + Date.now(),
+        period: period,
+        date: date,
+        score: score,
+        diagnosis: diagnosis,
+        strengths: strengths,
+        weaknesses: weaknesses,
+        action: action
+      });
+
+      await saveStudentVipData(targetId, vipData);
+      closeModal('vip-modal-evaluation');
+      renderVipEvaluations(vipData);
+      if (typeof toast === 'function') toast('Evaluación bimestral guardada en el historial comparativo.', 'success');
     };
 
     window.saveVipEvalConfig = function() {
@@ -6659,51 +7332,33 @@ function _renderAnalisis_orig() {
       if (typeof toast === 'function') toast('Configuración de evaluación bimestral guardada.', 'success');
     };
 
-    window.openNewSessionModal = function() {
-      const fecha = prompt('Fecha y hora de la sesión (Ej. 2026-11-05 18:00):');
-      if (!fecha) return;
-      const tipo = prompt('Tipo de sesión (1 a 1 Esteban / Psicología / Steven):', '1 a 1 Esteban Ochoa');
-      const link = prompt('Enlace de Zoom o Google Meet:', 'https://meet.google.com/abc-defg-hij');
-      const tbody = document.getElementById('vip-sessions-tbody');
-      if (tbody) {
-        const row = `
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <td style="padding:10px 14px; color:#fff; font-weight:700;">${escapeHtml(fecha)}</td>
-            <td style="padding:10px 14px; color:#facc15; font-weight:600;">${escapeHtml(tipo || 'Sesión')}</td>
-            <td style="padding:10px 14px; color:#cbd5e1;">Esteban Ochoa</td>
-            <td style="padding:10px 14px;"><a href="${escapeHtml(link || '#')}" target="_blank" style="color:#60a5fa; text-decoration:underline;">Unirse a sesión</a></td>
-            <td style="padding:10px 14px;"><span style="background:rgba(234,179,8,0.15); color:#facc15; padding:2px 7px; border-radius:4px; font-size:10.5px; font-weight:700;">Agendada</span></td>
-            <td style="padding:10px 14px; text-align:right;"><button class="btn-grey" style="font-size:11px; padding:3px 8px; border-radius:5px;" onclick="this.closest('tr').remove()">Cancelar</button></td>
-          </tr>
-        `;
-        if (tbody.innerHTML.includes('No hay sesiones')) tbody.innerHTML = row;
-        else tbody.innerHTML += row;
-      }
-      if (typeof toast === 'function') toast('Sesión agendada correctamente.', 'success');
-    };
+    // ── SUBPESTAÑA 7: EVOLUCIÓN 360° ──
+    function renderVipEvolution(vipData) {
+      const homeworks = Array.isArray(vipData.homeworks) ? vipData.homeworks : [];
+      const sessions = Array.isArray(vipData.sessions) ? vipData.sessions : [];
 
-    window.openNewHomeworkModal = function() {
-      const titulo = prompt('Título de la tarea / homework:');
-      if (!titulo) return;
-      const objetivo = prompt('Objetivo de mejora:', 'Corregir entradas anticipadas en M5');
-      const deadline = prompt('Fecha límite (Ej. 2026-11-10):', 'Próxima semana');
-      const tbody = document.getElementById('vip-homeworks-tbody');
-      if (tbody) {
-        const row = `
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <td style="padding:10px 14px; color:#fff; font-weight:700;">${escapeHtml(titulo)}</td>
-            <td style="padding:10px 14px; color:#cbd5e1;">${escapeHtml(objetivo || 'Mejora continua')}</td>
-            <td style="padding:10px 14px; color:#facc15; font-weight:600;">Esteban Ochoa</td>
-            <td style="padding:10px 14px; color:#94a3b8; font-family:var(--mono);">${escapeHtml(deadline || 'Sin fecha')}</td>
-            <td style="padding:10px 14px;"><span style="background:rgba(234,179,8,0.15); color:#facc15; padding:2px 7px; border-radius:4px; font-size:10.5px; font-weight:700;">Pendiente</span></td>
-            <td style="padding:10px 14px; text-align:right;"><span style="color:#64748b; font-size:11px;">En espera de entrega</span></td>
-          </tr>
-        `;
-        if (tbody.innerHTML.includes('No hay tareas')) tbody.innerHTML = row;
-        else tbody.innerHTML += row;
+      let hwPct = 100;
+      if (homeworks.length > 0) {
+        const completed = homeworks.filter(h => h.status === 'aprobada' || h.status === 'entregada').length;
+        hwPct = Math.round((completed / homeworks.length) * 100);
       }
-      if (typeof toast === 'function') toast('Tarea asignada al alumno VIP.', 'success');
-    };
+
+      let sessPct = 100;
+      if (sessions.length > 0) {
+        const attended = sessions.filter(s => s.status === 'completada').length;
+        sessPct = Math.round((attended / sessions.length) * 100);
+      }
+
+      const tasksBar = document.getElementById('vip-evolucion-tasks-bar');
+      const tasksVal = document.getElementById('vip-evolucion-tasks-val');
+      if (tasksBar) tasksBar.style.width = hwPct + '%';
+      if (tasksVal) tasksVal.textContent = hwPct + '%';
+
+      const sessBar = document.getElementById('vip-evolucion-sessions-bar');
+      const sessVal = document.getElementById('vip-evolucion-sessions-val');
+      if (sessBar) sessBar.style.width = sessPct + '%';
+      if (sessVal) sessVal.textContent = sessPct + '%';
+    }
 
     window.renderVipModule = async function() {
       if (!isSaraUser()) return;
