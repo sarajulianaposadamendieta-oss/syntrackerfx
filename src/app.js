@@ -4761,9 +4761,9 @@ function _renderAnalisis_orig() {
           } else {
             if (userDashboard) userDashboard.style.display = 'none';
             btnContainer.innerHTML = `
-              <button class="btn-green" onclick="openTournamentJoinModal()" style="font-size:12px; padding:7px 16px; border-radius:18px;">
-                🏆 Conectar MT5 e Inscribirme
-              </button>
+              <span style="background:rgba(234,179,8,0.12); border:1px solid rgba(234,179,8,0.35); color:#facc15; font-size:11.5px; font-weight:800; padding:6px 14px; border-radius:18px; display:inline-flex; align-items:center; gap:6px;">
+                🔒 Inscripciones MT5 Cerradas
+              </span>
             `;
           }
 
@@ -4784,20 +4784,14 @@ function _renderAnalisis_orig() {
       }
 
       function openTournamentJoinModal() {
-        const user = sb.getUser();
-        if (!user) {
-          alert('Debes iniciar sesión para inscribirte en el torneo.');
-          return;
-        }
-        const srvInput = document.getElementById('tjm-server');
-        if (srvInput) srvInput.value = 'WeTrade-MT5';
-        document.getElementById('tournament-join-modal').classList.add('open');
+        toast('El torneo ha finalizado oficialmente. Las inscripciones de cuentas MT5 están deshabilitadas hasta el próximo torneo.', 'warning');
       }
 
       async function submitTournamentJoin(event) {
-        event.preventDefault();
-        const user = sb.getUser();
-        if (!user) return;
+        if (event && event.preventDefault) event.preventDefault();
+        toast('El torneo ha finalizado. No se permiten nuevas inscripciones.', 'warning');
+        closeModal('tournament-join-modal');
+        return;
 
         const serverEl = document.getElementById('tjm-server');
         const server = (serverEl && serverEl.value.trim()) || 'WeTrade-MT5';
