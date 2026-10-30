@@ -6879,6 +6879,95 @@ function _renderAnalisis_orig() {
     }
 
     // ── SUBPESTAÑA 3: PSICOTRADING ──
+    async function uploadVipDocument(file) {
+      if (!file) return null;
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const fileName = `${Date.now()}_${safeName}`;
+      const res = await fetch(SUPABASE_URL + '/storage/v1/object/vip-documents/' + fileName, {
+        method: 'POST',
+        headers: {
+          'apikey': ADMIN_SERVICE_KEY,
+          'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY,
+          'Content-Type': file.type || 'application/octet-stream'
+        },
+        body: file
+      });
+      if (!res.ok) {
+        let errMsg = 'Error al subir documento';
+        try {
+          const eJson = await res.json();
+          errMsg = eJson.message || eJson.error || errMsg;
+        } catch (e) {}
+        throw new Error(errMsg);
+      }
+      return {
+        url: SUPABASE_URL + '/storage/v1/object/public/vip-documents/' + fileName,
+        name: file.name,
+        size: file.size,
+        type: file.type
+      };
+    }
+
+    let vipSelectedPsicoFile = null;
+    window.handleVipPsicoFileSelected = function(input) {
+      if (input.files && input.files[0]) {
+        vipSelectedPsicoFile = input.files[0];
+        const nameEl = document.getElementById('vip-psico-file-name');
+        const clearBtn = document.getElementById('vip-psico-file-clear');
+        if (nameEl) nameEl.textContent = '📄 ' + vipSelectedPsicoFile.name;
+        if (clearBtn) clearBtn.style.display = 'inline-block';
+      }
+    };
+    window.clearVipPsicoFile = function() {
+      vipSelectedPsicoFile = null;
+      const input = document.getElementById('vip-psico-file');
+      if (input) input.value = '';
+      const nameEl = document.getElementById('vip-psico-file-name');
+      const clearBtn = document.getElementById('vip-psico-file-clear');
+      if (nameEl) nameEl.textContent = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+    };
+
+    let vipSelectedHwFile = null;
+    window.handleVipHwFileSelected = function(input) {
+      if (input.files && input.files[0]) {
+        vipSelectedHwFile = input.files[0];
+        const nameEl = document.getElementById('vip-form-hw-file-name');
+        const clearBtn = document.getElementById('vip-form-hw-file-clear');
+        if (nameEl) nameEl.textContent = '📄 ' + vipSelectedHwFile.name;
+        if (clearBtn) clearBtn.style.display = 'inline-block';
+      }
+    };
+    window.clearVipHwFile = function() {
+      vipSelectedHwFile = null;
+      const input = document.getElementById('vip-form-hw-file');
+      if (input) input.value = '';
+      const nameEl = document.getElementById('vip-form-hw-file-name');
+      const clearBtn = document.getElementById('vip-form-hw-file-clear');
+      if (nameEl) nameEl.textContent = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+    };
+
+    let vipSelectedSubHwFile = null;
+    window.handleVipSubHwFileSelected = function(input) {
+      if (input.files && input.files[0]) {
+        vipSelectedSubHwFile = input.files[0];
+        const nameEl = document.getElementById('vip-sub-hw-file-name');
+        const clearBtn = document.getElementById('vip-sub-hw-file-clear');
+        if (nameEl) nameEl.textContent = '📄 ' + vipSelectedSubHwFile.name;
+        if (clearBtn) clearBtn.style.display = 'inline-block';
+      }
+    };
+    window.clearVipSubHwFile = function() {
+      vipSelectedSubHwFile = null;
+      const input = document.getElementById('vip-sub-hw-file');
+      if (input) input.value = '';
+      const nameEl = document.getElementById('vip-sub-hw-file-name');
+      const clearBtn = document.getElementById('vip-sub-hw-file-clear');
+      if (nameEl) nameEl.textContent = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+    };
+
     function renderVipPsicoHistory(vipData) {
       const container = document.getElementById('vip-psico-history-container');
       if (!container) return;
@@ -6910,6 +6999,13 @@ function _renderAnalisis_orig() {
             ${item.notes ? `
               <div style="background:rgba(168,85,247,0.08); border-left:3px solid #a855f7; padding:8px 12px; border-radius:4px; font-size:12.5px; color:#f3e8ff; line-height:1.5;">
                 <strong>Nota Profesional:</strong> ${escapeHtml(item.notes)}
+              </div>
+            ` : ''}
+            ${item.file?.url ? `
+              <div style="margin-top:10px;">
+                <a href="${escapeHtml(item.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:7px; background:rgba(168,85,247,0.15); color:#d8b4fe; border:1px solid rgba(168,85,247,0.35); padding:6px 14px; border-radius:6px; font-size:11.5px; font-weight:700; text-decoration:none;">
+                  <span>📄</span> Documento Adjunto: <u>${escapeHtml(item.file.name || 'Archivo')}</u>
+                </a>
               </div>
             ` : ''}
           </div>
@@ -6946,25 +7042,40 @@ function _renderAnalisis_orig() {
       const vipData = await getStudentVipData(targetId);
       const notes = document.getElementById('vip-field-notas-psicologa')?.value || '';
 
-      if (!notes.trim()) {
-        if (typeof toast === 'function') toast('Escribe la nota psicológica antes de guardar.', 'warning');
+      if (!notes.trim() && !vipSelectedPsicoFile) {
+        if (typeof toast === 'function') toast('Escribe la nota psicológica o adjunta un documento antes de guardar.', 'warning');
         return;
       }
 
-      if (!Array.isArray(vipData.psychology_history)) vipData.psychology_history = [];
+      showLoading(true);
+      try {
+        let fileDoc = null;
+        if (vipSelectedPsicoFile) {
+          fileDoc = await uploadVipDocument(vipSelectedPsicoFile);
+        }
 
-      vipData.psychology_history.push({
-        id: 'psiconote_' + Date.now(),
-        date: new Date().toISOString(),
-        author: 'Psicóloga Gold FX (Confidencial)',
-        notes: notes
-      });
+        if (!Array.isArray(vipData.psychology_history)) vipData.psychology_history = [];
 
-      await saveStudentVipData(targetId, vipData);
-      const inputEl = document.getElementById('vip-field-notas-psicologa');
-      if (inputEl) inputEl.value = '';
-      renderVipPsicoHistory(vipData);
-      if (typeof toast === 'function') toast('Observación psicológica guardada en el expediente protegido.', 'success');
+        vipData.psychology_history.push({
+          id: 'psiconote_' + Date.now(),
+          date: new Date().toISOString(),
+          author: 'Psicóloga Gold FX (Confidencial)',
+          notes: notes,
+          file: fileDoc
+        });
+
+        await saveStudentVipData(targetId, vipData);
+        const inputEl = document.getElementById('vip-field-notas-psicologa');
+        if (inputEl) inputEl.value = '';
+        clearVipPsicoFile();
+        renderVipPsicoHistory(vipData);
+        if (typeof toast === 'function') toast('Observación y documento guardados en el expediente protegido.', 'success');
+      } catch (err) {
+        console.error('Error guardando nota psicológica:', err);
+        if (typeof toast === 'function') toast('Error al subir documento: ' + (err.message || 'Error en almacenamiento'), 'error');
+      } finally {
+        showLoading(false);
+      }
     };
 
     // ── SUBPESTAÑA 4: CALENDARIO & SESIONES ──
@@ -7119,7 +7230,25 @@ function _renderAnalisis_orig() {
             <td style="padding:10px 14px;">
               <div style="font-weight:700; color:#fff;">${escapeHtml(hw.title)}</div>
               ${hw.instructions ? `<div style="font-size:11px; color:#94a3b8; margin-top:2px;">${escapeHtml(hw.instructions)}</div>` : ''}
-              ${hw.submission?.notes ? `<div style="font-size:11px; color:#4ade80; margin-top:4px; background:rgba(74,222,128,0.08); padding:3px 6px; border-radius:4px;"><strong>Entrega:</strong> ${escapeHtml(hw.submission.notes)} ${hw.submission.link ? `<a href="${escapeHtml(hw.submission.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; margin-left:4px;">[Ver Enlace]</a>` : ''}</div>` : ''}
+              ${hw.file?.url ? `
+                <div style="margin-top:5px;">
+                  <a href="${escapeHtml(hw.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:5px; background:rgba(234,179,8,0.12); color:#facc15; border:1px solid rgba(234,179,8,0.3); padding:3px 8px; border-radius:5px; font-size:10.5px; font-weight:700; text-decoration:none;">
+                    <span>📄</span> Documento Tarea: <u>${escapeHtml(hw.file.name || 'Descargar')}</u>
+                  </a>
+                </div>
+              ` : ''}
+              ${hw.submission?.notes ? `
+                <div style="font-size:11px; color:#4ade80; margin-top:4px; background:rgba(74,222,128,0.08); padding:5px 8px; border-radius:4px; border:1px solid rgba(74,222,128,0.15);">
+                  <div><strong>Entrega:</strong> ${escapeHtml(hw.submission.notes)} ${hw.submission.link ? `<a href="${escapeHtml(hw.submission.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; margin-left:4px;">[Ver TradingView]</a>` : ''}</div>
+                  ${hw.submission.file?.url ? `
+                    <div style="margin-top:3px;">
+                      <a href="${escapeHtml(hw.submission.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:4px; color:#86efac; text-decoration:none; font-weight:700; font-size:10.5px;">
+                        <span>📎</span> Archivo de Resolución: <u>${escapeHtml(hw.submission.file.name || 'Descargar')}</u>
+                      </a>
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
             </td>
             <td style="padding:10px 14px; color:#cbd5e1;">${escapeHtml(hw.objective || 'Mejora continua')}</td>
             <td style="padding:10px 14px; color:#facc15; font-weight:600;">${escapeHtml(hw.assigned_by || 'Esteban Ochoa')}</td>
@@ -7140,6 +7269,7 @@ function _renderAnalisis_orig() {
     }
 
     window.openNewHomeworkModal = function() {
+      clearVipHwFile();
       openModal('vip-modal-homework');
     };
 
@@ -7155,28 +7285,44 @@ function _renderAnalisis_orig() {
         return;
       }
 
-      const targetId = getTargetUserId();
-      const vipData = await getStudentVipData(targetId);
-      if (!Array.isArray(vipData.homeworks)) vipData.homeworks = [];
+      showLoading(true);
+      try {
+        let fileDoc = null;
+        if (vipSelectedHwFile) {
+          fileDoc = await uploadVipDocument(vipSelectedHwFile);
+        }
 
-      vipData.homeworks.push({
-        id: 'hw_' + Date.now(),
-        title: title,
-        objective: objective,
-        assigned_by: assigned_by,
-        deadline: deadline,
-        instructions: instructions,
-        status: 'pendiente'
-      });
+        const targetId = getTargetUserId();
+        const vipData = await getStudentVipData(targetId);
+        if (!Array.isArray(vipData.homeworks)) vipData.homeworks = [];
 
-      await saveStudentVipData(targetId, vipData);
-      closeModal('vip-modal-homework');
-      renderVipHomeworks(vipData);
-      renderVipEvolution(vipData);
-      if (typeof toast === 'function') toast('Tarea asignada al estudiante VIP.', 'success');
+        vipData.homeworks.push({
+          id: 'hw_' + Date.now(),
+          title: title,
+          objective: objective,
+          assigned_by: assigned_by,
+          deadline: deadline,
+          instructions: instructions,
+          file: fileDoc,
+          status: 'pendiente'
+        });
+
+        await saveStudentVipData(targetId, vipData);
+        closeModal('vip-modal-homework');
+        clearVipHwFile();
+        renderVipHomeworks(vipData);
+        renderVipEvolution(vipData);
+        if (typeof toast === 'function') toast('Tarea asignada con éxito al estudiante VIP.', 'success');
+      } catch (err) {
+        console.error('Error asignando tarea:', err);
+        if (typeof toast === 'function') toast('Error al subir documento: ' + (err.message || 'Error en almacenamiento'), 'error');
+      } finally {
+        showLoading(false);
+      }
     };
 
     window.openHomeworkSubmissionModal = async function(hwId) {
+      clearVipSubHwFile();
       const targetId = getTargetUserId();
       const vipData = await getStudentVipData(targetId);
       const hw = (vipData.homeworks || []).find(h => h.id === hwId);
@@ -7194,23 +7340,38 @@ function _renderAnalisis_orig() {
       const link = document.getElementById('vip-sub-hw-link')?.value;
       const notes = document.getElementById('vip-sub-hw-notes')?.value;
 
-      const targetId = getTargetUserId();
-      const vipData = await getStudentVipData(targetId);
-      const hw = (vipData.homeworks || []).find(h => h.id === hwId);
-      if (!hw) return;
+      showLoading(true);
+      try {
+        let fileDoc = null;
+        if (vipSelectedSubHwFile) {
+          fileDoc = await uploadVipDocument(vipSelectedSubHwFile);
+        }
 
-      hw.submission = {
-        date: new Date().toISOString(),
-        link: link,
-        notes: notes
-      };
-      hw.status = 'entregada';
+        const targetId = getTargetUserId();
+        const vipData = await getStudentVipData(targetId);
+        const hw = (vipData.homeworks || []).find(h => h.id === hwId);
+        if (!hw) return;
 
-      await saveStudentVipData(targetId, vipData);
-      closeModal('vip-modal-hw-submission');
-      renderVipHomeworks(vipData);
-      renderVipEvolution(vipData);
-      if (typeof toast === 'function') toast('Resolución enviada exitosamente.', 'success');
+        hw.submission = {
+          date: new Date().toISOString(),
+          link: link,
+          notes: notes,
+          file: fileDoc || (hw.submission ? hw.submission.file : null)
+        };
+        hw.status = 'entregada';
+
+        await saveStudentVipData(targetId, vipData);
+        closeModal('vip-modal-hw-submission');
+        clearVipSubHwFile();
+        renderVipHomeworks(vipData);
+        renderVipEvolution(vipData);
+        if (typeof toast === 'function') toast('Resolución enviada exitosamente.', 'success');
+      } catch (err) {
+        console.error('Error enviando resolución:', err);
+        if (typeof toast === 'function') toast('Error al subir documento: ' + (err.message || 'Error en almacenamiento'), 'error');
+      } finally {
+        showLoading(false);
+      }
     };
 
     window.openHomeworkFeedbackModal = async function(hwId) {
