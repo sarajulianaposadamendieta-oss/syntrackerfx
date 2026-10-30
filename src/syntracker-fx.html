@@ -10860,8 +10860,20 @@ function _renderAnalisis_orig() {
 
     async function loadAdminData() {
       try {
-        // 1. Cargar participantes de torneo
-        const tpData = await sb.query('tournament_participants', { select: '*', order: 'return_pct.desc' });
+        // 1 y 2. Cargar participantes de torneo y alumnos de Auth concurrentemente en paralelo
+        const [tpData, authJson] = await Promise.all([
+          sb.query('tournament_participants', { select: '*', order: 'return_pct.desc' }).catch(err => {
+            console.warn('Error cargando tournament_participants:', err);
+            return [];
+          }),
+          fetch(SUPABASE_URL + '/auth/v1/admin/users?per_page=1000', {
+            headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+          }).then(r => r.ok ? r.json() : { users: [] }).catch(err => {
+            console.warn('Fallback cargando auth/users:', err);
+            return { users: [] };
+          })
+        ]);
+
         adminParticipantsData = Array.isArray(tpData) ? tpData : [];
 
         // Calcular Puesto Bruto por PnL y Puesto Oficial del Torneo
@@ -10883,19 +10895,7 @@ function _renderAnalisis_orig() {
           if (p.user_email) tpMap.set(p.user_email.toLowerCase(), p);
         });
 
-        // 2. Cargar TODOS los alumnos registrados en Supabase Auth
-        let authUsers = [];
-        try {
-          const authRes = await fetch(SUPABASE_URL + '/auth/v1/admin/users?per_page=1000', {
-            headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
-          });
-          if (authRes.ok) {
-            const authJson = await authRes.json();
-            authUsers = authJson.users || [];
-          }
-        } catch (eAuth) {
-          console.warn('Fallback cargando profiles:', eAuth);
-        }
+        let authUsers = (authJson && Array.isArray(authJson.users)) ? authJson.users : [];
 
         if (authUsers.length === 0) {
           const profilesData = await sb.query('profiles', { select: '*', order: 'created_at.desc' });
@@ -11486,10 +11486,11 @@ function _renderAnalisis_orig() {
     }
 
     window.filterAdminTournament = function() {
-      const input = document.getElementById('admin-tourney-search');
+      const input = document.getElementById('tournament-manage-search') || document.getElementById('admin-tourney-search');
       currentTournamentSearch = input ? input.value : '';
       renderAdminTournamentTable();
     };
+    window.filterTournamentManagementTable = window.filterAdminTournament;
 
     window.openAdminEditModal = function(pid) {
       const p = adminParticipantsData.find(item => item.id === pid);
