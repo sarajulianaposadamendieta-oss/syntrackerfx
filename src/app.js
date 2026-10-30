@@ -5881,6 +5881,32 @@ function _renderAnalisis_orig() {
 
     // ── Pestaña 4: Comunicados y Anuncios Globales (Sincronizado en Supabase) ──
     const DISMISSED_ANNOUNCEMENTS_KEY = 'syntracker_dismissed_announcements_v1';
+    let currentAnnouncementType = 'info';
+    let activeAnnouncementsList = [];
+    let currentBannerIndex = 0;
+
+    window.setAnnouncementType = function(type) {
+      currentAnnouncementType = type;
+      const btnInfo = document.getElementById('atype-btn-info');
+      const btnUrgent = document.getElementById('atype-btn-urgent');
+      if (btnInfo && btnUrgent) {
+        if (type === 'urgent') {
+          btnUrgent.style.background = 'rgba(239,68,68,0.2)';
+          btnUrgent.style.borderColor = '#ef4444';
+          btnUrgent.style.color = '#f87171';
+          btnInfo.style.background = 'rgba(255,255,255,0.05)';
+          btnInfo.style.borderColor = 'rgba(255,255,255,0.12)';
+          btnInfo.style.color = '#94a3b8';
+        } else {
+          btnInfo.style.background = 'rgba(234,179,8,0.18)';
+          btnInfo.style.borderColor = '#eab308';
+          btnInfo.style.color = '#facc15';
+          btnUrgent.style.background = 'rgba(255,255,255,0.05)';
+          btnUrgent.style.borderColor = 'rgba(255,255,255,0.12)';
+          btnUrgent.style.color = '#94a3b8';
+        }
+      }
+    };
 
     function formatTimeAgo(isoString) {
       if (!isoString) return '';
@@ -5938,8 +5964,210 @@ function _renderAnalisis_orig() {
       return announcementsList;
     }
 
-    async function loadAdminAnnouncementInput() {
+    function renderAdminAnnouncementsUI() {
       const listContainer = document.getElementById('admin-announcements-list');
+      const badge = document.getElementById('announcements-count-badge');
+      if (!listContainer) return;
+
+      const items = activeAnnouncementsList || [];
+      if (badge) badge.textContent = items.length + ' activo' + (items.length === 1 ? '' : 's');
+
+      if (items.length === 0) {
+        listContainer.innerHTML = `
+          <div style="text-align:center; padding:18px 12px; color:#94a3b8; font-size:12px; border:1px dashed rgba(255,255,255,0.08); border-radius:10px;">
+            <div style="font-size:20px; margin-bottom:4px;">📭</div>
+            No hay comunicados activos en este momento.
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = items.map((ann, idx) => {
+        const isUrgent = ann.type === 'urgent';
+        const typeBadge = isUrgent
+          ? `<span style="background:rgba(239,68,68,0.18); color:#ef4444; border:1px solid rgba(239,68,68,0.35); font-size:9.5px; font-weight:800; padding:1.5px 7px; border-radius:8px; text-transform:uppercase;">🚨 Urgente</span>`
+          : `<span style="background:rgba(234,179,8,0.18); color:#facc15; border:1px solid rgba(234,179,8,0.35); font-size:9.5px; font-weight:800; padding:1.5px 7px; border-radius:8px; text-transform:uppercase;">📢 Oficial</span>`;
+
+        const timeAgo = formatTimeAgo(ann.created_at);
+
+        return `
+          <div style="background:#13161f; border-left:3px solid ${isUrgent ? '#ef4444' : '#eab308'}; border-radius:8px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                ${typeBadge}
+                <span style="font-size:10.5px; color:#94a3b8;">✍️ <strong>${escapeHtml(ann.author_name || 'Admin')}</strong> • ${timeAgo}</span>
+              </div>
+              <div style="font-size:12px; color:#f8fafc; font-weight:600; line-height:1.4; word-break:break-word;">${escapeHtml(ann.text)}</div>
+            </div>
+            <button type="button" class="btn-grey" onclick="adminDeleteAnnouncement('${ann.id}')" style="font-size:11px; padding:3px 7px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); cursor:pointer; flex-shrink:0;" title="Eliminar este aviso">
+              <span>🗑️</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderStudentBannerUI() {
+      const banner = document.getElementById('global-announcement-banner');
+      if (!banner) return;
+
+      let dismissed = [];
+      try {
+        dismissed = JSON.parse(localStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY) || '[]');
+      } catch (e) {}
+
+      const visible = (activeAnnouncementsList || []).filter(a => a && a.active !== false && !dismissed.includes(a.id));
+
+      if (visible.length === 0) {
+        banner.style.display = 'none';
+        return;
+      }
+
+      if (currentBannerIndex >= visible.length) currentBannerIndex = 0;
+      if (currentBannerIndex < 0) currentBannerIndex = visible.length - 1;
+
+      const ann = visible[currentBannerIndex];
+      const isUrgent = ann.type === 'urgent';
+
+      banner.style.display = 'flex';
+      banner.style.background = isUrgent
+        ? 'linear-gradient(90deg, rgba(239,68,68,0.22), rgba(185,28,28,0.1))'
+        : 'linear-gradient(90deg, rgba(234,179,8,0.18), rgba(245,158,11,0.08))';
+      banner.style.borderColor = isUrgent ? 'rgba(239,68,68,0.45)' : 'rgba(234,179,8,0.35)';
+
+      const iconEl = document.getElementById('announcement-banner-icon');
+      const badgeEl = document.getElementById('announcement-banner-badge');
+      const metaEl = document.getElementById('announcement-banner-meta');
+      const textEl = document.getElementById('announcement-banner-text');
+      const navPills = document.getElementById('announcement-nav-pills');
+      const navCounter = document.getElementById('announcement-nav-counter');
+
+      if (iconEl) iconEl.textContent = isUrgent ? '🚨' : '📢';
+      if (badgeEl) {
+        badgeEl.textContent = isUrgent ? 'ALERTA URGENTE' : 'COMUNICADO OFICIAL';
+        badgeEl.style.color = isUrgent ? '#ef4444' : '#eab308';
+      }
+      if (metaEl) {
+        metaEl.textContent = `• ✍️ ${ann.author_name || 'Admin'} (${ann.author_role || 'Admin'}) • ${formatTimeAgo(ann.created_at)}`;
+      }
+      if (textEl) {
+        textEl.textContent = ann.text;
+        textEl.style.color = isUrgent ? '#fee2e2' : '#fef08a';
+      }
+
+      if (navPills && navCounter) {
+        if (visible.length > 1) {
+          navPills.style.display = 'inline-flex';
+          navCounter.textContent = `${currentBannerIndex + 1}/${visible.length}`;
+        } else {
+          navPills.style.display = 'none';
+        }
+      }
+    }
+
+    window.prevAnnouncement = function(e) {
+      if (e) e.stopPropagation();
+      currentBannerIndex--;
+      renderStudentBannerUI();
+    };
+
+    window.nextAnnouncement = function(e) {
+      if (e) e.stopPropagation();
+      currentBannerIndex++;
+      renderStudentBannerUI();
+    };
+
+    window.dismissCurrentAnnouncement = function() {
+      let dismissed = [];
+      try {
+        dismissed = JSON.parse(localStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY) || '[]');
+      } catch (e) {}
+
+      const visible = (activeAnnouncementsList || []).filter(a => a && !dismissed.includes(a.id));
+      if (visible[currentBannerIndex]) {
+        const idToDismiss = visible[currentBannerIndex].id;
+        dismissed.push(idToDismiss);
+        localStorage.setItem(DISMISSED_ANNOUNCEMENTS_KEY, JSON.stringify(dismissed));
+      }
+      renderStudentBannerUI();
+    };
+
+    window.publishGlobalAnnouncement = async function() {
+      const inp = document.getElementById('admin-announcement-input');
+      const text = inp ? inp.value.trim() : '';
+
+      if (!text) {
+        toast('Escribe el texto del comunicado antes de publicar.', 'error');
+        return;
+      }
+
+      const u = sb.getUser() || {};
+      const meta = u.user_metadata || {};
+      const role = getAdminRole();
+      const roleName = role === 'superadmin' ? 'Superadmin' : 'Admin';
+      const authorName = meta.full_name || meta.name || (u.email ? (u.email.toLowerCase().includes('esteban') ? 'Esteban Ochoa' : (u.email.toLowerCase().includes('info') ? 'Steven Beltrán' : 'Sara')) : 'Administrador');
+
+      const newAnn = {
+        id: 'ann-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+        text: text,
+        type: currentAnnouncementType || 'info',
+        author_name: authorName,
+        author_role: roleName,
+        author_email: u.email || '',
+        created_at: new Date().toISOString(),
+        active: true
+      };
+
+      // 1. ACTUALIZACIÓN INSTANTÁNEA (0 ms)
+      activeAnnouncementsList = [newAnn, ...activeAnnouncementsList];
+      currentBannerIndex = 0;
+      if (inp) inp.value = '';
+      const charCount = document.getElementById('admin-announcement-charcount');
+      if (charCount) charCount.textContent = '0 caracteres';
+
+      renderAdminAnnouncementsUI();
+      renderStudentBannerUI();
+      toast('¡Aviso publicado con éxito!', 'success');
+
+      // 2. Persistir en segundo plano en Supabase
+      try {
+        await saveServerAnnouncements(activeAnnouncementsList);
+      } catch (err) {
+        console.error('Error persistiendo comunicado en Supabase:', err);
+      }
+    };
+
+    window.adminDeleteAnnouncement = async function(annId) {
+      if (!confirm('¿Deseas eliminar este comunicado de la plataforma?')) return;
+
+      // 1. ACTUALIZACIÓN INSTANTÁNEA (0 ms)
+      activeAnnouncementsList = activeAnnouncementsList.filter(a => a.id !== annId);
+      currentBannerIndex = 0;
+      renderAdminAnnouncementsUI();
+      renderStudentBannerUI();
+      toast('Comunicado eliminado.', 'success');
+
+      // 2. Persistir en segundo plano
+      try {
+        await saveServerAnnouncements(activeAnnouncementsList);
+      } catch (err) {
+        console.error('Error eliminando comunicado en Supabase:', err);
+      }
+    };
+
+    window.clearGlobalAnnouncement = window.adminDeleteAnnouncement;
+
+    async function loadGlobalAnnouncement() {
+      try {
+        activeAnnouncementsList = await fetchServerAnnouncements();
+        renderStudentBannerUI();
+      } catch (e) {
+        console.warn('Error cargando anuncios globales:', e);
+      }
+    }
+    window.loadGlobalAnnouncement = loadGlobalAnnouncement;
+
+    async function loadAdminAnnouncementInput() {
       const input = document.getElementById('admin-announcement-input');
       const charCount = document.getElementById('admin-announcement-charcount');
 
@@ -5949,202 +6177,13 @@ function _renderAnalisis_orig() {
         };
       }
 
-      if (!listContainer) return;
-      listContainer.innerHTML = '<div style="text-align:center; padding:18px; color:#94a3b8; font-size:12px;">Cargando comunicados...</div>';
-
+      renderAdminAnnouncementsUI();
       try {
-        const items = await fetchServerAnnouncements();
-        if (items.length === 0) {
-          listContainer.innerHTML = `
-            <div style="text-align:center; padding:28px 16px; color:#94a3b8; font-size:12px; border:1px dashed rgba(255,255,255,0.1); border-radius:10px;">
-              <div style="font-size:24px; margin-bottom:6px;">📭</div>
-              <strong>No hay comunicados activos en este momento</strong><br>
-              Publica un anuncio en la columna izquierda para que todos los estudiantes lo vean en la parte superior.
-            </div>
-          `;
-          return;
-        }
-
-        listContainer.innerHTML = items.map((ann, idx) => {
-          const isUrgent = ann.type === 'urgent';
-          const typeBadge = isUrgent
-            ? `<span style="background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px; text-transform:uppercase;">🚨 Alerta Urgente</span>`
-            : `<span style="background:rgba(234,179,8,0.2); color:#facc15; border:1px solid rgba(234,179,8,0.4); font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px; text-transform:uppercase;">📢 Comunicado Oficial</span>`;
-
-          const timeAgo = formatTimeAgo(ann.created_at);
-
-          return `
-            <div style="background:#13161f; border-left:4px solid ${isUrgent ? '#ef4444' : '#eab308'}; border-top:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:12px 14px; display:flex; flex-direction:column; gap:8px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <span style="font-family:var(--mono); font-size:10px; color:#64748b; font-weight:700;">#${idx + 1}</span>
-                  ${typeBadge}
-                </div>
-                <button type="button" class="btn-grey" onclick="adminDeleteAnnouncement('${ann.id}')" style="font-size:11px; padding:3px 8px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); cursor:pointer;" title="Eliminar este comunicado">
-                  <span>🗑️</span> Borrar
-                </button>
-              </div>
-
-              <div style="font-size:12.5px; color:#f8fafc; font-weight:600; line-height:1.45; white-space:pre-wrap;">${escapeHtml(ann.text)}</div>
-
-              <div style="font-size:10.5px; color:#94a3b8; display:flex; align-items:center; gap:6px; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,0.04); padding-top:6px;">
-                <span>✍️ <strong>${escapeHtml(ann.author_name || 'Admin')}</strong> (${escapeHtml(ann.author_role || 'Admin')})</span>
-                <span>•</span>
-                <span>🕒 ${timeAgo}</span>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-      } catch (e) {
-        console.error('Error cargando lista de comunicados:', e);
-        listContainer.innerHTML = '<div style="color:#ef4444; font-size:12px; padding:10px;">Error al cargar comunicados desde Supabase.</div>';
-      }
+        activeAnnouncementsList = await fetchServerAnnouncements();
+        renderAdminAnnouncementsUI();
+      } catch (e) {}
     }
     window.loadAdminAnnouncementInput = loadAdminAnnouncementInput;
-
-    window.publishGlobalAnnouncement = async function() {
-      const inp = document.getElementById('admin-announcement-input');
-      const typeSel = document.getElementById('admin-announcement-type');
-      const text = inp ? inp.value.trim() : '';
-      const type = typeSel ? typeSel.value : 'info';
-
-      if (!text) {
-        toast('Escribe el texto del comunicado antes de publicar.', 'error');
-        return;
-      }
-
-      showLoading(true);
-      try {
-        const u = sb.getUser() || {};
-        const meta = u.user_metadata || {};
-        const role = getAdminRole();
-        const roleName = role === 'superadmin' ? 'Superadmin' : 'Admin';
-        const authorName = meta.full_name || meta.name || (u.email ? (u.email.toLowerCase().includes('esteban') ? 'Esteban Ochoa' : (u.email.toLowerCase().includes('info') ? 'Steven Beltrán' : 'Sara')) : 'Administrador');
-
-        const newAnn = {
-          id: 'ann-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
-          text: text,
-          type: type,
-          author_name: authorName,
-          author_role: roleName,
-          author_email: u.email || '',
-          created_at: new Date().toISOString(),
-          active: true
-        };
-
-        const currentList = await fetchServerAnnouncements();
-        const updatedList = [newAnn, ...currentList];
-
-        await saveServerAnnouncements(updatedList);
-
-        if (inp) inp.value = '';
-        const charCount = document.getElementById('admin-announcement-charcount');
-        if (charCount) charCount.textContent = '0 caracteres';
-
-        toast('¡Comunicado publicado en la nube para todos los estudiantes!', 'success');
-        await loadAdminAnnouncementInput();
-        await loadGlobalAnnouncement();
-
-      } catch (err) {
-        console.error('Error publicando comunicado:', err);
-        toast('Error al guardar en Supabase: ' + err.message, 'error');
-      } finally {
-        showLoading(false);
-      }
-    };
-
-    window.adminDeleteAnnouncement = async function(annId) {
-      if (!confirm('¿Deseas eliminar este comunicado de la plataforma? Todos los alumnos dejarán de verlo.')) return;
-
-      showLoading(true);
-      try {
-        const currentList = await fetchServerAnnouncements();
-        const updatedList = currentList.filter(a => a.id !== annId);
-
-        await saveServerAnnouncements(updatedList);
-        toast('Comunicado eliminado exitosamente.', 'success');
-        await loadAdminAnnouncementInput();
-        await loadGlobalAnnouncement();
-
-      } catch (err) {
-        console.error('Error eliminando comunicado:', err);
-        toast('Error al eliminar comunicado: ' + err.message, 'error');
-      } finally {
-        showLoading(false);
-      }
-    };
-
-    window.clearGlobalAnnouncement = window.adminDeleteAnnouncement;
-
-    async function loadGlobalAnnouncement() {
-      const container = document.getElementById('global-announcement-container');
-      if (!container) return;
-
-      try {
-        const items = await fetchServerAnnouncements();
-        let dismissed = [];
-        try {
-          dismissed = JSON.parse(localStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY) || '[]');
-        } catch (eD) {}
-
-        const visibleItems = items.filter(a => !dismissed.includes(a.id));
-
-        if (visibleItems.length === 0) {
-          container.style.display = 'none';
-          container.innerHTML = '';
-          return;
-        }
-
-        container.style.display = 'flex';
-        container.innerHTML = visibleItems.map(ann => {
-          const isUrgent = ann.type === 'urgent';
-          const bg = isUrgent
-            ? 'linear-gradient(90deg, rgba(239,68,68,0.22), rgba(185,28,28,0.12))'
-            : 'linear-gradient(90deg, rgba(234,179,8,0.18), rgba(245,158,11,0.08))';
-          const border = isUrgent ? 'rgba(239,68,68,0.45)' : 'rgba(234,179,8,0.35)';
-          const badgeText = isUrgent ? '🚨 ALERTA URGENTE' : '📢 COMUNICADO OFICIAL';
-          const badgeColor = isUrgent ? '#ef4444' : '#eab308';
-          const badgeBg = isUrgent ? 'rgba(239,68,68,0.15)' : 'rgba(234,179,8,0.15)';
-          const textColor = isUrgent ? '#fee2e2' : '#fef08a';
-          const timeAgo = formatTimeAgo(ann.created_at);
-
-          return `
-            <div class="announcement-item" style="padding:10px 16px; border-radius:12px; background:${bg}; border:1px solid ${border}; box-shadow:0 4px 18px rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-              <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:260px;">
-                <span style="font-size:18px;">${isUrgent ? '🚨' : '📢'}</span>
-                <div style="flex:1;">
-                  <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <span style="font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; color:${badgeColor}; background:${badgeBg}; padding:1.5px 6px; border-radius:4px;">${badgeText}</span>
-                    <span style="font-size:10.5px; color:#94a3b8;">✍️ ${escapeHtml(ann.author_name || 'Equipo Gold FX')} • ${timeAgo}</span>
-                  </div>
-                  <div style="font-size:12.5px; font-weight:700; color:${textColor}; margin-top:2px; line-height:1.4; white-space:pre-wrap;">
-                    ${escapeHtml(ann.text)}
-                  </div>
-                </div>
-              </div>
-              <button type="button" onclick="dismissAnnouncement('${ann.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size:18px; line-height:1; padding:4px 8px; border-radius:4px;" title="Cerrar este aviso">&times;</button>
-            </div>
-          `;
-        }).join('');
-
-      } catch (e) {
-        console.warn('Error cargando anuncios globales:', e);
-      }
-    }
-    window.loadGlobalAnnouncement = loadGlobalAnnouncement;
-
-    window.dismissAnnouncement = function(annId) {
-      if (!annId) return;
-      try {
-        const dismissed = JSON.parse(localStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY) || '[]');
-        if (!dismissed.includes(annId)) {
-          dismissed.push(annId);
-          localStorage.setItem(DISMISSED_ANNOUNCEMENTS_KEY, JSON.stringify(dismissed));
-        }
-      } catch (e) {}
-      loadGlobalAnnouncement();
-    };
 
     // ── Pestaña 5: Monitor de Salud del Bot (Superadmin Sara) ──
     async function loadAdminBotTab() {

@@ -3733,8 +3733,25 @@
 
   <!-- MAIN -->
   <div class="main">
-    <!-- BANNER DE COMUNICADOS GLOBALES (ADMIN) -->
-    <div id="global-announcement-container" style="display:none; margin:14px 24px 0 24px; flex-direction:column; gap:8px;"></div>
+    <!-- BANNER DE COMUNICADO GLOBAL (ADMIN) -->
+    <div id="global-announcement-banner" style="display:none; margin:14px 24px 0 24px; padding:12px 18px; border-radius:12px; background:linear-gradient(90deg, rgba(234,179,8,0.18), rgba(245,158,11,0.08)); border:1px solid rgba(234,179,8,0.35); box-shadow:0 4px 20px rgba(0,0,0,0.4); align-items:center; justify-content:space-between; gap:12px; transition:all 0.2s ease;">
+      <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
+        <span id="announcement-banner-icon" style="font-size:18px; flex-shrink:0;">📢</span>
+        <div style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div id="announcement-banner-badge" style="font-size:10px; font-weight:800; color:#eab308; text-transform:uppercase; letter-spacing:1px;">COMUNICADO OFICIAL</div>
+            <span id="announcement-banner-meta" style="font-size:11px; color:#94a3b8; font-weight:500;"></span>
+            <div id="announcement-nav-pills" style="display:none; align-items:center; gap:6px; margin-left:auto;">
+              <button type="button" onclick="prevAnnouncement(event)" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; border-radius:4px; font-size:10px; padding:2px 7px; cursor:pointer;" title="Aviso anterior">◀</button>
+              <span id="announcement-nav-counter" style="font-size:10.5px; font-family:var(--mono); color:#cbd5e1; font-weight:700;">1/1</span>
+              <button type="button" onclick="nextAnnouncement(event)" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; border-radius:4px; font-size:10px; padding:2px 7px; cursor:pointer;" title="Siguiente aviso">▶</button>
+            </div>
+          </div>
+          <div id="announcement-banner-text" style="font-size:13px; font-weight:700; color:#fef08a; margin-top:2px; white-space:pre-wrap; word-break:break-word;"></div>
+        </div>
+      </div>
+      <button onclick="dismissCurrentAnnouncement()" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size:18px; line-height:1; padding:4px 6px; border-radius:4px; opacity:0.8; transition:opacity 0.15s; flex-shrink:0;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'" title="Cerrar aviso">&times;</button>
+    </div>
     <!-- TOPBAR -->
     <div class="topbar">
       <!-- Mobile Header Brand (Visible on mobile only) -->
@@ -4454,53 +4471,39 @@
       </div>
 
 <div id="admin-sec-anuncios" class="admin-sec-content" style="display:none;">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:20px; align-items:start;">
+        <div style="max-width:680px; background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;">
           
-          <!-- Columna 1: Formulario de Publicación -->
-          <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:22px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-              <span style="font-size:20px;">📢</span>
-              <h3 style="margin:0; font-size:16px; font-weight:800; color:#fff;">Publicar Comunicado Oficial</h3>
-            </div>
-            <div style="font-size:12px; color:#94a3b8; margin-bottom:18px; line-height:1.45;">
-              Este mensaje se sincroniza en la nube (Supabase) y aparecerá fijado en la parte superior para todos los alumnos en vivo.
-            </div>
-
-            <div style="margin-bottom:14px;">
-              <label style="display:block; font-size:11px; font-weight:700; color:#cbd5e1; text-transform:uppercase; margin-bottom:6px;">Tipo de Notificación</label>
-              <select id="admin-announcement-type" style="width:100%; background:#13161f; border:1px solid rgba(255,255,255,0.12); color:#fff; border-radius:8px; padding:9px 12px; font-size:12.5px; font-weight:700; outline:none; cursor:pointer;">
-                <option value="info">🟡 Comunicado Oficial / Informativo (Dorado)</option>
-                <option value="urgent">🔴 Alerta Urgente / Cierre de Mercado (Rojo)</option>
-              </select>
-            </div>
-
-            <div style="margin-bottom:16px;">
-              <label style="display:block; font-size:11px; font-weight:700; color:#cbd5e1; text-transform:uppercase; margin-bottom:6px;">Texto del Comunicado</label>
-              <textarea id="admin-announcement-input" rows="4" placeholder="Ejemplo: ¡Atención comunidad! Hoy viernes el mercado cierra a las 5:00 PM. No olviden gestionar sus posiciones y proteger su capital..." style="width:100%; background:#13161f; border:1px solid rgba(255,255,255,0.12); color:#fff; border-radius:8px; padding:10px 12px; font-size:13px; font-family:inherit; resize:vertical; box-sizing:border-box;"></textarea>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-              <span id="admin-announcement-charcount" style="font-size:11px; color:#64748b; font-family:var(--mono);">0 caracteres</span>
-              <button type="button" class="btn-green" onclick="publishGlobalAnnouncement()" style="padding:9px 20px; font-size:12px; font-weight:800; border-radius:8px; display:inline-flex; align-items:center; gap:6px;">
-                <span>📢</span> Publicar Aviso
-              </button>
-            </div>
+          <div style="margin-bottom:16px;">
+            <h3 style="margin:0 0 4px 0; font-size:16px; font-weight:800; color:#fff;">📢 Comunicado Oficial para Estudiantes</h3>
+            <div style="font-size:12px; color:#94a3b8;">El mensaje que publiques aquí aparecerá fijado en la barra superior de la plataforma para todos los alumnos en vivo.</div>
           </div>
 
-          <!-- Columna 2: Lista de Comunicados Activos -->
-          <div style="background:#0d0f14; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:22px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
-              <div>
-                <h3 style="margin:0; font-size:15px; font-weight:800; color:#fff;">📋 Comunicados Activos en Plataforma</h3>
-                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Ordenados por fecha (el más reciente arriba).</div>
+          <div style="margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <label style="font-size:11px; font-weight:700; color:#cbd5e1; text-transform:uppercase;">Texto del Comunicado</label>
+              <div style="display:inline-flex; gap:6px;">
+                <button type="button" id="atype-btn-info" onclick="setAnnouncementType('info')" style="font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:6px; cursor:pointer; background:rgba(234,179,8,0.18); border:1px solid #eab308; color:#facc15; transition:all 0.15s;">🟡 Informativo</button>
+                <button type="button" id="atype-btn-urgent" onclick="setAnnouncementType('urgent')" style="font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); color:#94a3b8; transition:all 0.15s;">🔴 Urgente</button>
               </div>
-              <button type="button" class="btn-grey" onclick="loadAdminAnnouncementInput()" style="font-size:11px; padding:5px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">
-                <span>🔄</span> Refrescar
-              </button>
             </div>
+            <textarea id="admin-announcement-input" rows="3" placeholder="Ejemplo: ¡Atención comunidad! Hoy viernes el mercado cierra a las 5:00 PM. No olviden gestionar sus posiciones..." style="width:100%; background:#13161f; border:1px solid rgba(255,255,255,0.12); color:#fff; border-radius:10px; padding:12px 14px; font-size:13px; font-family:inherit; resize:vertical; box-sizing:border-box; outline:none; transition:border 0.2s;" onfocus="this.style.borderColor='#eab308'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"></textarea>
+          </div>
 
-            <div id="admin-announcements-list" style="display:flex; flex-direction:column; gap:10px; max-height:450px; overflow-y:auto; padding-right:4px;">
-              <!-- Tarjetas dinámicas de anuncios -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;">
+            <span id="admin-announcement-charcount" style="font-size:11px; color:#64748b; font-family:var(--mono);">0 caracteres</span>
+            <button type="button" class="btn-green" onclick="publishGlobalAnnouncement()" style="padding:8px 22px; font-size:12px; font-weight:800; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+              <span>📢</span> Publicar Aviso
+            </button>
+          </div>
+
+          <!-- Avisos Activos Actuales -->
+          <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="font-size:11px; font-weight:800; text-transform:uppercase; color:#cbd5e1; letter-spacing:0.5px;">Avisos Activos en Plataforma</span>
+              <span id="announcements-count-badge" style="font-size:10.5px; font-weight:700; color:#eab308; background:rgba(234,179,8,0.12); border:1px solid rgba(234,179,8,0.25); padding:2px 8px; border-radius:10px;">0 activos</span>
+            </div>
+            <div id="admin-announcements-list" style="display:flex; flex-direction:column; gap:8px;">
+              <!-- Se llena al instante -->
             </div>
           </div>
 
