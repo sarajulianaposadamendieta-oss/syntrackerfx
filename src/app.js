@@ -6118,40 +6118,52 @@ function _renderAnalisis_orig() {
         active: true
       };
 
-      // 1. ACTUALIZACIÓN INSTANTÁNEA (0 ms)
-      activeAnnouncementsList = [newAnn, ...activeAnnouncementsList];
-      currentBannerIndex = 0;
       if (inp) inp.value = '';
       const charCount = document.getElementById('admin-announcement-charcount');
       if (charCount) charCount.textContent = '0 caracteres';
 
+      // 1. Mostrar de inmediato en pantalla local
+      activeAnnouncementsList = [newAnn, ...activeAnnouncementsList.filter(a => a && a.id !== newAnn.id)];
+      currentBannerIndex = 0;
       renderAdminAnnouncementsUI();
       renderStudentBannerUI();
-      toast('¡Aviso publicado con éxito!', 'success');
 
-      // 2. Persistir en segundo plano en Supabase
+      // 2. Traer la lista más reciente de Supabase para no sobreescribir los avisos de otros admins
       try {
-        await saveServerAnnouncements(activeAnnouncementsList);
+        const freshServerList = await fetchServerAnnouncements();
+        const mergedList = [newAnn, ...freshServerList.filter(a => a && a.id !== newAnn.id)];
+        activeAnnouncementsList = mergedList;
+        renderAdminAnnouncementsUI();
+        renderStudentBannerUI();
+
+        await saveServerAnnouncements(mergedList);
+        toast('¡Aviso publicado y sincronizado en la nube!', 'success');
       } catch (err) {
         console.error('Error persistiendo comunicado en Supabase:', err);
+        toast('Error al guardar en la nube: ' + (err.message || 'Error de conexión'), 'error');
       }
     };
 
     window.adminDeleteAnnouncement = async function(annId) {
       if (!confirm('¿Deseas eliminar este comunicado de la plataforma?')) return;
 
-      // 1. ACTUALIZACIÓN INSTANTÁNEA (0 ms)
-      activeAnnouncementsList = activeAnnouncementsList.filter(a => a.id !== annId);
+      activeAnnouncementsList = activeAnnouncementsList.filter(a => a && a.id !== annId);
       currentBannerIndex = 0;
       renderAdminAnnouncementsUI();
       renderStudentBannerUI();
-      toast('Comunicado eliminado.', 'success');
 
-      // 2. Persistir en segundo plano
       try {
-        await saveServerAnnouncements(activeAnnouncementsList);
+        const freshServerList = await fetchServerAnnouncements();
+        const mergedList = freshServerList.filter(a => a && a.id !== annId);
+        activeAnnouncementsList = mergedList;
+        renderAdminAnnouncementsUI();
+        renderStudentBannerUI();
+
+        await saveServerAnnouncements(mergedList);
+        toast('Comunicado eliminado exitosamente.', 'success');
       } catch (err) {
         console.error('Error eliminando comunicado en Supabase:', err);
+        toast('Error al eliminar en la nube.', 'error');
       }
     };
 
@@ -6184,6 +6196,22 @@ function _renderAnalisis_orig() {
       } catch (e) {}
     }
     window.loadAdminAnnouncementInput = loadAdminAnnouncementInput;
+
+    // Sincronización automática periódica en segundo plano cada 8 segundos
+    if (!window._announcementSyncInterval) {
+      window._announcementSyncInterval = setInterval(async () => {
+        try {
+          const latest = await fetchServerAnnouncements();
+          const currentIds = (activeAnnouncementsList || []).map(a => a.id).join(',');
+          const latestIds = (latest || []).map(a => a.id).join(',');
+          if (currentIds !== latestIds) {
+            activeAnnouncementsList = latest;
+            renderAdminAnnouncementsUI();
+            renderStudentBannerUI();
+          }
+        } catch (e) {}
+      }, 8000);
+    }
 
     // ── Pestaña 5: Monitor de Salud del Bot (Superadmin Sara) ──
     async function loadAdminBotTab() {
