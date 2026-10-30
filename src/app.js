@@ -5174,7 +5174,11 @@ function _renderAnalisis_orig() {
       if (!u) return false;
       const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
       const userId = (u.id || '').trim();
-      return email === 'parkjiminfromsara@gmail.com' || userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' || (u.user_metadata && u.user_metadata.role === 'superadmin');
+      return email === 'parkjiminfromsara@gmail.com' ||
+             email === 'sarajulianaposadamendieta@gmail.com' ||
+             userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' ||
+             userId === 'd8878aa5-611d-4500-9d20-b644525409ce' ||
+             (u.user_metadata && u.user_metadata.role === 'superadmin');
     }
     window.isSaraUser = isSaraUser;
 
@@ -6630,6 +6634,11 @@ function _renderAnalisis_orig() {
 
     // ── PERSISTENCIA Y SINCRONIZACIÓN CLOUD EN SUPABASE ──
     async function getStudentVipData(userId) {
+      if (!userId || userId === 'me') {
+        const u = sb.getUser();
+        if (u && u.id) userId = u.id;
+        else return vipStudentProfiles['me'] || {};
+      }
       if (vipStudentProfiles[userId]) return vipStudentProfiles[userId];
       try {
         const res = await fetch(SUPABASE_URL + '/auth/v1/admin/users/' + userId, {
@@ -6648,6 +6657,10 @@ function _renderAnalisis_orig() {
     }
 
     async function saveStudentVipData(userId, vipData) {
+      if (!userId || userId === 'me') {
+        const u = sb.getUser();
+        if (u && u.id) userId = u.id;
+      }
       vipStudentProfiles[userId] = vipData;
       try {
         localStorage.setItem('syntracker_vip_profiles', JSON.stringify(vipStudentProfiles));
@@ -6675,6 +6688,9 @@ function _renderAnalisis_orig() {
 
     function getTargetUserId() {
       const u = sb.getUser();
+      if (!isAdminUser()) {
+        return u ? u.id : 'me';
+      }
       if (currentVipStudentId === 'me' || (u && currentVipStudentId === u.id)) {
         return u ? u.id : 'me';
       }
@@ -6683,7 +6699,8 @@ function _renderAnalisis_orig() {
 
     async function loadVipStudentData(studentId) {
       const u = sb.getUser();
-      const isMe = (studentId === 'me' || (u && studentId === u.id));
+      const isAdmin = isAdminUser();
+      const isMe = (!isAdmin || studentId === 'me' || (u && studentId === u.id));
       const targetId = isMe ? (u ? u.id : 'me') : studentId;
       const emailTag = document.getElementById('vip-selected-email-tag');
 
@@ -7362,6 +7379,29 @@ function _renderAnalisis_orig() {
 
     window.renderVipModule = async function() {
       if (!isSaraUser()) return;
+      const u = sb.getUser();
+      const isAdmin = isAdminUser();
+
+      const adminSelectorBar = document.getElementById('vip-admin-selector-bar');
+      const studentWelcomeBar = document.getElementById('vip-student-welcome-bar');
+      const studentWelcomeName = document.getElementById('vip-student-welcome-name');
+
+      if (isAdmin) {
+        if (adminSelectorBar) adminSelectorBar.style.display = 'flex';
+        if (studentWelcomeBar) studentWelcomeBar.style.display = 'none';
+        if (!adminStudentsData || adminStudentsData.length === 0) {
+          await loadAdminData();
+        }
+      } else {
+        if (adminSelectorBar) adminSelectorBar.style.display = 'none';
+        if (studentWelcomeBar) {
+          studentWelcomeBar.style.display = 'flex';
+          const name = (u && u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || 'Sarah FX';
+          if (studentWelcomeName) studentWelcomeName.textContent = 'Hola, ' + name;
+        }
+        currentVipStudentId = (u && u.id) ? u.id : 'me';
+      }
+
       try {
         const raw = localStorage.getItem('syntracker_vip_profiles');
         if (raw) vipStudentProfiles = JSON.parse(raw);
@@ -7379,10 +7419,9 @@ function _renderAnalisis_orig() {
         }
       } catch (e) {}
 
-      // Poblar selector con alumnos VIP
+      // Poblar selector con alumnos VIP (solo en modo admin/mentor)
       const selector = document.getElementById('vip-student-selector');
-      if (selector) {
-        const u = sb.getUser();
+      if (selector && isAdmin) {
         let opts = `<option value="me">👤 Mi Bitácora (${(u && u.user_metadata && u.user_metadata.full_name) || 'Sara Posada'})</option>`;
         const vipStudents = (adminStudentsData || []).filter(s => (s.membership === 'VIP' || s.membership === 'Lifetime'));
         vipStudents.forEach(s => {

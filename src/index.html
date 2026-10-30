@@ -4690,8 +4690,8 @@
         </div>
       </div>
 
-      <!-- BARRA DE SELECCIÓN DE ALUMNO VIP & AUDITORÍA 360 -->
-      <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:16px 20px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+      <!-- BARRA DE SELECCIÓN DE ALUMNO VIP & AUDITORÍA 360 (VISTA MENTOR / ADMIN) -->
+      <div id="vip-admin-selector-bar" style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:16px 20px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
         <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
           <div style="font-size:12px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Auditar Alumno VIP:</div>
           <div style="min-width:280px;">
@@ -4706,6 +4706,25 @@
         <div id="vip-student-badge-info" style="display:flex; align-items:center; gap:10px; font-size:12px;">
           <span style="background:rgba(234,179,8,0.15); color:#facc15; border:1px solid rgba(234,179,8,0.3); padding:4px 9px; border-radius:6px; font-weight:700;">★ Alumno VIP Activo</span>
           <span id="vip-selected-email-tag" style="color:#94a3b8; font-family:var(--mono);">parkjiminfromsara@gmail.com</span>
+        </div>
+      </div>
+
+      <!-- BANNER DE BIENVENIDA ESTUDIANTE VIP (VISTA ESTUDIANTE) -->
+      <div id="vip-student-welcome-bar" style="display:none; background:linear-gradient(135deg, rgba(234,179,8,0.1), rgba(24,24,27,0.85)); border:1px solid rgba(234,179,8,0.3); border-radius:14px; padding:18px 22px; margin-bottom:24px; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, #facc15, #ca8a04); display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 4px 14px rgba(234,179,8,0.3);">
+            ⭐
+          </div>
+          <div>
+            <div style="font-size:16px; font-weight:800; color:#fff;" id="vip-student-welcome-name">Hola, Sarah FX</div>
+            <div style="font-size:12.5px; color:#a1a1aa; margin-top:2px;">Esta es tu Bitácora VIP privada de mentoría con Gold FX. Aquí verás tu diagnóstico, psicotrading, sesiones agendadas y tareas.</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="background:rgba(234,179,8,0.18); color:#facc15; border:1px solid rgba(234,179,8,0.45); padding:6px 12px; border-radius:999px; font-size:11.5px; font-weight:800; letter-spacing:0.5px; display:inline-flex; align-items:center; gap:6px;">
+            <span style="width:7px; height:7px; border-radius:50%; background:#facc15; display:inline-block; box-shadow:0 0 8px #facc15;"></span>
+            MEMBRESÍA VIP ACTIVA
+          </span>
         </div>
       </div>
 
