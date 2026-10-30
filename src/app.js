@@ -7264,8 +7264,99 @@ function _renderAnalisis_orig() {
       }
     };
 
-    // ── SUBPESTAÑA 6: EVALUACIÓN BIMESTRAL (HISTORIAL COMPARATIVO) ──
+    // ── SUBPESTAÑA 6: EVALUACIÓN BIMESTRAL (FORMULARIO, ESTADO Y RETROALIMENTACIÓN) ──
+    let vipEvaluationFormUrl = '';
+
+    window.openVipEvaluationForm = function(e) {
+      if (e) e.preventDefault();
+      if (vipEvaluationFormUrl && vipEvaluationFormUrl.startsWith('http')) {
+        window.open(vipEvaluationFormUrl, '_blank');
+      } else {
+        if (typeof toast === 'function') {
+          toast('El enlace oficial del formulario de evaluación bimestral será asignado próximamente.', 'info');
+        } else {
+          alert('El enlace oficial del formulario de evaluación bimestral será asignado próximamente.');
+        }
+      }
+    };
+
     function renderVipEvaluations(vipData) {
+      const isAdmin = isAdminUser();
+      const currentEval = vipData.current_eval || {};
+
+      // 1. Casilla y estado de presentación
+      const checkEl = document.getElementById('vip-eval-submitted-checkbox');
+      const badgeEl = document.getElementById('vip-eval-status-badge');
+      const labelEl = document.getElementById('vip-eval-submitted-label');
+      const subtextEl = document.getElementById('vip-eval-submitted-subtext');
+
+      const isSubmitted = !!currentEval.submitted;
+      if (checkEl) checkEl.checked = isSubmitted;
+
+      if (badgeEl) {
+        if (isSubmitted) {
+          badgeEl.style.background = 'rgba(74,222,128,0.15)';
+          badgeEl.style.color = '#4ade80';
+          badgeEl.style.borderColor = 'rgba(74,222,128,0.35)';
+          badgeEl.textContent = '✅ Presentada';
+        } else {
+          badgeEl.style.background = 'rgba(234,179,8,0.15)';
+          badgeEl.style.color = '#facc15';
+          badgeEl.style.borderColor = 'rgba(234,179,8,0.35)';
+          badgeEl.textContent = '⏳ Pendiente por presentar';
+        }
+      }
+
+      if (labelEl) {
+        labelEl.textContent = isSubmitted ? '¡Evaluación Bimestral Presentada!' : '¿Ya presentaste tu evaluación bimestral?';
+      }
+      if (subtextEl) {
+        if (isSubmitted && currentEval.submitted_at) {
+          let dStr = 'Reciente';
+          try {
+            dStr = new Date(currentEval.submitted_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          } catch (eD) {}
+          subtextEl.textContent = 'Marcada como presentada el ' + dStr;
+        } else {
+          subtextEl.textContent = 'Marca esta casilla una vez hayas llenado y enviado el formulario.';
+        }
+      }
+
+      // 2. Retroalimentación del Mentor
+      const editContainer = document.getElementById('vip-eval-feedback-edit-container');
+      const viewContainer = document.getElementById('vip-eval-feedback-view-container');
+      const inputEl = document.getElementById('vip-eval-feedback-input');
+      const dateEl = document.getElementById('vip-eval-feedback-date');
+      const viewTextEl = document.getElementById('vip-eval-feedback-view-text');
+      const viewMetaEl = document.getElementById('vip-eval-feedback-view-meta');
+
+      const feedbackText = currentEval.feedback || '';
+      if (inputEl) inputEl.value = feedbackText;
+
+      let metaStr = '';
+      if (currentEval.feedback_updated_at) {
+        try {
+          const fDate = new Date(currentEval.feedback_updated_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          metaStr = `✍️ Por: ${currentEval.feedback_author || 'Mentor Gold FX'} • ${fDate}`;
+        } catch (eM) {}
+      }
+      if (dateEl) dateEl.textContent = metaStr;
+
+      if (isAdmin) {
+        if (editContainer) editContainer.style.display = 'block';
+        if (viewContainer) viewContainer.style.display = 'none';
+      } else {
+        if (editContainer) editContainer.style.display = 'none';
+        if (viewContainer) {
+          viewContainer.style.display = 'block';
+          if (viewTextEl) {
+            viewTextEl.textContent = feedbackText || 'Aún no hay retroalimentación registrada para este período. Tu mentora la publicará aquí tras revisar tus respuestas.';
+          }
+          if (viewMetaEl) viewMetaEl.textContent = metaStr;
+        }
+      }
+
+      // 3. Historial Comparativo
       const container = document.getElementById('vip-eval-history-container');
       if (!container) return;
       const evaluations = Array.isArray(vipData.evaluations_history) ? vipData.evaluations_history : [];
@@ -7273,7 +7364,7 @@ function _renderAnalisis_orig() {
       if (evaluations.length === 0) {
         container.innerHTML = `
           <div style="grid-column:1/-1; text-align:center; padding:24px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
-            Aún no hay evaluaciones bimestrales registradas. Haz clic en <strong>"Registrar Evaluación"</strong> para documentar el primer período.
+            Aún no hay evaluaciones previas registradas en el historial. Haz clic en <strong>"Registrar Período"</strong> para archivar un ciclo bimestral.
           </div>
         `;
         return;
@@ -7301,6 +7392,43 @@ function _renderAnalisis_orig() {
         `;
       }).join('');
     }
+
+    window.toggleVipEvaluationSubmitted = async function(isChecked) {
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (!vipData.current_eval) vipData.current_eval = {};
+
+      vipData.current_eval.submitted = isChecked;
+      vipData.current_eval.submitted_at = isChecked ? new Date().toISOString() : null;
+
+      await saveStudentVipData(targetId, vipData);
+      renderVipEvaluations(vipData);
+
+      if (typeof toast === 'function') {
+        toast(isChecked ? '✅ Estado actualizado: Evaluación Presentada' : 'Estado actualizado: Pendiente por presentar', isChecked ? 'success' : 'info');
+      }
+    };
+
+    window.saveVipEvalFeedback = async function() {
+      const targetId = getTargetUserId();
+      const inputEl = document.getElementById('vip-eval-feedback-input');
+      const feedbackText = inputEl ? inputEl.value.trim() : '';
+
+      const vipData = await getStudentVipData(targetId);
+      if (!vipData.current_eval) vipData.current_eval = {};
+
+      const u = sb.getUser();
+      vipData.current_eval.feedback = feedbackText;
+      vipData.current_eval.feedback_updated_at = new Date().toISOString();
+      vipData.current_eval.feedback_author = (u && u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || 'Sara Posada';
+
+      await saveStudentVipData(targetId, vipData);
+      renderVipEvaluations(vipData);
+
+      if (typeof toast === 'function') {
+        toast('Retroalimentación de evaluación guardada con éxito.', 'success');
+      }
+    };
 
     window.openNewEvaluationModal = function() {
       const dtInput = document.getElementById('vip-form-eval-date');
@@ -7336,17 +7464,6 @@ function _renderAnalisis_orig() {
       closeModal('vip-modal-evaluation');
       renderVipEvaluations(vipData);
       if (typeof toast === 'function') toast('Evaluación bimestral guardada en el historial comparativo.', 'success');
-    };
-
-    window.saveVipEvalConfig = function() {
-      const name = document.getElementById('vip-eval-name')?.value || '';
-      const url = document.getElementById('vip-eval-url')?.value || '';
-      try {
-        localStorage.setItem('syntracker_vip_eval_config', JSON.stringify({ name, url }));
-      } catch (e) {}
-      const extBtn = document.getElementById('vip-eval-external-btn');
-      if (extBtn && url) extBtn.href = url;
-      if (typeof toast === 'function') toast('Configuración de evaluación bimestral guardada.', 'success');
     };
 
     // ── SUBPESTAÑA 7: EVOLUCIÓN 360° ──
@@ -7405,18 +7522,6 @@ function _renderAnalisis_orig() {
       try {
         const raw = localStorage.getItem('syntracker_vip_profiles');
         if (raw) vipStudentProfiles = JSON.parse(raw);
-        const evalRaw = localStorage.getItem('syntracker_vip_eval_config');
-        if (evalRaw) {
-          const cfg = JSON.parse(evalRaw);
-          const nameEl = document.getElementById('vip-eval-name');
-          const urlEl = document.getElementById('vip-eval-url');
-          const extBtn = document.getElementById('vip-eval-external-btn');
-          if (nameEl && cfg.name) nameEl.value = cfg.name;
-          if (urlEl && cfg.url) {
-            urlEl.value = cfg.url;
-            if (extBtn) extBtn.href = cfg.url;
-          }
-        }
       } catch (e) {}
 
       // Poblar selector con alumnos VIP (solo en modo admin/mentor)

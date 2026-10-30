@@ -5052,50 +5052,79 @@
       <!-- SECCIÓN 6: EVALUACIÓN BIMESTRAL -->
       <div id="vip-sec-evaluaciones" class="vip-sec-content" style="display:none;">
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px; margin-bottom:20px;">
-          <!-- Configuración del Enlace por el Admin -->
-          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
-            <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-              <span>⚙️</span> Configuración de la Evaluación (Admin)
+          
+          <!-- TARJETA 1: FORMULARIO Y CASILLA DE ESTADO DE PRESENTACIÓN -->
+          <div style="background:#121214; border:1px solid rgba(234,179,8,0.25); border-radius:14px; padding:22px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                <div style="font-size:15px; font-weight:800; color:#facc15; display:flex; align-items:center; gap:8px;">
+                  <span>📋</span> Evaluación Bimestral Oficial
+                </div>
+                <span id="vip-eval-status-badge" style="font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px; background:rgba(234,179,8,0.15); color:#facc15; border:1px solid rgba(234,179,8,0.35);">
+                  ⏳ Pendiente por presentar
+                </span>
+              </div>
+              <p style="font-size:12.5px; color:#cbd5e1; line-height:1.5; margin:0 0 16px 0;">
+                Completa tu formulario bimestral para que el equipo de mentores evalúe tu avance técnico, psicológico y disciplinario.
+              </p>
+
+              <!-- CASILLA DE SI YA LO PRESENTÉ O NO -->
+              <div style="background:#18181b; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px; margin-bottom:16px;">
+                <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer; user-select:none;">
+                  <input type="checkbox" id="vip-eval-submitted-checkbox" onchange="toggleVipEvaluationSubmitted(this.checked)" style="width:18px; height:18px; margin-top:2px; accent-color:#facc15; cursor:pointer;">
+                  <div>
+                    <div style="font-size:13px; font-weight:700; color:#fff;" id="vip-eval-submitted-label">
+                      ¿Ya presentaste tu evaluación bimestral?
+                    </div>
+                    <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;" id="vip-eval-submitted-subtext">
+                      Marca esta casilla una vez hayas llenado y enviado el formulario.
+                    </div>
+                  </div>
+                </label>
+              </div>
             </div>
-            <div style="display:flex; flex-direction:column; gap:12px; font-size:12.5px;">
-              <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700;">Nombre del Formulario / Test:</label>
-                <input type="text" id="vip-eval-name" class="input-dark" placeholder="Ej. Evaluación Integral Bimestral - Bimestre 1" style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff;">
-              </div>
-              <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700;">Enlace Externo (Google Form / Typeform):</label>
-                <input type="url" id="vip-eval-url" class="input-dark" placeholder="https://forms.gle/..." style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff;">
-              </div>
-              <div style="margin-top:6px;">
-                <button type="button" class="btn-primary" onclick="saveVipEvalConfig()" style="font-size:11.5px; padding:6px 14px; border-radius:6px; cursor:pointer; background:#facc15; color:#000; font-weight:800; border:none;">
-                  <span>💾</span> Guardar Configuración
-                </button>
-              </div>
+
+            <!-- BOTÓN ABRIR FORMULARIO DE EVALUACIÓN -->
+            <div style="margin-top:10px;">
+              <a id="vip-eval-external-btn" href="javascript:void(0)" onclick="openVipEvaluationForm(event)" class="btn-primary" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; width:100%; padding:12px; border-radius:8px; font-size:13px; font-weight:800; background:linear-gradient(135deg, #facc15, #ca8a04); color:#000; box-shadow:0 4px 14px rgba(234,179,8,0.25); cursor:pointer;">
+                <span>🚀</span> Abrir Formulario de Evaluación
+              </a>
             </div>
           </div>
 
-          <!-- Vista para el Alumno y Registro de Historial -->
-          <div style="background:#121214; border:1px solid rgba(234,179,8,0.25); border-radius:14px; padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+          <!-- TARJETA 2: RETROALIMENTACIÓN DEL ADMIN / MENTOR -->
+          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:22px; display:flex; flex-direction:column; justify-content:space-between;">
             <div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <div style="font-size:14px; font-weight:800; color:#facc15; display:flex; align-items:center; gap:8px;">
-                  <span>📋</span> Evaluación Activa para el Trader
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                <div style="font-size:15px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+                  <span>✍️</span> Retroalimentación del Mentor
                 </div>
-                <button type="button" class="btn-primary" onclick="openNewEvaluationModal()" style="font-size:11.5px; padding:5px 12px; border-radius:6px; cursor:pointer; background:#a855f7; color:#fff; font-weight:700; border:none;">
-                  <span>➕</span> Registrar Evaluación
-                </button>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button type="button" class="btn-primary" onclick="openNewEvaluationModal()" style="font-size:11px; padding:4px 10px; border-radius:6px; cursor:pointer; background:#a855f7; color:#fff; font-weight:700; border:none;" title="Registrar ciclo en el historial comparativo">
+                    <span>➕</span> Registrar Período
+                  </button>
+                </div>
               </div>
-              <p style="font-size:12.5px; color:#cbd5e1; line-height:1.5; margin:0 0 14px 0;">
-                Completa tu formulario bimestral para que el equipo de mentores evalúe tu avance técnico, psicológico y disciplinario.
+              <p style="font-size:12px; color:#94a3b8; line-height:1.4; margin:0 0 12px 0;">
+                Observaciones detalladas, correcciones técnicas y feedback proporcionado por el mentor tras revisar la evaluación:
               </p>
-              <div id="vip-eval-current-card" style="background:#18181b; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px; font-size:12px; color:#94a3b8;">
-                Estado: <span style="color:#facc15; font-weight:700;">Formulario Oficial de Evaluación</span>
+
+              <!-- CAMPO DE TEXTO PARA QUE EL ADMIN ESCRIBA RETROALIMENTACIÓN -->
+              <div id="vip-eval-feedback-edit-container" style="display:block;">
+                <textarea id="vip-eval-feedback-input" class="input-dark" rows="4" placeholder="Escribe aquí la retroalimentación, observaciones y plan de mejora para el alumno..." style="width:100%; padding:10px 12px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:12.5px; line-height:1.45; resize:vertical; outline:none; box-sizing:border-box;"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:8px;">
+                  <span id="vip-eval-feedback-date" style="font-size:11px; color:#64748b; font-family:var(--mono);"></span>
+                  <button type="button" class="btn-primary" onclick="saveVipEvalFeedback()" style="font-size:11.5px; padding:6px 14px; border-radius:6px; cursor:pointer; background:#facc15; color:#000; font-weight:800; border:none;">
+                    <span>💾</span> Guardar Retroalimentación
+                  </button>
+                </div>
               </div>
-            </div>
-            <div style="margin-top:16px;">
-              <a id="vip-eval-external-btn" href="#" target="_blank" class="btn-primary" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; width:100%; padding:10px; border-radius:8px; font-weight:700; background:#facc15; color:#000;">
-                <span>🚀</span> Abrir Formulario de Evaluación
-              </a>
+
+              <!-- VISTA DE SOLO LECTURA (PARA EL ESTUDIANTE) -->
+              <div id="vip-eval-feedback-view-container" style="display:none; background:#18181b; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:14px; font-size:12.5px; color:#e2e8f0; line-height:1.5;">
+                <div id="vip-eval-feedback-view-text" style="white-space:pre-wrap;">Aún no hay retroalimentación registrada para este período.</div>
+                <div id="vip-eval-feedback-view-meta" style="margin-top:8px; font-size:11px; color:#94a3b8; font-family:var(--mono);"></div>
+              </div>
             </div>
           </div>
         </div>
