@@ -43,7 +43,7 @@ def update_participant(pid, data):
 
 def update_bot_heartbeat(data):
     try:
-        url = f"{SUPABASE_URL}/rest/v1/tournaments?select=id,rules&status=eq.Activo&limit=1"
+        url = f"{SUPABASE_URL}/rest/v1/tournaments?select=id,rules&order=created_at.desc&limit=1"
         r = requests.get(url, headers=HEADERS, timeout=8)
         if r.status_code == 200:
             tourneys = r.json()

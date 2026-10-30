@@ -4549,7 +4549,7 @@ function _renderAnalisis_orig() {
 
         try {
           // 1. Cargar torneo activo
-          const tournamentsData = await sb.query('tournaments', { select: '*', filter: 'status=eq.Activo', order: 'created_at.desc' });
+          const tournamentsData = await sb.query('tournaments', { select: '*', order: 'created_at.desc' });
           if (Array.isArray(tournamentsData) && tournamentsData.length > 0) {
             activeTournament = tournamentsData[0];
           } else {
@@ -5954,7 +5954,7 @@ function _renderAnalisis_orig() {
 
     async function getActiveTournamentWithRules() {
       try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/tournaments?status=eq.Activo&select=id,rules&order=created_at.desc', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/tournaments?select=id,rules,status&order=created_at.desc', {
           headers: {
             'apikey': SUPABASE_KEY,
             'Authorization': 'Bearer ' + SUPABASE_KEY
