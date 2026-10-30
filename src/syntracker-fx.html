@@ -5847,6 +5847,70 @@
     function showAuthSuccess(m) { const e = document.getElementById('auth-success'); e.textContent = m; e.classList.add('show'); document.getElementById('auth-error').classList.remove('show'); }
     function showLoading(v) { document.getElementById('loading-overlay').classList.toggle('show', v); }
 
+    window.toast = function(msg, type = 'info', duration = 3800) {
+      try {
+        let container = document.getElementById('syntracker-toast-container');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'syntracker-toast-container';
+          container.style.cssText = 'position:fixed; bottom:24px; right:24px; z-index:999999; display:flex; flex-direction:column; gap:10px; pointer-events:none; max-width:380px; width:calc(100% - 48px);';
+          document.body.appendChild(container);
+        }
+
+        const toastEl = document.createElement('div');
+        toastEl.style.cssText = 'pointer-events:auto; display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:10px; font-size:12.5px; font-weight:600; font-family:system-ui, -apple-system, sans-serif; box-shadow:0 12px 28px rgba(0,0,0,0.5); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); transform:translateY(12px); opacity:0; transition:all 0.25s cubic-bezier(0.16, 1, 0.3, 1);';
+
+        let bg = 'rgba(24, 24, 27, 0.95)';
+        let border = '1px solid rgba(255,255,255,0.12)';
+        let textColor = '#f8fafc';
+        let iconHtml = 'ℹ️';
+
+        if (type === 'success') {
+          bg = 'rgba(16, 36, 24, 0.96)';
+          border = '1px solid rgba(74, 222, 128, 0.35)';
+          textColor = '#86efac';
+          iconHtml = '✓';
+        } else if (type === 'error') {
+          bg = 'rgba(45, 15, 15, 0.96)';
+          border = '1px solid rgba(239, 68, 68, 0.35)';
+          textColor = '#fca5a5';
+          iconHtml = '✕';
+        } else if (type === 'warning') {
+          bg = 'rgba(45, 35, 10, 0.96)';
+          border = '1px solid rgba(234, 179, 8, 0.4)';
+          textColor = '#fde047';
+          iconHtml = '⚠️';
+        }
+
+        toastEl.style.background = bg;
+        toastEl.style.border = border;
+        toastEl.style.color = textColor;
+
+        const safeMsg = String(msg || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        toastEl.innerHTML = `
+          <span style="display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; font-size:11px; font-weight:800; flex-shrink:0;">${iconHtml}</span>
+          <span style="flex:1; line-height:1.4;">${safeMsg}</span>
+        `;
+
+        container.appendChild(toastEl);
+        requestAnimationFrame(() => {
+          toastEl.style.transform = 'translateY(0)';
+          toastEl.style.opacity = '1';
+        });
+
+        setTimeout(() => {
+          toastEl.style.transform = 'translateY(12px)';
+          toastEl.style.opacity = '0';
+          setTimeout(() => {
+            if (toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
+          }, 300);
+        }, duration);
+      } catch (tErr) {
+        console.log('[Toast]', msg);
+      }
+    };
+    const toast = window.toast;
+
     function togglePassword() {
       const input = document.getElementById('login-pass');
       const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -11318,20 +11382,35 @@ function _renderAnalisis_orig() {
           })
         });
 
-        // 2. Si participa en el torneo, actualizar también su badge en tournament_participants
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || errData.error_description || ('HTTP ' + res.status));
+        }
+
+        // 2. Si participa en el torneo, sincronizar también su badge en tournament_participants
         if (student.tp && student.tp.id) {
-          const tpObj = adminParticipantsData.find(p => p.id === student.tp.id);
-          let badges = tpObj && Array.isArray(tpObj.badges) ? [...tpObj.badges] : [];
-          badges = badges.filter(b => !(b && b.membership));
-          if (newMembership !== 'Ninguna') {
-            badges.push({ membership: newMembership, label: newMembership, updated_at: new Date().toISOString() });
+          try {
+            const tpObj = adminParticipantsData.find(p => p.id === student.tp.id);
+            let badges = tpObj && Array.isArray(tpObj.badges) ? [...tpObj.badges] : [];
+            badges = badges.filter(b => !(b && b.membership));
+            if (newMembership !== 'Ninguna') {
+              badges.push({ membership: newMembership, label: newMembership, updated_at: new Date().toISOString() });
+            }
+            await fetch(SUPABASE_URL + '/rest/v1/tournament_participants?id=eq.' + student.tp.id, {
+              method: 'PATCH',
+              headers: {
+                'apikey': ADMIN_SERVICE_KEY,
+                'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify({ badges: badges })
+            });
+            if (tpObj) tpObj.badges = badges;
+            if (student.tp) student.tp.badges = badges;
+          } catch (tpErr) {
+            console.warn('Advertencia al sincronizar badges de torneo:', tpErr);
           }
-          await sb.query('tournament_participants', {
-            method: 'PATCH',
-            filter: 'id=eq.' + student.tp.id,
-            body: { badges: badges }
-          });
-          if (tpObj) tpObj.badges = badges;
         }
 
         student.membership = newMembership;
@@ -11339,7 +11418,9 @@ function _renderAnalisis_orig() {
           statusEl.textContent = '✓ Guardado';
           statusEl.style.color = '#4ade80';
         }
-        toast(`Membresía de ${student.name} actualizada a ${newMembership}.`, 'success');
+        if (typeof toast === 'function') {
+          toast(`Membresía de ${student.name} actualizada a ${newMembership}.`, 'success');
+        }
         renderAdminMembershipsTable();
       } catch (err) {
         console.error('Error guardando membresía:', err);
@@ -11347,7 +11428,9 @@ function _renderAnalisis_orig() {
           statusEl.textContent = 'Error al guardar';
           statusEl.style.color = '#ef4444';
         }
-        toast('Error al actualizar membresía en Supabase.', 'error');
+        if (typeof toast === 'function') {
+          toast('Error al actualizar membresía: ' + (err.message || 'Error en Supabase'), 'error');
+        }
       }
     };
 
