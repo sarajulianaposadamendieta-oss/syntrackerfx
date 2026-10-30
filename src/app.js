@@ -5508,7 +5508,12 @@ function _renderAnalisis_orig() {
               </select>
             </td>
             <td style="padding:12px 14px; text-align:right;">
-              <span id="mstatus-${s.id}" style="font-size:10.5px; color:#4ade80; font-weight:700;">✓ Guardado</span>
+              <div style="display:inline-flex; align-items:center; justify-content:flex-end; gap:8px;">
+                <span id="mstatus-${s.id}" style="font-size:10.5px; color:#4ade80; font-weight:700; white-space:nowrap;">✓ Guardado</span>
+                <button type="button" class="btn-grey" onclick="adminDeleteStudent('${s.id}')" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.35); background:rgba(239,68,68,0.06); display:inline-flex; align-items:center; gap:4px; cursor:pointer;" title="Eliminar usuario permanentemente de Syntracker">
+                  <span>🗑️</span> Borrar
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -5585,6 +5590,98 @@ function _renderAnalisis_orig() {
           statusEl.style.color = '#ef4444';
         }
         toast('Error al actualizar membresía en Supabase.', 'error');
+      }
+    };
+
+    window.adminDeleteStudent = async function(userId) {
+      const student = adminStudentsData.find(s => s.id === userId);
+      if (!student) {
+        toast('No se encontró el estudiante.', 'error');
+        return;
+      }
+
+      // Proteger a los administradores de ser eliminados accidentalmente
+      const email = (student.email || '').toLowerCase().trim();
+      const protectedAdmins = ['parkjiminfromsara@gmail.com', 'estebangoldfx@gmail.com', 'infogoldfx@gmail.com'];
+      const protectedIds = ['8ffa85d8-cf48-4b2b-a720-98ff14e99553', '26b36306-b12c-481c-b43e-fe4f1452a210', '84061dcc-f1dd-4a1f-8e2a-bbbe63045787'];
+      if (protectedAdmins.includes(email) || protectedIds.includes(userId)) {
+        toast('⚠️ Acción denegada: No se puede eliminar a una cuenta de administrador.', 'error');
+        return;
+      }
+
+      const confirmMsg = `¿Estás seguro de que deseas eliminar permanentemente a este usuario?\n\n` +
+        `• Nombre: ${student.name}\n` +
+        `• Correo: ${student.email}\n\n` +
+        `Esta acción es irreversible y eliminará su cuenta y accesos en Syntracker.`;
+
+      if (!confirm(confirmMsg)) return;
+
+      showLoading(true);
+      try {
+        // 1. Limpiar datos asociados en base de datos si existen
+        try {
+          await fetch(SUPABASE_URL + '/rest/v1/trades?user_id=eq.' + userId, {
+            method: 'DELETE',
+            headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+          });
+        } catch (e1) {}
+
+        try {
+          await fetch(SUPABASE_URL + '/rest/v1/accounts?user_id=eq.' + userId, {
+            method: 'DELETE',
+            headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+          });
+        } catch (e2) {}
+
+        if (student.tp && student.tp.id) {
+          try {
+            await fetch(SUPABASE_URL + '/rest/v1/tournament_participants?id=eq.' + student.tp.id, {
+              method: 'DELETE',
+              headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+            });
+          } catch (e3) {}
+        } else if (email) {
+          try {
+            await fetch(SUPABASE_URL + '/rest/v1/tournament_participants?user_email=eq.' + encodeURIComponent(email), {
+              method: 'DELETE',
+              headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+            });
+          } catch (e3b) {}
+        }
+
+        try {
+          await fetch(SUPABASE_URL + '/rest/v1/profiles?id=eq.' + userId, {
+            method: 'DELETE',
+            headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+          });
+        } catch (e4) {}
+
+        // 2. Eliminar de Supabase Auth Admin
+        const authRes = await fetch(SUPABASE_URL + '/auth/v1/admin/users/' + userId, {
+          method: 'DELETE',
+          headers: {
+            'apikey': ADMIN_SERVICE_KEY,
+            'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY
+          }
+        });
+
+        if (!authRes.ok) {
+          const errData = await authRes.json().catch(() => ({}));
+          console.error('Error Auth DELETE:', errData);
+          throw new Error(errData.message || 'Error al eliminar usuario en Auth');
+        }
+
+        toast(`Estudiante ${student.name} eliminado exitosamente.`, 'success');
+
+        // Recargar datos del panel
+        await loadAdminData();
+        renderAdminDashboard();
+
+      } catch (err) {
+        console.error('Error eliminando estudiante:', err);
+        toast('Error al eliminar estudiante: ' + (err.message || 'Error desconocido'), 'error');
+      } finally {
+        showLoading(false);
       }
     };
 
