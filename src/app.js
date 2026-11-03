@@ -3,6 +3,7 @@
 
     const SUPABASE_URL = 'https://nuvoeaqorlzrrhscosim.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51dm9lYXFvcmx6cnJoc2Nvc2ltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5NTU1NjcsImV4cCI6MjA5NzUzMTU2N30.dDrNTeuO20qQFjYulzeA6iaHBd3zLJNQG53YdZa-dqY';
+    const ADMIN_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51dm9lYXFvcmx6cnJoc2Nvc2ltIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTk1NTU2NywiZXhwIjoyMDk3NTMxNTY3fQ.dNxaUeXs_RjlD-HlezKA0MMlc3Z7jkdbRhdDrlDMV08';
 
     // ── Supabase client ──
     const sb = (function () {
@@ -559,6 +560,160 @@
       return { code: 'OTHER', name: 'Internacional', flag: '🌐', flagImg: 'https://flagcdn.com/w160/un.png' };
     }
 
+    // ── ROLES DE EQUIPO & STAFF OFICIAL (GOLD FX) ──
+    const STAFF_ROLES = {
+      'parkjiminfromsara@gmail.com': {
+        role: 'superadmin',
+        label: 'Desarrolladora',
+        display: '👩‍💻 Desarrolladora',
+        badgeStyle: 'background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.4);',
+        adminTitle: '👩‍💻 Desarrolladora (Sara)'
+      },
+      'sarajulianaposadamendieta@gmail.com': {
+        role: 'superadmin',
+        label: 'Desarrolladora',
+        display: '👩‍💻 Desarrolladora',
+        badgeStyle: 'background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.4);',
+        adminTitle: '👩‍💻 Desarrolladora (Sara)'
+      },
+      'estebangoldfx@gmail.com': {
+        role: 'mentor',
+        label: 'Mentor',
+        display: '👨‍🏫 Mentor',
+        badgeStyle: 'background:rgba(234,179,8,0.18); color:#facc15; border:1px solid rgba(234,179,8,0.4);',
+        adminTitle: '👨‍🏫 Mentor Gold FX (Esteban)'
+      },
+      'infogoldfx@gmail.com': {
+        role: 'admin',
+        label: 'Admin',
+        display: '🛡️ Admin',
+        badgeStyle: 'background:rgba(14,165,233,0.18); color:#38bdf8; border:1px solid rgba(14,165,233,0.4);',
+        adminTitle: '🛡️ Administrador (Steven)'
+      },
+      'psico.goldfx@gmail.com': {
+        role: 'psicologa',
+        label: 'Psicóloga',
+        display: '🧠 Psicóloga',
+        badgeStyle: 'background:rgba(244,63,94,0.18); color:#fb7185; border:1px solid rgba(244,63,94,0.4);',
+        adminTitle: '🧠 Psicóloga Gold FX'
+      }
+    };
+
+    const STAFF_IDS = {
+      '8ffa85d8-cf48-4b2b-a720-98ff14e99553': 'parkjiminfromsara@gmail.com',
+      'd8878aa5-611d-4500-9d20-b644525409ce': 'sarajulianaposadamendieta@gmail.com',
+      '26b36306-b12c-481c-b43e-fe4f1452a210': 'estebangoldfx@gmail.com',
+      '84061dcc-f1dd-4a1f-8e2a-bbbe63045787': 'infogoldfx@gmail.com',
+      '2d09f625-f966-47f6-9b14-392e743d1a38': 'psico.goldfx@gmail.com'
+    };
+
+    function getStaffInfo(user) {
+      const u = user || (typeof sb !== 'undefined' ? sb.getUser() : null);
+      if (!u) return null;
+      const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
+      const userId = (u.id || '').trim();
+      if (STAFF_ROLES[email]) return STAFF_ROLES[email];
+      if (STAFF_IDS[userId] && STAFF_ROLES[STAFF_IDS[userId]]) return STAFF_ROLES[STAFF_IDS[userId]];
+
+      const meta = u.user_metadata || {};
+      const metaRole = (meta.role || '').toLowerCase().trim();
+      if (metaRole === 'superadmin') {
+        return {
+          role: 'superadmin',
+          label: meta.role_label || 'Desarrolladora',
+          display: '👩‍💻 ' + (meta.role_label || 'Desarrolladora'),
+          badgeStyle: 'background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.4);',
+          adminTitle: '👩‍💻 Desarrolladora'
+        };
+      }
+      if (metaRole === 'mentor') {
+        return {
+          role: 'mentor',
+          label: meta.role_label || 'Mentor',
+          display: '👨‍🏫 ' + (meta.role_label || 'Mentor'),
+          badgeStyle: 'background:rgba(234,179,8,0.18); color:#facc15; border:1px solid rgba(234,179,8,0.4);',
+          adminTitle: '👨‍🏫 Mentor Gold FX'
+        };
+      }
+      if (metaRole === 'psicologa' || metaRole === 'psicóloga' || metaRole === 'psicologo' || metaRole === 'psicólogo') {
+        return {
+          role: 'psicologa',
+          label: meta.role_label || 'Psicóloga',
+          display: '🧠 ' + (meta.role_label || 'Psicóloga'),
+          badgeStyle: 'background:rgba(244,63,94,0.18); color:#fb7185; border:1px solid rgba(244,63,94,0.4);',
+          adminTitle: '🧠 Psicóloga Gold FX'
+        };
+      }
+      if (metaRole === 'admin' || metaRole === 'administrador') {
+        return {
+          role: 'admin',
+          label: meta.role_label || 'Admin',
+          display: '🛡️ ' + (meta.role_label || 'Admin'),
+          badgeStyle: 'background:rgba(14,165,233,0.18); color:#38bdf8; border:1px solid rgba(14,165,233,0.4);',
+          adminTitle: '🛡️ Administrador'
+        };
+      }
+      return null;
+    }
+
+    function getAdminRole(user) {
+      const staff = getStaffInfo(user);
+      return staff ? staff.role : null;
+    }
+
+    function isAdminUser(user) {
+      return getAdminRole(user) !== null;
+    }
+
+    function isSuperAdminUser(user) {
+      return getAdminRole(user) === 'superadmin';
+    }
+
+    function isSaraUser(user) {
+      const u = user || (typeof sb !== 'undefined' ? sb.getUser() : null);
+      if (!u) return false;
+      const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
+      const userId = (u.id || '').trim();
+      return email === 'parkjiminfromsara@gmail.com' ||
+             email === 'sarajulianaposadamendieta@gmail.com' ||
+             userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' ||
+             userId === 'd8878aa5-611d-4500-9d20-b644525409ce' ||
+             (u.user_metadata && u.user_metadata.role === 'superadmin');
+    }
+
+    function getUserBadgeInfo(user) {
+      const u = user || (typeof sb !== 'undefined' ? sb.getUser() : null);
+      if (!u) return null;
+      const staff = getStaffInfo(u);
+      if (staff) {
+        return { label: staff.display, style: staff.badgeStyle, isStaff: true };
+      }
+      const meta = u.user_metadata || {};
+      const m = ((meta.membership || '') + '').toUpperCase().trim();
+      if (m === 'VIP') {
+        return { label: '🟡 VIP', style: 'background:rgba(234,179,8,0.18); color:#facc15; border:1px solid rgba(234,179,8,0.4);', isStaff: false };
+      }
+      if (m === 'LIFETIME') {
+        return { label: '🟣 Lifetime', style: 'background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.4);', isStaff: false };
+      }
+      if (m === 'ANUAL') {
+        return { label: '🔵 Anual', style: 'background:rgba(59,130,246,0.18); color:#60a5fa; border:1px solid rgba(59,130,246,0.4);', isStaff: false };
+      }
+      if (m === 'MENSUAL') {
+        return { label: '🟢 Mensual', style: 'background:rgba(34,197,94,0.18); color:#4ade80; border:1px solid rgba(34,197,94,0.4);', isStaff: false };
+      }
+      return null;
+    }
+
+    window.STAFF_ROLES = STAFF_ROLES;
+    window.STAFF_IDS = STAFF_IDS;
+    window.getStaffInfo = getStaffInfo;
+    window.getAdminRole = getAdminRole;
+    window.isAdminUser = isAdminUser;
+    window.isSuperAdminUser = isSuperAdminUser;
+    window.isSaraUser = isSaraUser;
+    window.getUserBadgeInfo = getUserBadgeInfo;
+
     function getUserProfileData(user) {
       if (!user) user = sb.getUser();
       if (!user) return { name: 'Sarah Posada', username: '', country: 'CO', email: '', avatarUrl: null };
@@ -610,6 +765,7 @@
       const nameEl = document.querySelector('#sidebar-user-name .user-name-text') || document.querySelector('.user-name');
       const flagEl = document.getElementById('sidebar-user-flag');
       const handleEl = document.getElementById('sidebar-user-handle') || document.querySelector('.user-email');
+      const roleBadgeEl = document.getElementById('sidebar-user-role-badge');
 
       if (nameEl) nameEl.textContent = data.name;
       if (flagEl) {
@@ -618,6 +774,16 @@
       }
       if (handleEl) {
         handleEl.textContent = data.username ? ('@' + data.username) : (data.email || '—');
+      }
+      if (roleBadgeEl) {
+        const bInfo = getUserBadgeInfo(user);
+        if (bInfo) {
+          roleBadgeEl.textContent = bInfo.label;
+          roleBadgeEl.style.cssText = `font-size:9.5px; font-weight:800; padding:1.5px 7px; border-radius:999px; ${bInfo.style}`;
+          roleBadgeEl.style.display = 'inline-block';
+        } else {
+          roleBadgeEl.style.display = 'none';
+        }
       }
 
       renderUserAvatar(user, data.name);
@@ -5168,8 +5334,6 @@ function _renderAnalisis_orig() {
     //                      MÓDULO: PANEL DE ADMINISTRACIÓN
     // =========================================================================
 
-    const ADMIN_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51dm9lYXFvcmx6cnJoc2Nvc2ltIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTk1NTU2NywiZXhwIjoyMDk3NTMxNTY3fQ.dNxaUeXs_RjlD-HlezKA0MMlc3Z7jkdbRhdDrlDMV08';
-
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
       return String(str)
@@ -5187,41 +5351,6 @@ function _renderAnalisis_orig() {
     let currentMembershipSearch = '';
     let currentMembershipFilter = 'all';
     let currentTournamentSearch = '';
-
-    function getAdminRole() {
-      const u = sb.getUser();
-      if (!u) return null;
-      const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
-      const userId = (u.id || '').trim();
-      if (email === 'parkjiminfromsara@gmail.com' || userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' || (u.user_metadata && u.user_metadata.role === 'superadmin')) {
-        return 'superadmin';
-      }
-      const admins = ['estebangoldfx@gmail.com', 'infogoldfx@gmail.com'];
-      const adminIds = ['26b36306-b12c-481c-b43e-fe4f1452a210', '84061dcc-f1dd-4a1f-8e2a-bbbe63045787'];
-      if (admins.includes(email) || adminIds.includes(userId) || (u.user_metadata && u.user_metadata.role === 'admin')) {
-        return 'admin';
-      }
-      return null;
-    }
-
-    function isAdminUser() {
-      return getAdminRole() !== null;
-    }
-
-    function isSuperAdminUser() {
-      return getAdminRole() === 'superadmin';
-    }
-
-    function isSaraUser() {
-      const u = sb.getUser();
-      if (!u) return false;
-      const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
-      const userId = (u.id || '').trim();
-      return email === 'parkjiminfromsara@gmail.com' ||
-             userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' ||
-             (u.user_metadata && u.user_metadata.role === 'superadmin');
-    }
-    window.isSaraUser = isSaraUser;
 
     let vipSimulateLockedView = false;
     window.toggleVipPreviewLock = function() {
@@ -5283,11 +5412,12 @@ function _renderAnalisis_orig() {
 
       const botTabBtn = document.getElementById('atab-btn-bot');
       if (botTabBtn) {
-        botTabBtn.style.display = role ? 'inline-flex' : 'none';
+        botTabBtn.style.display = (role === 'superadmin') ? 'inline-flex' : 'none';
       }
       const roleBadge = document.getElementById('admin-role-badge');
       if (roleBadge) {
-        roleBadge.textContent = role === 'superadmin' ? 'Superadmin (Sara)' : 'Administrador';
+        const staff = getStaffInfo(u);
+        roleBadge.textContent = staff ? staff.adminTitle : 'Staff Gold FX';
       }
       loadGlobalAnnouncement();
     }
@@ -5384,7 +5514,8 @@ function _renderAnalisis_orig() {
             name: name,
             membership: membership,
             created_at: u.created_at || new Date().toISOString(),
-            tp: tp
+            tp: tp,
+            user_metadata: meta
           };
         });
 
@@ -5671,6 +5802,10 @@ function _renderAnalisis_orig() {
       tbody.innerHTML = items.map((s, idx) => {
         const currentM = s.membership || 'Ninguna';
         const stClass = badgeStyles[currentM] || badgeStyles.Ninguna;
+        const staff = getStaffInfo(s);
+        const staffBadgeHtml = staff
+          ? `<span style="${staff.badgeStyle} font-size:9.5px; font-weight:800; padding:1.5px 7px; border-radius:999px;">${staff.display}</span>`
+          : '';
 
         let dateStr = 'Reciente';
         if (s.created_at) {
@@ -5686,7 +5821,10 @@ function _renderAnalisis_orig() {
         return `
           <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
             <td style="padding:12px 16px;">
-              <div style="font-weight:700; color:#fff;">${escapeHtml(s.name)}</div>
+              <div style="font-weight:700; color:#fff; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span>${escapeHtml(s.name)}</span>
+                ${staffBadgeHtml}
+              </div>
               <div style="font-size:11px; color:#64748b;">${escapeHtml(s.email)}</div>
             </td>
             <td style="padding:12px 14px; font-family:var(--mono); color:#94a3b8; font-size:11.5px;">
@@ -5741,7 +5879,13 @@ function _renderAnalisis_orig() {
       }
 
       try {
-        // 1. Persistir membresía en user_metadata de Auth (Supabase Admin API)
+        // 1. Persistir membresía en user_metadata de Auth preservando metadatos existentes
+        const currentMeta = student.user_metadata || {};
+        const updatedMeta = Object.assign({}, currentMeta, {
+          membership: newMembership,
+          membership_updated_at: new Date().toISOString()
+        });
+
         const res = await fetch(SUPABASE_URL + '/auth/v1/admin/users/' + userId, {
           method: 'PUT',
           headers: {
@@ -5750,10 +5894,7 @@ function _renderAnalisis_orig() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            user_metadata: {
-              membership: newMembership,
-              membership_updated_at: new Date().toISOString()
-            }
+            user_metadata: updatedMeta
           })
         });
 
@@ -5789,6 +5930,20 @@ function _renderAnalisis_orig() {
         }
 
         student.membership = newMembership;
+        student.user_metadata = updatedMeta;
+
+        // Si es el usuario logueado actualmente, sincronizar sesión local
+        const curU = sb.getUser();
+        if (curU && curU.id === userId) {
+          curU.user_metadata = Object.assign({}, curU.user_metadata || {}, updatedMeta);
+          localStorage.setItem('syntracker_auth_session', JSON.stringify({
+            token: sb.getToken(),
+            user: curU,
+            saved_at: Date.now()
+          }));
+          renderUserProfile(curU);
+        }
+
         if (statusEl) {
           statusEl.textContent = '✓ Guardado';
           statusEl.style.color = '#4ade80';
@@ -6354,9 +6509,9 @@ function _renderAnalisis_orig() {
 
       const u = sb.getUser() || {};
       const meta = u.user_metadata || {};
-      const role = getAdminRole();
-      const roleName = role === 'superadmin' ? 'Superadmin' : 'Admin';
-      const authorName = meta.full_name || meta.name || (u.email ? (u.email.toLowerCase().includes('esteban') ? 'Esteban Ochoa' : (u.email.toLowerCase().includes('info') ? 'Steven Beltrán' : 'Sara')) : 'Administrador');
+      const staff = getStaffInfo(u);
+      const roleName = staff ? staff.label : (getAdminRole() === 'superadmin' ? 'Desarrolladora' : 'Admin');
+      const authorName = meta.full_name || meta.name || (staff ? staff.display.replace(/^[^\s]+\s*/, '') : 'Administrador');
 
       const newAnn = {
         id: 'ann-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
@@ -7513,6 +7668,72 @@ function _renderAnalisis_orig() {
     // ── SUBPESTAÑA 6: EVALUACIÓN BIMESTRAL (FORMULARIO, ESTADO Y RETROALIMENTACIÓN) ──
     let vipEvaluationFormUrl = '';
 
+    async function loadVipEvaluationFormUrl() {
+      const cached = localStorage.getItem('syntracker_vip_eval_form_url');
+      if (cached) {
+        vipEvaluationFormUrl = cached;
+        const input = document.getElementById('vip-admin-eval-url-input');
+        if (input && !input.value) input.value = cached;
+      }
+      try {
+        const tourney = await getActiveTournamentWithRules();
+        if (tourney && tourney.rules && tourney.rules.vip_eval_form_url !== undefined) {
+          const remoteUrl = (tourney.rules.vip_eval_form_url || '').trim();
+          vipEvaluationFormUrl = remoteUrl;
+          localStorage.setItem('syntracker_vip_eval_form_url', remoteUrl);
+          const input = document.getElementById('vip-admin-eval-url-input');
+          if (input) input.value = remoteUrl;
+        }
+      } catch (err) {
+        console.warn('Error cargando enlace de evaluación en segundo plano:', err);
+      }
+    }
+    window.loadVipEvaluationFormUrl = loadVipEvaluationFormUrl;
+
+    window.saveVipEvaluationFormUrl = async function(newUrl) {
+      const cleanUrl = (newUrl || '').trim();
+      vipEvaluationFormUrl = cleanUrl;
+      localStorage.setItem('syntracker_vip_eval_form_url', cleanUrl);
+      const input = document.getElementById('vip-admin-eval-url-input');
+      if (input) input.value = cleanUrl;
+
+      try {
+        const tourney = await getActiveTournamentWithRules();
+        const tourneyId = tourney ? tourney.id : '7639677c-4054-4a88-a75e-7f5f253cc5b6';
+        const currentRules = (tourney && tourney.rules) ? Object.assign({}, tourney.rules) : {};
+        currentRules.vip_eval_form_url = cleanUrl;
+
+        const res = await fetch(SUPABASE_URL + '/rest/v1/tournaments?id=eq.' + tourneyId, {
+          method: 'PATCH',
+          headers: {
+            'apikey': ADMIN_SERVICE_KEY,
+            'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({ rules: currentRules })
+        });
+
+        if (!res.ok) {
+          const err = await res.text();
+          throw new Error('Error al actualizar enlace en Supabase: ' + err);
+        }
+
+        if (typeof toast === 'function') {
+          toast('¡Enlace oficial del formulario de evaluación actualizado para toda la academia!', 'success');
+        } else {
+          alert('Enlace oficial guardado con éxito.');
+        }
+      } catch (err) {
+        console.error('Error guardando enlace de evaluación en Supabase:', err);
+        if (typeof toast === 'function') {
+          toast('Error al sincronizar con la nube: ' + (err.message || 'Error de conexión'), 'error');
+        } else {
+          alert('Error al guardar en la nube.');
+        }
+      }
+    };
+
     window.openVipEvaluationForm = function(e) {
       if (e) e.preventDefault();
       if (vipEvaluationFormUrl && vipEvaluationFormUrl.startsWith('http')) {
@@ -7529,6 +7750,16 @@ function _renderAnalisis_orig() {
     function renderVipEvaluations(vipData) {
       const isAdmin = isAdminUser();
       const currentEval = vipData.current_eval || {};
+
+      // Mostrar panel de configuración de enlace si es admin/staff
+      const evalConfigPanel = document.getElementById('vip-admin-eval-form-config');
+      if (evalConfigPanel) {
+        evalConfigPanel.style.display = isAdmin ? 'block' : 'none';
+      }
+      const evalUrlInput = document.getElementById('vip-admin-eval-url-input');
+      if (evalUrlInput && !evalUrlInput.value && vipEvaluationFormUrl) {
+        evalUrlInput.value = vipEvaluationFormUrl;
+      }
 
       // 1. Casilla y estado de presentación
       const checkEl = document.getElementById('vip-eval-submitted-checkbox');
@@ -7762,6 +7993,8 @@ function _renderAnalisis_orig() {
       if (previewBtn) {
         previewBtn.style.display = isAdmin ? 'inline-flex' : 'none';
       }
+
+      loadVipEvaluationFormUrl();
 
       const u = sb.getUser();
 

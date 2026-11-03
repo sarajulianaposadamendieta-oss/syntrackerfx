@@ -4053,7 +4053,10 @@
             <span class="user-name-text">Sarah Posada</span>
             <span id="sidebar-user-flag" style="font-size:14px;">🇨🇴</span>
           </div>
-          <div class="user-email" id="sidebar-user-handle">—</div>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <div class="user-email" id="sidebar-user-handle">—</div>
+            <span id="sidebar-user-role-badge" style="display:none; font-size:9.5px; font-weight:800; padding:1.5px 7px; border-radius:999px;"></span>
+          </div>
         </div>
         <button class="ftr-btn" onclick="event.stopPropagation(); openProfileModal()" title="Personalizar Perfil" style="margin-left:auto;flex-shrink:0;">
           ⚙️
@@ -5406,6 +5409,23 @@
               <a id="vip-eval-external-btn" href="javascript:void(0)" onclick="openVipEvaluationForm(event)" class="vip-btn-gold" style="width:100%; justify-content:center; padding:13px; font-size:13.5px; text-decoration:none; box-sizing:border-box;">
                 <span>🚀</span> Abrir Formulario de Evaluación
               </a>
+            </div>
+
+            <!-- PANEL DE EDICIÓN DEL ENLACE DEL FORMULARIO (SOLO MENTORES Y ADMINS) -->
+            <div id="vip-admin-eval-form-config" style="display:none; margin-top:14px; background:rgba(0,0,0,0.45); border:1px dashed rgba(234,179,8,0.45); border-radius:12px; padding:14px;">
+              <div style="font-size:11px; font-weight:800; color:#facc15; text-transform:uppercase; letter-spacing:0.8px; display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                <span style="display:flex; align-items:center; gap:6px;"><span>⚙️</span> Enlace Oficial del Formulario (Solo Staff)</span>
+                <span class="vip-badge-pill gold" style="font-size:9px; padding:1px 6px;">Editable</span>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <input type="url" id="vip-admin-eval-url-input" class="vip-input-luxury" placeholder="https://docs.google.com/forms/d/..." style="font-size:12px; padding:8px 12px; flex:1; min-width:200px;">
+                <button type="button" class="vip-btn-gold" onclick="saveVipEvaluationFormUrl(document.getElementById('vip-admin-eval-url-input').value)" style="font-size:11.5px; padding:8px 14px; white-space:nowrap;">
+                  <span>💾</span> Guardar Enlace
+                </button>
+              </div>
+              <div style="font-size:10.5px; color:#94a3b8; margin-top:6px;">
+                Cualquier cambio aquí actualizará automáticamente el formulario para todos los alumnos VIP de la academia.
+              </div>
             </div>
           </div>
 
@@ -6835,7 +6855,7 @@
     </div>
   </nav>
 
-  <script src="app.js?v=1793725197334"></script>
+  <script src="app.js?v=1793726976760"></script>
 </body>
 
 </html>
