@@ -6831,9 +6831,11 @@ function _renderAnalisis_orig() {
                 </span>
                 <span style="font-size:12.5px; font-weight:800; color:#fff;">✍️ Por: ${escapeHtml(item.author || 'Mentor Gold FX')}</span>
               </div>
-              <button type="button" class="btn-grey" onclick="deleteVipDiagnosisEntry('${item.id}')" style="font-size:11px; padding:3px 9px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" title="Eliminar este diagnóstico">
-                🗑️ Borrar
-              </button>
+              ${isAdminUser() ? `
+                <button type="button" class="btn-grey" onclick="deleteVipDiagnosisEntry('${item.id}')" style="font-size:11px; padding:3px 9px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" title="Eliminar este diagnóstico">
+                  🗑️ Borrar
+                </button>
+              ` : ''}
             </div>
             ${item.nivel ? `<div style="font-size:12px; color:#cbd5e1; margin-bottom:4px;"><strong>Nivel Registrado:</strong> <span style="color:#facc15;">${escapeHtml(item.nivel)}</span></div>` : ''}
             ${item.objetivoCapital ? `<div style="font-size:12px; color:#94a3b8; margin-bottom:4px;"><strong>Meta de Capital:</strong> <span style="color:#60a5fa;">${escapeHtml(item.objetivoCapital)}</span></div>` : ''}
@@ -7196,12 +7198,14 @@ function _renderAnalisis_orig() {
               ${s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; color:#60a5fa; text-decoration:none; font-weight:700; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); padding:4px 10px; border-radius:6px; font-size:11.5px;"><span style="font-size:12px;">🔗</span> Unirse a Sesión</a>` : '<span style="color:#64748b; font-size:11.5px;">Sin enlace</span>'}
             </td>
             <td style="padding:12px 16px;">
-              <span class="vip-badge-pill" style="color:${st.color}; background:${st.bg}; border:1px solid ${st.border}; cursor:pointer; font-size:10.5px; padding:3px 9px;" onclick="toggleVipSessionStatus('${s.id}')" title="Clic para alternar estado">
+              <span class="vip-badge-pill" style="color:${st.color}; background:${st.bg}; border:1px solid ${st.border}; ${isAdminUser() ? 'cursor:pointer;' : ''} font-size:10.5px; padding:3px 9px;" ${isAdminUser() ? `onclick="toggleVipSessionStatus('${s.id}')" title="Clic para alternar estado"` : ''}>
                 <span class="vip-pulse-dot ${st.dot}"></span> ${st.text}
               </span>
             </td>
             <td style="padding:12px 16px; text-align:right;">
-              <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" onclick="deleteVipSession('${s.id}')" title="Eliminar sesión">🗑️</button>
+              ${isAdminUser() ? `
+                <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" onclick="deleteVipSession('${s.id}')" title="Eliminar sesión">🗑️</button>
+              ` : '<span style="color:#64748b; font-size:11px;">—</span>'}
             </td>
           </tr>
         `;
@@ -7338,8 +7342,10 @@ function _renderAnalisis_orig() {
             <td style="padding:12px 16px; text-align:right;">
               <div style="display:inline-flex; gap:6px;">
                 <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#4ade80; border-color:rgba(74,222,128,0.3); background:rgba(74,222,128,0.08); cursor:pointer;" onclick="openHomeworkSubmissionModal('${hw.id}')" title="Resolver o subir evidencias">📤 Entregar</button>
-                <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#60a5fa; border-color:rgba(96,165,250,0.3); background:rgba(96,165,250,0.08); cursor:pointer;" onclick="openHomeworkFeedbackModal('${hw.id}')" title="Calificar y dar feedback como mentor">✍️ Feedback</button>
-                <button class="btn-grey" style="font-size:11px; padding:4px 7px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" onclick="deleteVipHomework('${hw.id}')">🗑️</button>
+                ${isAdminUser() ? `
+                  <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#60a5fa; border-color:rgba(96,165,250,0.3); background:rgba(96,165,250,0.08); cursor:pointer;" onclick="openHomeworkFeedbackModal('${hw.id}')" title="Calificar y dar feedback como mentor">✍️ Feedback</button>
+                  <button class="btn-grey" style="font-size:11px; padding:4px 7px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" onclick="deleteVipHomework('${hw.id}')" title="Eliminar tarea">🗑️</button>
+                ` : ''}
               </div>
             </td>
           </tr>
@@ -7778,6 +7784,21 @@ function _renderAnalisis_orig() {
         }
         currentVipStudentId = (u && u.id) ? u.id : 'me';
       }
+
+      // Herramientas exclusivas del Mentor / Admin (ocultas para alumnos VIP)
+      const auditBanner = document.getElementById('vip-admin-audit-banner');
+      const diagInputCard = document.getElementById('vip-admin-diagnosis-input-card');
+      const psicoNotesCard = document.getElementById('vip-admin-psico-notes-card');
+      const btnAddSession = document.getElementById('vip-btn-add-session');
+      const btnAddHw = document.getElementById('vip-btn-add-homework');
+      const btnAddEval = document.getElementById('vip-btn-add-evaluation');
+
+      if (auditBanner) auditBanner.style.display = isAdmin ? 'flex' : 'none';
+      if (diagInputCard) diagInputCard.style.display = isAdmin ? 'block' : 'none';
+      if (psicoNotesCard) psicoNotesCard.style.display = isAdmin ? 'flex' : 'none';
+      if (btnAddSession) btnAddSession.style.display = isAdmin ? 'inline-flex' : 'none';
+      if (btnAddHw) btnAddHw.style.display = isAdmin ? 'inline-flex' : 'none';
+      if (btnAddEval) btnAddEval.style.display = isAdmin ? 'inline-flex' : 'none';
 
       try {
         const raw = localStorage.getItem('syntracker_vip_profiles');

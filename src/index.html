@@ -5090,7 +5090,7 @@
         </div>
 
         <!-- Tarjeta: Diagnóstico Inicial y Metas de Mejora por el Mentor -->
-        <div class="vip-glass-card gold-accent" style="margin-bottom:22px;">
+        <div id="vip-admin-diagnosis-input-card" class="vip-glass-card gold-accent" style="margin-bottom:22px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
             <div style="font-size:15px; font-weight:900; color:#facc15; display:flex; align-items:center; gap:8px;">
               <span>📝</span> Agregar Nueva Evaluación / Diagnóstico al Historial
@@ -5157,8 +5157,8 @@
           </div>
         </div>
 
-        <!-- Banner de Auditoría 360 al Journal Completo -->
-        <div class="vip-glass-card gold-accent" style="margin-bottom:22px; padding:20px 26px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <!-- Banner de Auditoría 360 al Journal Completo (Solo Mentor/Admin) -->
+        <div id="vip-admin-audit-banner" class="vip-glass-card gold-accent" style="margin-bottom:22px; padding:20px 26px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
           <div>
             <div style="font-size:16px; font-weight:900; color:#facc15; display:flex; align-items:center; gap:8px;">
               <span>👁️</span> Auditoría Completa del Journal del Estudiante
@@ -5240,8 +5240,8 @@
             </div>
           </div>
 
-          <!-- Zona Confidencial de la Psicóloga -->
-          <div class="vip-glass-card purple-accent" style="display:flex; flex-direction:column; justify-content:space-between;">
+          <!-- Zona Confidencial de la Psicóloga (Solo Mentores / Admin) -->
+          <div id="vip-admin-psico-notes-card" class="vip-glass-card purple-accent" style="display:flex; flex-direction:column; justify-content:space-between;">
             <div>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <div style="font-size:15px; font-weight:900; color:#c084fc; display:flex; align-items:center; gap:8px;">
@@ -5290,7 +5290,7 @@
               </div>
               <div style="font-size:12.5px; color:#94a3b8; margin-top:2px;">Sesiones 1 a 1 agendadas con Esteban Ochoa, Steven y Psicóloga</div>
             </div>
-            <button type="button" class="vip-btn-gold" onclick="openNewSessionModal()">
+            <button type="button" id="vip-btn-add-session" class="vip-btn-gold" onclick="openNewSessionModal()">
               <span>➕</span> Agendar Nueva Sesión
             </button>
           </div>
@@ -5340,7 +5340,7 @@
               </div>
               <div style="font-size:12.5px; color:#94a3b8; margin-top:2px;">Asignación de actividades, entrega de evidencias y correcciones del mentor</div>
             </div>
-            <button type="button" class="vip-btn-gold" onclick="openNewHomeworkModal()">
+            <button type="button" id="vip-btn-add-homework" class="vip-btn-gold" onclick="openNewHomeworkModal()">
               <span>➕</span> Asignar Homework
             </button>
           </div>
@@ -5417,7 +5417,7 @@
                   <span>✍️</span> Retroalimentación del Mentor
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
-                  <button type="button" class="vip-btn-purple" onclick="openNewEvaluationModal()" style="font-size:11.5px; padding:6px 12px;" title="Registrar ciclo en el historial comparativo">
+                  <button type="button" id="vip-btn-add-evaluation" class="vip-btn-purple" onclick="openNewEvaluationModal()" style="font-size:11.5px; padding:6px 12px;" title="Registrar ciclo en el historial comparativo">
                     <span>➕</span> Registrar Período
                   </button>
                 </div>
