@@ -1483,13 +1483,6 @@
         renderAdminDashboard();
       }
       if (id === 'vip') {
-        const u = sb.getUser();
-        const userEmail = (u && (u.email || (u.user_metadata && u.user_metadata.email)) || '').toLowerCase().trim();
-        const isSaraDevAllowed = isSaraUser() || userEmail === 'sarajulianaposadamendieta@gmail.com';
-        if (!isSaraDevAllowed) {
-          goTo('dashboard');
-          return;
-        }
         renderVipModule();
       }
       if (id === 'torneo') {
@@ -5388,26 +5381,14 @@ function _renderAnalisis_orig() {
         }
       }
 
-      // BITÁCORA VIP: En modo desarrollo privado, visible ÚNICAMENTE para Sara (y su cuenta de prueba)
-      const u = sb.getUser();
-      const userEmail = (u && (u.email || (u.user_metadata && u.user_metadata.email)) || '').toLowerCase().trim();
-      const isSaraDevAllowed = isSaraUser() || userEmail === 'sarajulianaposadamendieta@gmail.com';
-
+      // BITÁCORA VIP: Habilitada para toda la academia (los VIP acceden al módulo completo; los no-VIP ven la pantalla de bloqueo y beneficios)
       const vipNav = document.getElementById('nav-item-vip');
       if (vipNav) {
-        if (isSaraDevAllowed) {
-          vipNav.style.setProperty('display', 'flex', 'important');
-        } else {
-          vipNav.style.setProperty('display', 'none', 'important');
-        }
+        vipNav.style.setProperty('display', 'flex', 'important');
       }
       const mobVipNav = document.getElementById('mob-nav-item-vip');
       if (mobVipNav) {
-        if (isSaraDevAllowed) {
-          mobVipNav.style.setProperty('display', 'flex', 'important');
-        } else {
-          mobVipNav.style.setProperty('display', 'none', 'important');
-        }
+        mobVipNav.style.setProperty('display', 'flex', 'important');
       }
 
       const botTabBtn = document.getElementById('atab-btn-bot');
@@ -7992,6 +7973,11 @@ function _renderAnalisis_orig() {
       if (lockedView) lockedView.style.display = 'none';
       if (previewBtn) {
         previewBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+      }
+
+      const headerBadge = document.getElementById('vip-header-badge-text');
+      if (headerBadge) {
+        headerBadge.textContent = isAdmin ? '🛡️ Modo Staff / Mentor' : '💎 Acceso VIP Oficial';
       }
 
       loadVipEvaluationFormUrl();
