@@ -1247,6 +1247,9 @@
       document.querySelectorAll('.mob-nav-item').forEach(function (m) { m.classList.remove('active'); });
 
       // Página BITÁCORA VIP: Cualquier usuario puede ingresar; renderVipModule mostrará la vista autorizada o la pantalla de bloqueo/upsell según su membresía
+      if (id !== 'vip' && typeof vipSimulateLockedView !== 'undefined') {
+        vipSimulateLockedView = false;
+      }
 
       const targetPage = document.getElementById('page-' + id);
       if (targetPage) targetPage.classList.add('active');
@@ -7664,10 +7667,6 @@ function _renderAnalisis_orig() {
     }
 
     window.renderVipModule = async function() {
-      try {
-        await sb.verifySession();
-      } catch (e) {}
-
       const isAdmin = isAdminUser();
       const isAllowed = hasVipAccess();
       const authView = document.getElementById('vip-authorized-view');
