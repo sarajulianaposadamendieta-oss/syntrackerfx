@@ -1362,21 +1362,35 @@
     .audit-neg-item:has(input:checked) { border-color: rgba(248,113,113,0.5); background: rgba(248,113,113,0.08); }
     .audit-check:has(input.audit-pos:checked) { border-color: rgba(255,205,27,0.4); background: rgba(255,205,27,0.06); }
 
-    .btn-cancel {
-      padding: 8px 17px;
-      background: transparent;
-      border: 1px solid var(--border);
+    .btn-cancel, .btn-grey, .vip-btn-cancel {
+      padding: 9px 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 8px;
-      color: var(--text-secondary);
+      color: #94a3b8;
       font-family: var(--sans);
       font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     }
 
-    .btn-cancel:hover {
-      border-color: var(--border-light);
-      color: var(--text-primary);
+    .btn-cancel:hover, .btn-grey:hover, .vip-btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(250, 204, 21, 0.45);
+      color: #f8fafc;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-cancel:active, .btn-grey:active, .vip-btn-cancel:active {
+      transform: translateY(0);
+      background: rgba(255, 255, 255, 0.04);
     }
 
     .side-tag {
@@ -5364,6 +5378,23 @@
             </table>
           </div>
         </div>
+
+        <!-- HISTORIAL DE ENTREGAS Y FEEDBACK DE HOMEWORKS -->
+        <div class="vip-glass-card" style="margin-top:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+            <div>
+              <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                <span>📜</span> Historial de Entregas & Feedback de Homeworks
+              </div>
+              <div style="font-size:12px; color:#94a3b8; margin-top:2px;">Registro cronológico y trazabilidad completa de evidencias enviadas y devoluciones pedagógicas</div>
+            </div>
+          </div>
+          <div id="vip-homeworks-history-container" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="text-align:center; padding:28px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.1);">
+              Aún no hay entregas ni feedbacks registrados en el historial de tareas.
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- SECCIÓN 6: EVALUACIÓN BIMESTRAL -->
@@ -5654,7 +5685,7 @@
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:8px;">
-          <button type="button" class="btn-grey" onclick="closeModal('admin-edit-modal')">Cancelar</button>
+          <button type="button" class="vip-btn-cancel" onclick="closeModal('admin-edit-modal')">Cancelar</button>
           <button type="button" class="btn-green" onclick="saveAdminEditParticipant()">Guardar Cambios</button>
         </div>
       </div>
@@ -5684,7 +5715,7 @@
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:8px;">
-          <button type="button" class="btn-grey" onclick="closeModal('admin-disqualify-modal')">Cancelar</button>
+          <button type="button" class="vip-btn-cancel" onclick="closeModal('admin-disqualify-modal')">Cancelar</button>
           <button type="button" class="btn-red" onclick="confirmAdminDisqualify()" style="background:#ef4444; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">Confirmar Descalificación</button>
         </div>
       </div>
@@ -5735,7 +5766,7 @@
         <textarea class="form-i" id="vip-form-session-notes" rows="2" placeholder="Puntos específicos a revisar durante la sesión..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-session')">Cancelar</button>
+        <button type="button" class="vip-btn-cancel" onclick="closeModal('vip-modal-session')">Cancelar</button>
         <button type="button" class="btn-primary" onclick="confirmSaveVipSession()" style="background:#facc15; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar Sesión</button>
       </div>
     </div>
@@ -5786,7 +5817,7 @@
         </div>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-homework')">Cancelar</button>
+        <button type="button" class="vip-btn-cancel" onclick="closeModal('vip-modal-homework')">Cancelar</button>
         <button type="button" class="btn-primary" onclick="confirmSaveVipHomework()" style="background:#facc15; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Asignar Tarea</button>
       </div>
     </div>
@@ -5820,7 +5851,7 @@
         <textarea class="form-i" id="vip-sub-hw-notes" rows="4" placeholder="Explica cómo resolviste la tarea, qué dificultades encontraste y tus conclusiones..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-hw-submission')">Cancelar</button>
+        <button type="button" class="vip-btn-cancel" onclick="closeModal('vip-modal-hw-submission')">Cancelar</button>
         <button type="button" class="btn-primary" onclick="confirmSubmitVipHomework()" style="background:#4ade80; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Enviar Resolución</button>
       </div>
     </div>
@@ -5864,7 +5895,7 @@
           🗑️ Eliminar
         </button>
         <div style="display:flex; gap:8px; margin-left:auto;">
-          <button type="button" class="btn-grey" onclick="closeModal('vip-modal-trade-feedback')">Cancelar</button>
+          <button type="button" class="vip-btn-cancel" onclick="closeModal('vip-modal-trade-feedback')">Cancelar</button>
           <button type="button" class="vip-btn-gold" onclick="confirmSaveTradeFeedback()" style="padding:8px 18px; font-size:12.5px;">
             💾 Guardar Retroalimentación
           </button>
@@ -5905,7 +5936,7 @@
         <textarea class="form-i" id="vip-fb-comments" rows="3" placeholder="Puntos positivos, correcciones y pautas para seguir mejorando..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-hw-feedback')">Cancelar</button>
+        <button type="button" class="vip-btn-cancel" onclick="closeModal('vip-modal-hw-feedback')">Cancelar</button>
         <button type="button" class="btn-primary" onclick="confirmSaveVipFeedback()" style="background:#60a5fa; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar Calificación</button>
       </div>
     </div>
@@ -5957,7 +5988,7 @@
         <textarea class="form-i" id="vip-form-eval-action" rows="2" placeholder="Compromisos y metas para el próximo ciclo..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button type="button" class="btn-grey" onclick="closeModal('vip-modal-evaluation')">Cancelar</button>
+        <button type="button" class="vip-btn-cancel" onclick="closeModal('vip-modal-evaluation')">Cancelar</button>
         <button type="button" class="btn-primary" onclick="confirmSaveVipEvaluation()" style="background:#facc15; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar en Historial</button>
       </div>
     </div>
@@ -6899,7 +6930,7 @@
     </div>
   </nav>
 
-  <script src="app.js?v=1793745536628"></script>
+  <script src="app.js?v=1793746487132"></script>
 </body>
 
 </html>
