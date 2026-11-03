@@ -6774,8 +6774,8 @@ function _renderAnalisis_orig() {
       const history = Array.isArray(vipData.diagnosis_history) ? vipData.diagnosis_history : [];
       if (history.length === 0) {
         container.innerHTML = `
-          <div style="text-align:center; padding:20px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
-            Aún no hay diagnósticos previos registrados. Escribe uno arriba y haz clic en <strong>"Guardar en Historial"</strong>.
+          <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.1);">
+            Aún no hay diagnósticos previos registrados. Escribe uno arriba y haz clic en <strong style="color:#facc15;">"Guardar en Historial"</strong>.
           </div>
         `;
         return;
@@ -6784,20 +6784,23 @@ function _renderAnalisis_orig() {
       container.innerHTML = history.slice().reverse().map((item, idx) => {
         const dateStr = item.date ? new Date(item.date).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
         return `
-          <div style="background:#18181b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px; position:relative;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:11px; font-weight:800; background:rgba(234,179,8,0.15); color:#facc15; padding:2px 8px; border-radius:4px; font-family:var(--mono);">📅 ${dateStr}</span>
-                <span style="font-size:12px; font-weight:700; color:#fff;">✍️ Por: ${escapeHtml(item.author || 'Mentor')}</span>
+          <div class="vip-glass-card gold-accent" style="padding:18px 20px; position:relative; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="vip-badge-pill gold" style="font-size:10.5px; font-family:var(--mono); padding:3px 10px;">
+                  <span class="vip-pulse-dot vip-pulse-gold"></span> 📅 ${dateStr}
+                </span>
+                <span style="font-size:12.5px; font-weight:800; color:#fff;">✍️ Por: ${escapeHtml(item.author || 'Mentor Gold FX')}</span>
               </div>
-              <button type="button" class="btn-grey" onclick="deleteVipDiagnosisEntry('${item.id}')" style="font-size:10.5px; padding:2px 7px; border-radius:4px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); cursor:pointer;">
+              <button type="button" class="btn-grey" onclick="deleteVipDiagnosisEntry('${item.id}')" style="font-size:11px; padding:3px 9px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" title="Eliminar este diagnóstico">
                 🗑️ Borrar
               </button>
             </div>
-            ${item.objetivoCapital ? `<div style="font-size:11.5px; color:#94a3b8; margin-bottom:4px;"><strong>Meta de Capital:</strong> ${escapeHtml(item.objetivoCapital)}</div>` : ''}
-            ${item.difTecnica ? `<div style="font-size:11.5px; color:#fca5a5; margin-bottom:4px;"><strong>Dificultad Técnica:</strong> ${escapeHtml(item.difTecnica)}</div>` : ''}
-            ${item.difEmocional ? `<div style="font-size:11.5px; color:#fde047; margin-bottom:6px;"><strong>Bloqueo Emocional:</strong> ${escapeHtml(item.difEmocional)}</div>` : ''}
-            <div style="font-size:12.5px; color:#f8fafc; line-height:1.5; background:rgba(0,0,0,0.3); border-left:3px solid #facc15; padding:8px 12px; border-radius:4px;">
+            ${item.nivel ? `<div style="font-size:12px; color:#cbd5e1; margin-bottom:4px;"><strong>Nivel Registrado:</strong> <span style="color:#facc15;">${escapeHtml(item.nivel)}</span></div>` : ''}
+            ${item.objetivoCapital ? `<div style="font-size:12px; color:#94a3b8; margin-bottom:4px;"><strong>Meta de Capital:</strong> <span style="color:#60a5fa;">${escapeHtml(item.objetivoCapital)}</span></div>` : ''}
+            ${item.difTecnica ? `<div style="font-size:12px; color:#fca5a5; margin-bottom:4px;"><strong>Dificultad Técnica:</strong> ${escapeHtml(item.difTecnica)}</div>` : ''}
+            ${item.difEmocional ? `<div style="font-size:12px; color:#fde047; margin-bottom:8px;"><strong>Bloqueo Emocional:</strong> ${escapeHtml(item.difEmocional)}</div>` : ''}
+            <div style="font-size:13px; color:#f8fafc; line-height:1.6; background:rgba(0,0,0,0.4); border-left:3px solid #facc15; padding:12px 16px; border-radius:8px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);">
               ${escapeHtml(item.diagnosis || 'Sin notas adicionales')}
             </div>
           </div>
@@ -7004,7 +7007,7 @@ function _renderAnalisis_orig() {
       const history = Array.isArray(vipData.psychology_history) ? vipData.psychology_history : [];
       if (history.length === 0) {
         container.innerHTML = `
-          <div style="text-align:center; padding:20px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
+          <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.1);">
             No hay registros emocionales ni notas de psicología guardadas aún.
           </div>
         `;
@@ -7014,27 +7017,30 @@ function _renderAnalisis_orig() {
       container.innerHTML = history.slice().reverse().map(item => {
         const dateStr = item.date ? new Date(item.date).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
         return `
-          <div style="background:#18181b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-              <span style="font-size:11px; font-weight:800; background:rgba(168,85,247,0.15); color:#c084fc; padding:2px 8px; border-radius:4px; font-family:var(--mono);">📅 ${dateStr}</span>
-              <span style="font-size:12px; font-weight:700; color:#cbd5e1;">Por: ${escapeHtml(item.author || 'Psicología Gold FX')}</span>
+          <div class="vip-glass-card purple-accent" style="padding:18px 20px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+              <span class="vip-badge-pill purple" style="font-size:10.5px; font-family:var(--mono); padding:3px 10px;">
+                <span class="vip-pulse-dot vip-pulse-purple"></span> 📅 ${dateStr}
+              </span>
+              <span style="font-size:12px; font-weight:800; color:#e2e8f0;">Por: ${escapeHtml(item.author || 'Psicología Gold FX')}</span>
             </div>
             ${item.before ? `
-              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
-                <span style="font-size:11px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Antes: <strong>${escapeHtml(item.before)}</strong></span>
-                <span style="font-size:11px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Durante: <strong>${escapeHtml(item.during)}</strong></span>
-                <span style="font-size:11px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Después: <strong>${escapeHtml(item.after)}</strong></span>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+                <span style="font-size:11.5px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:5px 12px; border-radius:8px; color:#cbd5e1;">Antes: <strong style="color:#4ade80;">${escapeHtml(item.before)}</strong></span>
+                <span style="font-size:11.5px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:5px 12px; border-radius:8px; color:#cbd5e1;">Durante: <strong style="color:#60a5fa;">${escapeHtml(item.during)}</strong></span>
+                <span style="font-size:11.5px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:5px 12px; border-radius:8px; color:#cbd5e1;">Después: <strong style="color:#facc15;">${escapeHtml(item.after)}</strong></span>
               </div>
             ` : ''}
             ${item.notes ? `
-              <div style="background:rgba(168,85,247,0.08); border-left:3px solid #a855f7; padding:8px 12px; border-radius:4px; font-size:12.5px; color:#f3e8ff; line-height:1.5;">
-                <strong>Nota Profesional:</strong> ${escapeHtml(item.notes)}
+              <div style="background:rgba(168,85,247,0.08); border-left:3px solid #c084fc; padding:12px 16px; border-radius:8px; font-size:13px; color:#f3e8ff; line-height:1.6; margin-bottom:8px;">
+                <div style="font-size:11px; font-weight:800; color:#c084fc; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px;">Nota Profesional Confidencial</div>
+                ${escapeHtml(item.notes)}
               </div>
             ` : ''}
             ${item.file?.url ? `
-              <div style="margin-top:10px;">
-                <a href="${escapeHtml(item.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:7px; background:rgba(168,85,247,0.15); color:#d8b4fe; border:1px solid rgba(168,85,247,0.35); padding:6px 14px; border-radius:6px; font-size:11.5px; font-weight:700; text-decoration:none;">
-                  <span>📄</span> Documento Adjunto: <u>${escapeHtml(item.file.name || 'Archivo')}</u>
+              <div style="margin-top:12px;">
+                <a href="${escapeHtml(item.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, rgba(168,85,247,0.2) 0%, rgba(126,34,206,0.2) 100%); color:#e9d5ff; border:1px solid rgba(168,85,247,0.45); padding:8px 16px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; box-shadow:0 4px 12px rgba(168,85,247,0.15); transition:all 0.15s ease;">
+                  <span style="font-size:14px;">📄</span> Documento Adjunto: <u style="text-underline-offset:2px;">${escapeHtml(item.file.name || 'Archivo')}</u>
                 </a>
               </div>
             ` : ''}
@@ -7117,44 +7123,46 @@ function _renderAnalisis_orig() {
       const miniGrid = document.getElementById('vip-calendar-mini-grid');
       if (miniGrid) {
         const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-        let gridHtml = days.map(d => `<div style="color:#64748b; font-weight:700; padding:4px;">${d}</div>`).join('');
+        let gridHtml = days.map(d => `<div style="color:#64748b; font-weight:800; padding:6px 4px; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">${d}</div>`).join('');
         for (let i = 1; i <= 30; i++) {
           const hasSession = sessions.some(s => s.datetime && new Date(s.datetime).getDate() === i);
-          const bg = hasSession ? 'background:rgba(234,179,8,0.2); border:1px solid rgba(234,179,8,0.5); color:#facc15; font-weight:800;' : 'background:rgba(255,255,255,0.02); color:#94a3b8;';
-          gridHtml += `<div style="${bg} border-radius:6px; padding:6px 2px; position:relative;">${i} ${hasSession ? '●' : ''}</div>`;
+          const bg = hasSession ? 'background:rgba(234,179,8,0.2); border:1px solid rgba(234,179,8,0.5); color:#facc15; font-weight:800; box-shadow:0 0 10px rgba(234,179,8,0.25);' : 'background:rgba(255,255,255,0.02); color:#94a3b8; border:1px solid rgba(255,255,255,0.04);';
+          gridHtml += `<div style="${bg} border-radius:8px; padding:8px 2px; position:relative; font-family:var(--mono);">${i} ${hasSession ? '<span style="color:#facc15;">●</span>' : ''}</div>`;
         }
         miniGrid.innerHTML = gridHtml;
       }
 
       if (!tbody) return;
       if (sessions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay sesiones agendadas para este estudiante. Haz clic en "Agendar Nueva Sesión".</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px; text-align:center; color:#94a3b8;">No hay sesiones agendadas para este estudiante. Haz clic en "Agendar Nueva Sesión".</td></tr>';
         return;
       }
 
       tbody.innerHTML = sessions.slice().reverse().map(s => {
         let dateFormatted = s.datetime ? new Date(s.datetime).toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Por definir';
         const statusMap = {
-          agendada: { text: '🟡 Agendada', color: '#facc15' },
-          completada: { text: '🟢 Completada', color: '#4ade80' },
-          reprogramada: { text: '🔵 Reprogramada', color: '#60a5fa' },
-          cancelada: { text: '🔴 Cancelada', color: '#ef4444' }
+          agendada: { text: 'Agendada', color: '#facc15', bg: 'rgba(234,179,8,0.15)', border: 'rgba(234,179,8,0.4)', dot: 'vip-pulse-gold' },
+          completada: { text: 'Completada', color: '#4ade80', bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.4)', dot: 'vip-pulse-green' },
+          reprogramada: { text: 'Reprogramada', color: '#60a5fa', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.4)', dot: 'vip-pulse-blue' },
+          cancelada: { text: 'Cancelada', color: '#f87171', bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.4)', dot: 'vip-pulse-red' }
         };
         const st = statusMap[s.status || 'agendada'] || statusMap.agendada;
 
         return `
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <td style="padding:10px 14px; font-weight:700; color:#fff; font-family:var(--mono);">${dateFormatted}</td>
-            <td style="padding:10px 14px; color:#facc15; font-weight:600;">${escapeHtml(s.type || '1 a 1')}</td>
-            <td style="padding:10px 14px; color:#cbd5e1;">${escapeHtml(s.mentor || 'Esteban Ochoa')}</td>
-            <td style="padding:10px 14px;">
-              ${s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; font-weight:600;">🔗 Unirse a Sesión</a>` : '<span style="color:#64748b;">Sin enlace</span>'}
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;">
+            <td style="padding:12px 16px; font-weight:800; color:#fff; font-family:var(--mono);">${dateFormatted}</td>
+            <td style="padding:12px 16px; color:#facc15; font-weight:700;">${escapeHtml(s.type || '1 a 1')}</td>
+            <td style="padding:12px 16px; color:#e2e8f0; font-weight:600;">${escapeHtml(s.mentor || 'Esteban Ochoa')}</td>
+            <td style="padding:12px 16px;">
+              ${s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; color:#60a5fa; text-decoration:none; font-weight:700; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); padding:4px 10px; border-radius:6px; font-size:11.5px;"><span style="font-size:12px;">🔗</span> Unirse a Sesión</a>` : '<span style="color:#64748b; font-size:11.5px;">Sin enlace</span>'}
             </td>
-            <td style="padding:10px 14px;">
-              <span style="font-size:11px; font-weight:700; color:${st.color}; cursor:pointer;" onclick="toggleVipSessionStatus('${s.id}')" title="Clic para cambiar estado">${st.text}</span>
+            <td style="padding:12px 16px;">
+              <span class="vip-badge-pill" style="color:${st.color}; background:${st.bg}; border:1px solid ${st.border}; cursor:pointer; font-size:10.5px; padding:3px 9px;" onclick="toggleVipSessionStatus('${s.id}')" title="Clic para alternar estado">
+                <span class="vip-pulse-dot ${st.dot}"></span> ${st.text}
+              </span>
             </td>
-            <td style="padding:10px 14px; text-align:right;">
-              <button class="btn-grey" style="font-size:10.5px; padding:3px 8px; border-radius:5px; color:#ef4444;" onclick="deleteVipSession('${s.id}')">🗑️</button>
+            <td style="padding:12px 16px; text-align:right;">
+              <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" onclick="deleteVipSession('${s.id}')" title="Eliminar sesión">🗑️</button>
             </td>
           </tr>
         `;
@@ -7241,38 +7249,38 @@ function _renderAnalisis_orig() {
       if (!tbody) return;
       const homeworks = Array.isArray(vipData.homeworks) ? vipData.homeworks : [];
       if (homeworks.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay tareas asignadas actualmente. Haz clic en "Asignar Homework".</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px; text-align:center; color:#94a3b8;">No hay tareas asignadas actualmente. Haz clic en "Asignar Homework".</td></tr>';
         return;
       }
 
       tbody.innerHTML = homeworks.slice().reverse().map(hw => {
         const statusMap = {
-          pendiente: { text: '🟡 Pendiente', color: '#facc15' },
-          en_proceso: { text: '🔵 En Proceso', color: '#60a5fa' },
-          entregada: { text: '🟣 Entregada', color: '#c084fc' },
-          aprobada: { text: '🟢 Aprobada', color: '#4ade80' },
-          corregir: { text: '⚠️ Corregir', color: '#f87171' }
+          pendiente: { text: 'Pendiente', color: '#facc15', bg: 'rgba(234,179,8,0.15)', border: 'rgba(234,179,8,0.4)', dot: 'vip-pulse-gold' },
+          en_proceso: { text: 'En Proceso', color: '#60a5fa', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.4)', dot: 'vip-pulse-blue' },
+          entregada: { text: 'Entregada', color: '#c084fc', bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.4)', dot: 'vip-pulse-purple' },
+          aprobada: { text: 'Aprobada', color: '#4ade80', bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.4)', dot: 'vip-pulse-green' },
+          corregir: { text: 'Corregir', color: '#f87171', bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.4)', dot: 'vip-pulse-red' }
         };
         const st = statusMap[hw.status || 'pendiente'] || statusMap.pendiente;
 
         return `
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <td style="padding:10px 14px;">
-              <div style="font-weight:700; color:#fff;">${escapeHtml(hw.title)}</div>
-              ${hw.instructions ? `<div style="font-size:11px; color:#94a3b8; margin-top:2px;">${escapeHtml(hw.instructions)}</div>` : ''}
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;">
+            <td style="padding:12px 16px;">
+              <div style="font-weight:800; color:#fff; font-size:13px;">${escapeHtml(hw.title)}</div>
+              ${hw.instructions ? `<div style="font-size:11.5px; color:#94a3b8; margin-top:3px; line-height:1.4;">${escapeHtml(hw.instructions)}</div>` : ''}
               ${hw.file?.url ? `
-                <div style="margin-top:5px;">
-                  <a href="${escapeHtml(hw.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:5px; background:rgba(234,179,8,0.12); color:#facc15; border:1px solid rgba(234,179,8,0.3); padding:3px 8px; border-radius:5px; font-size:10.5px; font-weight:700; text-decoration:none;">
-                    <span>📄</span> Documento Tarea: <u>${escapeHtml(hw.file.name || 'Descargar')}</u>
+                <div style="margin-top:6px;">
+                  <a href="${escapeHtml(hw.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:5px; background:rgba(234,179,8,0.12); color:#facc15; border:1px solid rgba(234,179,8,0.35); padding:3px 9px; border-radius:6px; font-size:11px; font-weight:700; text-decoration:none;">
+                    <span>📄</span> Documento Tarea: <u style="text-underline-offset:2px;">${escapeHtml(hw.file.name || 'Descargar')}</u>
                   </a>
                 </div>
               ` : ''}
               ${hw.submission?.notes ? `
-                <div style="font-size:11px; color:#4ade80; margin-top:4px; background:rgba(74,222,128,0.08); padding:5px 8px; border-radius:4px; border:1px solid rgba(74,222,128,0.15);">
-                  <div><strong>Entrega:</strong> ${escapeHtml(hw.submission.notes)} ${hw.submission.link ? `<a href="${escapeHtml(hw.submission.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; margin-left:4px;">[Ver TradingView]</a>` : ''}</div>
+                <div style="font-size:11.5px; color:#4ade80; margin-top:6px; background:rgba(74,222,128,0.08); padding:6px 10px; border-radius:6px; border:1px solid rgba(74,222,128,0.18);">
+                  <div><strong>Entrega:</strong> ${escapeHtml(hw.submission.notes)} ${hw.submission.link ? `<a href="${escapeHtml(hw.submission.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; font-weight:700; margin-left:4px;">[Ver TradingView]</a>` : ''}</div>
                   ${hw.submission.file?.url ? `
-                    <div style="margin-top:3px;">
-                      <a href="${escapeHtml(hw.submission.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:4px; color:#86efac; text-decoration:none; font-weight:700; font-size:10.5px;">
+                    <div style="margin-top:4px;">
+                      <a href="${escapeHtml(hw.submission.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:5px; color:#86efac; text-decoration:none; font-weight:800; font-size:11px;">
                         <span>📎</span> Archivo de Resolución: <u>${escapeHtml(hw.submission.file.name || 'Descargar')}</u>
                       </a>
                     </div>
@@ -7280,17 +7288,19 @@ function _renderAnalisis_orig() {
                 </div>
               ` : ''}
             </td>
-            <td style="padding:10px 14px; color:#cbd5e1;">${escapeHtml(hw.objective || 'Mejora continua')}</td>
-            <td style="padding:10px 14px; color:#facc15; font-weight:600;">${escapeHtml(hw.assigned_by || 'Esteban Ochoa')}</td>
-            <td style="padding:10px 14px; color:#94a3b8; font-family:var(--mono);">${escapeHtml(hw.deadline || 'Sin fecha')}</td>
-            <td style="padding:10px 14px;">
-              <span style="font-size:11px; font-weight:700; color:${st.color};">${st.text}</span>
+            <td style="padding:12px 16px; color:#cbd5e1; font-weight:500;">${escapeHtml(hw.objective || 'Mejora continua')}</td>
+            <td style="padding:12px 16px; color:#facc15; font-weight:700;">${escapeHtml(hw.assigned_by || 'Esteban Ochoa')}</td>
+            <td style="padding:12px 16px; color:#94a3b8; font-family:var(--mono); font-size:11.5px;">${escapeHtml(hw.deadline || 'Sin fecha')}</td>
+            <td style="padding:12px 16px;">
+              <span class="vip-badge-pill" style="color:${st.color}; background:${st.bg}; border:1px solid ${st.border}; font-size:10.5px; padding:3px 9px;">
+                <span class="vip-pulse-dot ${st.dot}"></span> ${st.text}
+              </span>
             </td>
-            <td style="padding:10px 14px; text-align:right;">
+            <td style="padding:12px 16px; text-align:right;">
               <div style="display:inline-flex; gap:6px;">
-                <button class="btn-grey" style="font-size:11px; padding:3px 8px; border-radius:5px; color:#4ade80;" onclick="openHomeworkSubmissionModal('${hw.id}')" title="Resolver o subir evidencias">📤 Entregar</button>
-                <button class="btn-grey" style="font-size:11px; padding:3px 8px; border-radius:5px; color:#60a5fa;" onclick="openHomeworkFeedbackModal('${hw.id}')" title="Calificar y dar feedback como mentor">✍️ Feedback</button>
-                <button class="btn-grey" style="font-size:11px; padding:3px 6px; border-radius:5px; color:#ef4444;" onclick="deleteVipHomework('${hw.id}')">🗑️</button>
+                <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#4ade80; border-color:rgba(74,222,128,0.3); background:rgba(74,222,128,0.08); cursor:pointer;" onclick="openHomeworkSubmissionModal('${hw.id}')" title="Resolver o subir evidencias">📤 Entregar</button>
+                <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#60a5fa; border-color:rgba(96,165,250,0.3); background:rgba(96,165,250,0.08); cursor:pointer;" onclick="openHomeworkFeedbackModal('${hw.id}')" title="Calificar y dar feedback como mentor">✍️ Feedback</button>
+                <button class="btn-grey" style="font-size:11px; padding:4px 7px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" onclick="deleteVipHomework('${hw.id}')">🗑️</button>
               </div>
             </td>
           </tr>
@@ -7554,8 +7564,8 @@ function _renderAnalisis_orig() {
 
       if (evaluations.length === 0) {
         container.innerHTML = `
-          <div style="grid-column:1/-1; text-align:center; padding:24px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
-            Aún no hay evaluaciones previas registradas en el historial. Haz clic en <strong>"Registrar Período"</strong> para archivar un ciclo bimestral.
+          <div style="grid-column:1/-1; text-align:center; padding:28px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.1);">
+            Aún no hay evaluaciones previas registradas en el historial. Haz clic en <strong style="color:#facc15;">"Registrar Período"</strong> para archivar un ciclo bimestral.
           </div>
         `;
         return;
@@ -7563,20 +7573,20 @@ function _renderAnalisis_orig() {
 
       container.innerHTML = evaluations.slice().reverse().map(ev => {
         return `
-          <div style="background:#18181b; border:1px solid rgba(250,204,21,0.25); border-radius:12px; padding:18px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <span style="font-size:13px; font-weight:800; color:#facc15;">${escapeHtml(ev.period)}</span>
-              <span style="font-size:12px; font-weight:800; color:#4ade80; background:rgba(74,222,128,0.12); padding:2px 8px; border-radius:6px; font-family:var(--mono);">${escapeHtml(ev.score || 'Aprobado')}</span>
+          <div class="vip-glass-card gold-accent" style="padding:20px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="font-size:14px; font-weight:900; color:#facc15; letter-spacing:0.3px;">${escapeHtml(ev.period)}</span>
+              <span class="vip-badge-pill green" style="font-size:11px; font-family:var(--mono); padding:3px 9px;">${escapeHtml(ev.score || 'Aprobado')}</span>
             </div>
-            <div style="font-size:11px; color:#94a3b8; margin-bottom:8px;">Fecha: <strong>${escapeHtml(ev.date || 'Reciente')}</strong></div>
-            <div style="font-size:12px; color:#cbd5e1; line-height:1.4; margin-bottom:8px;">
-              <strong>Diagnóstico:</strong> ${escapeHtml(ev.diagnosis || 'Sin diagnóstico')}
+            <div style="font-size:11.5px; color:#94a3b8; margin-bottom:10px; font-family:var(--mono);">📅 Fecha: <strong style="color:#fff;">${escapeHtml(ev.date || 'Reciente')}</strong></div>
+            <div style="font-size:12.5px; color:#cbd5e1; line-height:1.5; margin-bottom:10px;">
+              <strong style="color:#fff;">Diagnóstico:</strong> ${escapeHtml(ev.diagnosis || 'Sin diagnóstico')}
             </div>
-            ${ev.strengths ? `<div style="font-size:11.5px; color:#86efac; margin-bottom:4px;"><strong>Fortalezas:</strong> ${escapeHtml(ev.strengths)}</div>` : ''}
-            ${ev.weaknesses ? `<div style="font-size:11.5px; color:#fca5a5; margin-bottom:6px;"><strong>Por Mejorar:</strong> ${escapeHtml(ev.weaknesses)}</div>` : ''}
+            ${ev.strengths ? `<div style="font-size:12px; color:#86efac; margin-bottom:6px; background:rgba(34,197,94,0.06); padding:4px 8px; border-radius:6px; border:1px solid rgba(34,197,94,0.15);"><strong>✓ Fortalezas:</strong> ${escapeHtml(ev.strengths)}</div>` : ''}
+            ${ev.weaknesses ? `<div style="font-size:12px; color:#fca5a5; margin-bottom:8px; background:rgba(239,68,68,0.06); padding:4px 8px; border-radius:6px; border:1px solid rgba(239,68,68,0.15);"><strong>⚠️ Por Mejorar:</strong> ${escapeHtml(ev.weaknesses)}</div>` : ''}
             ${ev.action ? `
-              <div style="background:rgba(0,0,0,0.3); border-left:3px solid #60a5fa; padding:6px 10px; font-size:11.5px; color:#bfdbfe; border-radius:4px; margin-top:8px;">
-                <strong>Plan de Acción:</strong> ${escapeHtml(ev.action)}
+              <div style="background:rgba(0,0,0,0.4); border-left:3px solid #60a5fa; padding:8px 12px; font-size:12px; color:#bfdbfe; border-radius:6px; margin-top:10px; line-height:1.45;">
+                <strong style="color:#60a5fa;">Plan de Acción:</strong> ${escapeHtml(ev.action)}
               </div>
             ` : ''}
           </div>

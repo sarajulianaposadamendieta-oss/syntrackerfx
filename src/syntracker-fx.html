@@ -3424,32 +3424,312 @@
       color: #eab308;
       box-shadow: 0 0 15px rgba(234,179,8,0.15);
     }
-    /* VIP MODULE STYLES (Stealth Mode) */
+    /* VIP MODULE LUXURY STYLES (Institutional Hedge-Fund / Private Mentorship) */
+    @keyframes vipPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .vip-pulse-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      animation: vipPulse 2s infinite ease-in-out;
+    }
+    .vip-pulse-green { background: #4ade80; box-shadow: 0 0 8px #4ade80; }
+    .vip-pulse-gold { background: #facc15; box-shadow: 0 0 8px #facc15; }
+    .vip-pulse-purple { background: #c084fc; box-shadow: 0 0 8px #c084fc; }
+    .vip-pulse-blue { background: #60a5fa; box-shadow: 0 0 8px #60a5fa; }
+    .vip-pulse-red { background: #f87171; box-shadow: 0 0 8px #f87171; }
+
+    .vip-glass-card {
+      background: linear-gradient(180deg, rgba(22, 22, 28, 0.72) 0%, rgba(13, 13, 17, 0.92) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+      position: relative;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .vip-glass-card:hover {
+      border-color: rgba(250, 204, 21, 0.22);
+      box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.8), 0 0 20px -8px rgba(250, 204, 21, 0.12);
+    }
+    .vip-glass-card.gold-accent {
+      border-color: rgba(234, 179, 8, 0.28);
+      background: linear-gradient(180deg, rgba(28, 25, 20, 0.75) 0%, rgba(14, 13, 12, 0.95) 100%);
+    }
+    .vip-glass-card.purple-accent {
+      border-color: rgba(168, 85, 247, 0.28);
+      background: linear-gradient(180deg, rgba(26, 20, 32, 0.75) 0%, rgba(14, 12, 17, 0.95) 100%);
+    }
+
+    .vip-header-card {
+      background: radial-gradient(circle at 12% 25%, rgba(234, 179, 8, 0.14) 0%, transparent 55%),
+                  radial-gradient(circle at 88% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 60%),
+                  linear-gradient(180deg, rgba(22, 22, 28, 0.88) 0%, rgba(12, 12, 16, 0.98) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(234, 179, 8, 0.25);
+      border-radius: 20px;
+      padding: 24px 28px;
+      margin-bottom: 22px;
+      box-shadow: 0 14px 40px -12px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vip-tabs-bar {
+      display: inline-flex;
+      background: rgba(13, 13, 17, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 999px;
+      padding: 5px;
+      gap: 4px;
+      margin-bottom: 24px;
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .vip-tabs-bar::-webkit-scrollbar { display: none; }
+
     .vip-tab-btn {
-      background: #121215;
-      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
+      border: 1px solid transparent;
       color: #94a3b8;
       font-size: 12px;
       font-weight: 700;
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 8px 18px;
+      border-radius: 999px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
+      gap: 7px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       white-space: nowrap;
+      user-select: none;
     }
     .vip-tab-btn:hover {
-      background: #1c1c24;
+      background: rgba(255, 255, 255, 0.05);
       color: #fff;
-      border-color: rgba(250,204,21,0.3);
     }
     .vip-tab-btn.active {
-      background: linear-gradient(135deg, rgba(234,179,8,0.24), rgba(168,85,247,0.15));
-      border-color: rgba(250,204,21,0.55);
+      background: linear-gradient(135deg, rgba(250, 204, 21, 0.22) 0%, rgba(202, 138, 4, 0.12) 100%);
+      border-color: rgba(250, 204, 21, 0.55);
       color: #facc15;
-      box-shadow: 0 0 16px rgba(250,204,21,0.2);
+      font-weight: 800;
+      box-shadow: 0 2px 14px rgba(250, 204, 21, 0.25);
+      text-shadow: 0 0 10px rgba(250, 204, 21, 0.35);
+    }
+
+    .vip-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .vip-kpi-card {
+      background: linear-gradient(145deg, rgba(22, 22, 28, 0.75) 0%, rgba(12, 12, 16, 0.92) 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -8px rgba(0,0,0,0.6);
+      transition: all 0.25s ease;
+    }
+    .vip-kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(250, 204, 21, 0.3);
+      box-shadow: 0 14px 35px -8px rgba(0,0,0,0.7), 0 0 20px -8px rgba(250, 204, 21, 0.15);
+    }
+    .vip-kpi-top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+    .vip-kpi-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .vip-kpi-val {
+      font-size: 26px;
+      font-weight: 900;
+      margin-top: 8px;
+      font-family: var(--mono);
+      letter-spacing: -0.5px;
+    }
+    .vip-kpi-sub {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    .vip-input-luxury {
+      background: rgba(8, 8, 11, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 9px;
+      color: #f8fafc;
+      font-size: 13px;
+      padding: 10px 14px;
+      width: 100%;
+      box-sizing: border-box;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .vip-input-luxury:focus {
+      border-color: rgba(250, 204, 21, 0.6);
+      box-shadow: 0 0 16px rgba(250, 204, 21, 0.18), inset 0 1px 2px rgba(0,0,0,0.5);
+      background: rgba(12, 12, 16, 0.95);
+    }
+
+    .vip-label-luxury {
+      font-size: 11px;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .vip-table-wrap {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(9, 9, 12, 0.6);
+    }
+    .vip-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    .vip-table th {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px 16px;
+      text-align: left;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .vip-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+      vertical-align: middle;
+    }
+    .vip-table tbody tr {
+      transition: background 0.15s ease;
+    }
+    .vip-table tbody tr:hover {
+      background: rgba(250, 204, 21, 0.03);
+    }
+
+    .vip-btn-gold {
+      background: linear-gradient(135deg, #facc15 0%, #eab308 50%, #ca8a04 100%);
+      color: #000;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      padding: 9px 18px;
+      border-radius: 9px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(234, 179, 8, 0.35);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      user-select: none;
+    }
+    .vip-btn-gold:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(234, 179, 8, 0.55);
+      filter: brightness(1.05);
+    }
+
+    .vip-btn-purple {
+      background: linear-gradient(135deg, #c084fc 0%, #a855f7 50%, #7e22ce 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 12px;
+      padding: 9px 18px;
+      border-radius: 9px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.35);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      user-select: none;
+    }
+    .vip-btn-purple:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(168, 85, 247, 0.55);
+      filter: brightness(1.05);
+    }
+
+    .vip-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+    .vip-badge-pill.gold {
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.15);
+    }
+    .vip-badge-pill.purple {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
+    }
+    .vip-badge-pill.green {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    .vip-badge-pill.blue {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+    .vip-badge-pill.red {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .vip-badge-pill.orange {
+      background: rgba(249, 115, 22, 0.15);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.4);
     }
     .mfilter-btn {
       background: #13161f;
@@ -4667,163 +4947,169 @@
     <div class="page" id="page-vip">
       <!-- VISTA AUTORIZADA: BITÁCORA VIP -->
       <div id="vip-authorized-view">
-      <!-- CABECERA VIP -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:18px;">
-        <div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <h1 style="font-size:26px; font-weight:900; margin:0; color:#ffffff; letter-spacing:0.5px; display:flex; align-items:center; gap:10px;">
-              <span style="background:linear-gradient(135deg, #facc15 0%, #eab308 50%, #ca8a04 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">BITÁCORA VIP</span>
-              <span style="font-size:11px; font-weight:800; background:linear-gradient(135deg, rgba(234,179,8,0.25), rgba(202,138,4,0.1)); color:#facc15; border:1px solid rgba(234,179,8,0.4); padding:3px 9px; border-radius:999px; letter-spacing:1px; text-transform:uppercase;">Gold FX Mentorship</span>
-            </h1>
+      <!-- CABECERA VIP LUXURY -->
+      <div class="vip-header-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <h1 style="font-size:28px; font-weight:900; margin:0; letter-spacing:0.5px; display:flex; align-items:center; gap:12px;">
+                <span style="background:linear-gradient(135deg, #fef08a 0%, #facc15 50%, #ca8a04 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 20px rgba(250,204,21,0.25);">BITÁCORA VIP</span>
+                <span class="vip-badge-pill gold">★ Gold FX Private Mentorship</span>
+              </h1>
+            </div>
+            <div style="font-size:13px; color:#94a3b8; margin-top:6px; font-weight:500; display:flex; align-items:center; gap:8px;">
+              <span>🛡️</span> Ecosistema Institucional de Acompañamiento, Psicotrading y Auditoría 360° para Traders VIP
+            </div>
           </div>
-          <div style="font-size:12.5px; color:#94a3b8; margin-top:5px; font-weight:500;">
-            Ecosistema Integral de Acompañamiento, Psicotrading y Auditoría 360° para Traders VIP
-          </div>
-        </div>
 
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <div style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.35); border-radius:10px; padding:6px 12px; display:inline-flex; align-items:center; gap:8px;">
-            <span style="width:8px; height:8px; border-radius:50%; background:#a855f7; display:inline-block; box-shadow:0 0 10px #a855f7;"></span>
-            <span style="font-size:11px; font-weight:700; color:#c084fc;">Modo Desarrollo Privado (Solo Sara)</span>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div class="vip-badge-pill purple" style="padding:6px 14px;">
+              <span class="vip-pulse-dot vip-pulse-purple"></span>
+              <span>Modo Privado (Solo Sara)</span>
+            </div>
+            <button type="button" class="btn-grey" onclick="toggleVipPreviewLock()" id="vip-btn-preview-toggle" style="font-size:12px; font-weight:800; padding:8px 16px; border-radius:10px; display:inline-flex; align-items:center; gap:7px; cursor:pointer; color:#facc15; border-color:rgba(250,204,21,0.4); background:rgba(250,204,21,0.08); box-shadow:0 2px 10px rgba(250,204,21,0.12);" title="Ver cómo ve la pantalla un usuario no-VIP">
+              <span>🔒</span> Probar Pantalla de Bloqueo
+            </button>
+            <button type="button" class="btn-grey" onclick="refreshVipData()" style="font-size:12px; font-weight:700; padding:8px 16px; border-radius:10px; display:inline-flex; align-items:center; gap:7px; cursor:pointer;" title="Actualizar datos de la bitácora">
+              <span>🔄</span> Actualizar
+            </button>
           </div>
-          <button type="button" class="btn-grey" onclick="toggleVipPreviewLock()" id="vip-btn-preview-toggle" style="font-size:11.5px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#facc15; border-color:rgba(250,204,21,0.35); background:rgba(250,204,21,0.06);" title="Ver cómo ve la pantalla un usuario no-VIP">
-            <span>🔒</span> Probar Pantalla de Bloqueo
-          </button>
-          <button type="button" class="btn-grey" onclick="refreshVipData()" style="font-size:11.5px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Actualizar datos de la bitácora">
-            <span>🔄</span> Actualizar
-          </button>
         </div>
       </div>
 
       <!-- BARRA DE SELECCIÓN DE ALUMNO VIP & AUDITORÍA 360 (VISTA MENTOR / ADMIN) -->
-      <div id="vip-admin-selector-bar" style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:16px 20px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-          <div style="font-size:12px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Auditar Alumno VIP:</div>
-          <div style="min-width:280px;">
-            <select id="vip-student-selector" onchange="onVipStudentChange(this.value)" style="width:100%; background:#1c1c1f; color:#f8fafc; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 12px; font-size:12.5px; font-weight:600; outline:none; cursor:pointer;">
+      <div id="vip-admin-selector-bar" class="vip-glass-card gold-accent" style="margin-bottom:24px; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; flex:1;">
+          <div style="font-size:11px; font-weight:800; color:#facc15; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:6px;">
+            <span>🎯</span> Auditar Alumno VIP:
+          </div>
+          <div style="min-width:300px; flex:1; max-width:440px;">
+            <select id="vip-student-selector" class="vip-input-luxury" onchange="onVipStudentChange(this.value)" style="cursor:pointer; font-weight:700; padding:9px 14px;">
               <option value="me">👤 Mi Bitácora (Sara Posada)</option>
             </select>
           </div>
-          <button type="button" class="btn-primary" onclick="launchAuditStudentJournal()" style="font-size:12px; padding:8px 14px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; background:linear-gradient(135deg, #eab308, #ca8a04); color:#000; font-weight:800; border:none; box-shadow:0 4px 12px rgba(234,179,8,0.25);" title="Entrar y ver el journal completo de este alumno">
+          <button type="button" class="vip-btn-gold" onclick="launchAuditStudentJournal()" title="Entrar y ver el journal completo de este alumno">
             <span>👁️</span> Auditar Journal Completo
           </button>
         </div>
-        <div id="vip-student-badge-info" style="display:flex; align-items:center; gap:10px; font-size:12px;">
-          <span style="background:rgba(234,179,8,0.15); color:#facc15; border:1px solid rgba(234,179,8,0.3); padding:4px 9px; border-radius:6px; font-weight:700;">★ Alumno VIP Activo</span>
-          <span id="vip-selected-email-tag" style="color:#94a3b8; font-family:var(--mono);">parkjiminfromsara@gmail.com</span>
+        <div id="vip-student-badge-info" style="display:flex; align-items:center; gap:12px;">
+          <span class="vip-badge-pill gold"><span class="vip-pulse-dot vip-pulse-gold"></span> Alumno VIP Activo</span>
+          <span id="vip-selected-email-tag" style="color:#cbd5e1; font-family:var(--mono); font-size:12px; background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.06);">parkjiminfromsara@gmail.com</span>
         </div>
       </div>
 
       <!-- BANNER DE BIENVENIDA ESTUDIANTE VIP (VISTA ESTUDIANTE) -->
-      <div id="vip-student-welcome-bar" style="display:none; background:linear-gradient(135deg, rgba(234,179,8,0.1), rgba(24,24,27,0.85)); border:1px solid rgba(234,179,8,0.3); border-radius:14px; padding:18px 22px; margin-bottom:24px; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-        <div style="display:flex; align-items:center; gap:14px;">
-          <div style="width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, #facc15, #ca8a04); display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 4px 14px rgba(234,179,8,0.3);">
+      <div id="vip-student-welcome-bar" class="vip-glass-card gold-accent" style="display:none; margin-bottom:24px; padding:20px 26px; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, #facc15, #ca8a04); display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 6px 18px rgba(234,179,8,0.35);">
             ⭐
           </div>
           <div>
-            <div style="font-size:16px; font-weight:800; color:#fff;" id="vip-student-welcome-name">Hola, Sarah FX</div>
-            <div style="font-size:12.5px; color:#a1a1aa; margin-top:2px;">Esta es tu BITÁCORA VIP privada de mentoría con Gold FX. Aquí verás tu diagnóstico, psicotrading, sesiones agendadas y tareas.</div>
+            <div style="font-size:18px; font-weight:900; color:#fff;" id="vip-student-welcome-name">Hola, Sarah FX</div>
+            <div style="font-size:12.5px; color:#cbd5e1; margin-top:3px;">Esta es tu <strong>BITÁCORA VIP</strong> privada de mentoría con Gold FX. Aquí verás tu diagnóstico, psicotrading, sesiones agendadas y tareas.</div>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="background:rgba(234,179,8,0.18); color:#facc15; border:1px solid rgba(234,179,8,0.45); padding:6px 12px; border-radius:999px; font-size:11.5px; font-weight:800; letter-spacing:0.5px; display:inline-flex; align-items:center; gap:6px;">
-            <span style="width:7px; height:7px; border-radius:50%; background:#facc15; display:inline-block; box-shadow:0 0 8px #facc15;"></span>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="vip-badge-pill gold" style="padding:7px 16px; font-size:12px;">
+            <span class="vip-pulse-dot vip-pulse-gold"></span>
             MEMBRESÍA VIP ACTIVA
           </span>
         </div>
       </div>
 
-      <!-- SUBPESTAÑAS DEL MÓDULO VIP -->
-      <div style="display:flex; gap:8px; margin-bottom:22px; overflow-x:auto; padding-bottom:6px;">
-        <button type="button" class="vip-tab-btn active" id="viptab-btn-perfil" onclick="switchVipSubtab('perfil')">
-          <span>👤</span> Perfil & Diagnóstico
-        </button>
-        <button type="button" class="vip-tab-btn" id="viptab-btn-operativa" onclick="switchVipSubtab('operativa')">
-          <span>📊</span> Rendimiento Operativo
-        </button>
-        <button type="button" class="vip-tab-btn" id="viptab-btn-psico" onclick="switchVipSubtab('psico')">
-          <span>🧠</span> Psicotrading
-        </button>
-        <button type="button" class="vip-tab-btn" id="viptab-btn-calendario" onclick="switchVipSubtab('calendario')">
-          <span>📅</span> Calendario & Sesiones
-        </button>
-        <button type="button" class="vip-tab-btn" id="viptab-btn-tareas" onclick="switchVipSubtab('tareas')">
-          <span>📝</span> Homeworks & Tareas
-        </button>
-        <button type="button" class="vip-tab-btn" id="viptab-btn-evaluaciones" onclick="switchVipSubtab('evaluaciones')">
-          <span>📋</span> Evaluación Bimestral
-        </button>
-        <button type="button" class="vip-tab-btn" id="viptab-btn-evolucion" onclick="switchVipSubtab('evolucion')">
-          <span>📈</span> Evolución 360°
-        </button>
+      <!-- SUBPESTAÑAS DEL MÓDULO VIP (CÁPSULA SATINADA) -->
+      <div style="display:flex; justify-content:flex-start; margin-bottom:24px;">
+        <div class="vip-tabs-bar">
+          <button type="button" class="vip-tab-btn active" id="viptab-btn-perfil" onclick="switchVipSubtab('perfil')">
+            <span>👤</span> Perfil & Diagnóstico
+          </button>
+          <button type="button" class="vip-tab-btn" id="viptab-btn-operativa" onclick="switchVipSubtab('operativa')">
+            <span>📊</span> Rendimiento Operativo
+          </button>
+          <button type="button" class="vip-tab-btn" id="viptab-btn-psico" onclick="switchVipSubtab('psico')">
+            <span>🧠</span> Psicotrading
+          </button>
+          <button type="button" class="vip-tab-btn" id="viptab-btn-calendario" onclick="switchVipSubtab('calendario')">
+            <span>📅</span> Calendario & Sesiones
+          </button>
+          <button type="button" class="vip-tab-btn" id="viptab-btn-tareas" onclick="switchVipSubtab('tareas')">
+            <span>📝</span> Homeworks & Tareas
+          </button>
+          <button type="button" class="vip-tab-btn" id="viptab-btn-evaluaciones" onclick="switchVipSubtab('evaluaciones')">
+            <span>📋</span> Evaluación Bimestral
+          </button>
+          <button type="button" class="vip-tab-btn" id="viptab-btn-evolucion" onclick="switchVipSubtab('evolucion')">
+            <span>📈</span> Evolución 360°
+          </button>
+        </div>
       </div>
 
       <!-- SECCIÓN 1: PERFIL & DIAGNÓSTICO -->
       <div id="vip-sec-perfil" class="vip-sec-content" style="display:block;">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px; margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px; margin-bottom:22px;">
           <!-- Tarjeta: Datos Generales del Trader -->
-          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-              <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+          <div class="vip-glass-card">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+              <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
                 <span>🎯</span> Nivel & Objetivos del Trader
               </div>
-              <span id="vip-status-pill" style="background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3); font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">En Acompañamiento</span>
+              <span id="vip-status-pill" class="vip-badge-pill green"><span class="vip-pulse-dot vip-pulse-green"></span> En Acompañamiento</span>
             </div>
-            <div style="display:flex; flex-direction:column; gap:12px; font-size:12.5px;">
+            <div style="display:flex; flex-direction:column; gap:14px;">
               <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700; text-transform:uppercase;">Nivel Actual:</label>
-                <input type="text" id="vip-field-nivel" class="input-dark" placeholder="Ej. Intermedio - En búsqueda de consistencia" style="width:100%; margin-top:4px; padding:7px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff;">
+                <label class="vip-label-luxury">Nivel Actual:</label>
+                <input type="text" id="vip-field-nivel" class="vip-input-luxury" placeholder="Ej. Intermedio - En búsqueda de consistencia">
               </div>
               <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700; text-transform:uppercase;">Objetivo de Capital / Fondeo:</label>
-                <input type="text" id="vip-field-objetivo-capital" class="input-dark" placeholder="Ej. Pasar fase 2 de $50,000 en FTMO / Capital Propio" style="width:100%; margin-top:4px; padding:7px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff;">
+                <label class="vip-label-luxury">Objetivo de Capital / Fondeo:</label>
+                <input type="text" id="vip-field-objetivo-capital" class="vip-input-luxury" placeholder="Ej. Pasar fase 2 de $50,000 en FTMO / Capital Propio">
               </div>
               <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700; text-transform:uppercase;">Experiencia en Mercados:</label>
-                <input type="text" id="vip-field-experiencia" class="input-dark" placeholder="Ej. 1 año y medio operando Sintéticos y Forex" style="width:100%; margin-top:4px; padding:7px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff;">
+                <label class="vip-label-luxury">Experiencia en Mercados:</label>
+                <input type="text" id="vip-field-experiencia" class="vip-input-luxury" placeholder="Ej. 1 año y medio operando Sintéticos y Forex">
               </div>
             </div>
           </div>
 
           <!-- Tarjeta: Dificultades Técnicas y Emocionales -->
-          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
-            <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+          <div class="vip-glass-card">
+            <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:18px;">
               <span>⚠️</span> Dificultades Detectadas (Diagnóstico)
             </div>
-            <div style="display:flex; flex-direction:column; gap:12px; font-size:12.5px;">
+            <div style="display:flex; flex-direction:column; gap:14px;">
               <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700; text-transform:uppercase;">Dificultades Técnicas:</label>
-                <textarea id="vip-field-dif-tecnica" rows="2" class="input-dark" placeholder="Ej. Entradas anticipadas, falta de paciencia al esperar la confirmación en M5..." style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; resize:vertical; font-family:inherit;"></textarea>
+                <label class="vip-label-luxury">Dificultades Técnicas:</label>
+                <textarea id="vip-field-dif-tecnica" rows="2" class="vip-input-luxury" placeholder="Ej. Entradas anticipadas, falta de paciencia al esperar la confirmación en M5..." style="resize:vertical;"></textarea>
               </div>
               <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700; text-transform:uppercase;">Bloqueos Emocionales / Psicológicos:</label>
-                <textarea id="vip-field-dif-emocional" rows="2" class="input-dark" placeholder="Ej. Miedo a perder ganancias acumuladas, sobreoperación los días de pérdida..." style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; resize:vertical; font-family:inherit;"></textarea>
+                <label class="vip-label-luxury">Bloqueos Emocionales / Psicológicos:</label>
+                <textarea id="vip-field-dif-emocional" rows="2" class="vip-input-luxury" placeholder="Ej. Miedo a perder ganancias acumuladas, sobreoperación los días de pérdida..." style="resize:vertical;"></textarea>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Tarjeta: Diagnóstico Inicial y Metas de Mejora por el Mentor -->
-        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px; margin-bottom:20px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-            <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+        <div class="vip-glass-card gold-accent" style="margin-bottom:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+            <div style="font-size:15px; font-weight:900; color:#facc15; display:flex; align-items:center; gap:8px;">
               <span>📝</span> Agregar Nueva Evaluación / Diagnóstico al Historial
             </div>
-            <button type="button" class="btn-primary" onclick="saveVipDiagnosis()" style="font-size:12px; padding:7px 16px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#facc15; color:#000; font-weight:800; border:none;">
+            <button type="button" class="vip-btn-gold" onclick="saveVipDiagnosis()">
               <span>💾</span> Guardar en Historial
             </button>
           </div>
           <div>
-            <textarea id="vip-field-diagnostico-mentor" rows="3" class="input-dark" placeholder="Escribe el nuevo diagnóstico del alumno, acuerdos de la sesión y pautas técnicas para que quede registrado en su timeline histórico..." style="width:100%; padding:10px 12px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; resize:vertical; font-family:inherit; font-size:13px; line-height:1.5;"></textarea>
+            <textarea id="vip-field-diagnostico-mentor" rows="3" class="vip-input-luxury" placeholder="Escribe el nuevo diagnóstico del alumno, acuerdos de la sesión y pautas técnicas para que quede registrado en su timeline histórico..." style="resize:vertical; font-size:13.5px; line-height:1.55;"></textarea>
           </div>
         </div>
 
         <!-- HISTORIAL DE DIAGNÓSTICOS DEL TRADER (TIMELINE) -->
-        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
-          <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+        <div class="vip-glass-card">
+          <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:18px;">
             <span>⏳</span> Historial Cronológico de Diagnósticos & Evolución
           </div>
-          <div id="vip-profile-history-container" style="display:flex; flex-direction:column; gap:12px;">
+          <div id="vip-profile-history-container" style="display:flex; flex-direction:column; gap:14px;">
             <!-- Renderizado dinámico de diagnósticos pasados -->
             <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px;">Cargando historial de diagnósticos...</div>
           </div>
@@ -4832,64 +5118,80 @@
 
       <!-- SECCIÓN 2: RENDIMIENTO OPERATIVO -->
       <div id="vip-sec-operativa" class="vip-sec-content" style="display:none;">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:20px;">
-          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px;">
-            <div style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Win Rate Operativo</div>
-            <div id="vip-metric-winrate" style="font-size:24px; font-weight:800; color:#4ade80; margin-top:6px; font-family:var(--mono);">68.4%</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">Operaciones auditadas</div>
+        <div class="vip-kpi-grid">
+          <div class="vip-kpi-card">
+            <div class="vip-kpi-top-bar" style="background:#4ade80; box-shadow:0 0 10px #4ade80;"></div>
+            <div class="vip-kpi-label">
+              <span>Win Rate Operativo</span>
+              <span class="vip-pulse-dot vip-pulse-green"></span>
+            </div>
+            <div id="vip-metric-winrate" class="vip-kpi-val" style="color:#4ade80; text-shadow:0 0 14px rgba(74,222,128,0.3);">68.4%</div>
+            <div class="vip-kpi-sub">Operaciones auditadas</div>
           </div>
-          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px;">
-            <div style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">PnL Acumulado</div>
-            <div id="vip-metric-pnl" style="font-size:24px; font-weight:800; color:#facc15; margin-top:6px; font-family:var(--mono);">+$1,420.50</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">Cuentas auditadas</div>
+          <div class="vip-kpi-card">
+            <div class="vip-kpi-top-bar" style="background:#facc15; box-shadow:0 0 10px #facc15;"></div>
+            <div class="vip-kpi-label">
+              <span>PnL Acumulado</span>
+              <span class="vip-pulse-dot vip-pulse-gold"></span>
+            </div>
+            <div id="vip-metric-pnl" class="vip-kpi-val" style="color:#facc15; text-shadow:0 0 14px rgba(250,204,21,0.3);">+$1,420.50</div>
+            <div class="vip-kpi-sub">Cuentas auditadas</div>
           </div>
-          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px;">
-            <div style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Ratio R:R Promedio</div>
-            <div id="vip-metric-rr" style="font-size:24px; font-weight:800; color:#60a5fa; margin-top:6px; font-family:var(--mono);">1 : 2.8</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">Riesgo / Beneficio</div>
+          <div class="vip-kpi-card">
+            <div class="vip-kpi-top-bar" style="background:#60a5fa; box-shadow:0 0 10px #60a5fa;"></div>
+            <div class="vip-kpi-label">
+              <span>Ratio R:R Promedio</span>
+              <span class="vip-badge-pill blue" style="font-size:9.5px; padding:2px 7px;">INSTITUCIONAL</span>
+            </div>
+            <div id="vip-metric-rr" class="vip-kpi-val" style="color:#60a5fa; text-shadow:0 0 14px rgba(96,165,250,0.3);">1 : 2.8</div>
+            <div class="vip-kpi-sub">Riesgo / Beneficio</div>
           </div>
-          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px;">
-            <div style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Disciplina Sistema Gold FX</div>
-            <div id="vip-metric-disciplina" style="font-size:24px; font-weight:800; color:#a855f7; margin-top:6px; font-family:var(--mono);">92%</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">Cumplimiento del plan</div>
+          <div class="vip-kpi-card">
+            <div class="vip-kpi-top-bar" style="background:#c084fc; box-shadow:0 0 10px #c084fc;"></div>
+            <div class="vip-kpi-label">
+              <span>Disciplina Gold FX</span>
+              <span class="vip-pulse-dot vip-pulse-purple"></span>
+            </div>
+            <div id="vip-metric-disciplina" class="vip-kpi-val" style="color:#c084fc; text-shadow:0 0 14px rgba(192,132,252,0.3);">92%</div>
+            <div class="vip-kpi-sub">Cumplimiento del plan</div>
           </div>
         </div>
 
         <!-- Banner de Auditoría 360 al Journal Completo -->
-        <div style="background:linear-gradient(135deg, rgba(234,179,8,0.12), rgba(168,85,247,0.08)); border:1px solid rgba(234,179,8,0.3); border-radius:14px; padding:18px 22px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <div class="vip-glass-card gold-accent" style="margin-bottom:22px; padding:20px 26px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
           <div>
-            <div style="font-size:15px; font-weight:800; color:#facc15; display:flex; align-items:center; gap:8px;">
+            <div style="font-size:16px; font-weight:900; color:#facc15; display:flex; align-items:center; gap:8px;">
               <span>👁️</span> Auditoría Completa del Journal del Estudiante
             </div>
-            <div style="font-size:12px; color:#cbd5e1; margin-top:4px;">
+            <div style="font-size:12.5px; color:#cbd5e1; margin-top:4px;">
               Entra directamente al Dashboard, Trade Log, Calendario y Estadísticas completas de este alumno en modo auditor en vivo.
             </div>
           </div>
-          <button type="button" class="btn-primary" onclick="launchAuditStudentJournal()" style="background:#facc15; color:#000; font-weight:800; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-size:12.5px; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(234,179,8,0.3);">
+          <button type="button" class="vip-btn-gold" onclick="launchAuditStudentJournal()" style="font-size:13px; padding:10px 22px;">
             <span>🚀</span> Entrar al Journal de este Alumno
           </button>
         </div>
 
-        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
-          <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+        <div class="vip-glass-card">
+          <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
             <span>🔍</span> Operaciones Recientes Auditadas
           </div>
-          <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
+          <div class="vip-table-wrap" style="overflow-x:auto;">
+            <table class="vip-table">
               <thead>
-                <tr style="border-bottom:1px solid rgba(255,255,255,0.08); text-align:left; color:#94a3b8; font-size:11px; text-transform:uppercase;">
-                  <th style="padding:10px 14px;">Fecha</th>
-                  <th style="padding:10px 14px;">Activo / Par</th>
-                  <th style="padding:10px 14px;">Dirección</th>
-                  <th style="padding:10px 14px;">Resultado (PnL)</th>
-                  <th style="padding:10px 14px;">R:R</th>
-                  <th style="padding:10px 14px;">Checklist Gold FX</th>
-                  <th style="padding:10px 14px;">Retroalimentación Mentor</th>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Activo / Par</th>
+                  <th>Dirección</th>
+                  <th>Resultado (PnL)</th>
+                  <th>R:R</th>
+                  <th>Checklist Gold FX</th>
+                  <th>Retroalimentación Mentor</th>
                 </tr>
               </thead>
               <tbody id="vip-audit-trades-tbody">
                 <tr>
-                  <td colspan="7" style="padding:24px; text-align:center; color:#94a3b8;">Cargando operaciones del estudiante VIP...</td>
+                  <td colspan="7" style="padding:28px; text-align:center; color:#94a3b8;">Cargando operaciones del estudiante VIP...</td>
                 </tr>
               </tbody>
             </table>
@@ -4899,39 +5201,39 @@
 
       <!-- SECCIÓN 3: PSICOTRADING -->
       <div id="vip-sec-psico" class="vip-sec-content" style="display:none;">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px; margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px; margin-bottom:22px;">
           <!-- Registro de Emociones -->
-          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
-            <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+          <div class="vip-glass-card">
+            <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
               <span>🧠</span> Registrar Estado Emocional de Sesión
             </div>
-            <div style="display:flex; flex-direction:column; gap:12px; font-size:12.5px;">
+            <div style="display:flex; flex-direction:column; gap:14px;">
               <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700;">ANTES DE OPERAR (Preparación Mental):</label>
-                <select id="vip-psico-antes" style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; outline:none;">
+                <label class="vip-label-luxury">ANTES DE OPERAR (Preparación Mental):</label>
+                <select id="vip-psico-antes" class="vip-input-luxury" style="cursor:pointer;">
                   <option value="calma">🟢 Tranquilo, enfocado y con plan claro</option>
                   <option value="ansiedad">🟡 Con ansiedad o prisa por ver entradas</option>
                   <option value="fatiga">🔴 Cansado o distraído por factores externos</option>
                 </select>
               </div>
               <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700;">DURANTE LA OPERACIÓN (Gestión en Vivo):</label>
-                <select id="vip-psico-durante" style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; outline:none;">
+                <label class="vip-label-luxury">DURANTE LA OPERACIÓN (Gestión en Vivo):</label>
+                <select id="vip-psico-durante" class="vip-input-luxury" style="cursor:pointer;">
                   <option value="disciplina">🟢 Respeté el Stop Loss y el Take Profit sin intervenir</option>
                   <option value="duda">🟡 Duda / Mover Stop Loss prematuramente</option>
                   <option value="fomo">🔴 Entrada por FOMO fuera de la zona</option>
                 </select>
               </div>
               <div>
-                <label style="color:#94a3b8; font-size:11px; font-weight:700;">DESPUÉS DE CERRAR (Cierre de Jornada):</label>
-                <select id="vip-psico-despues" style="width:100%; margin-top:4px; padding:8px 10px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; outline:none;">
+                <label class="vip-label-luxury">DESPUÉS DE CERRAR (Cierre de Jornada):</label>
+                <select id="vip-psico-despues" class="vip-input-luxury" style="cursor:pointer;">
                   <option value="aceptacion">🟢 Aceptación total del resultado sin importar PnL</option>
                   <option value="euforia">🟡 Euforia tras ganar (tentación de sobreoperar)</option>
                   <option value="frustracion">🔴 Frustración o deseo de revancha (Revenge trading)</option>
                 </select>
               </div>
               <div style="margin-top:6px; text-align:right;">
-                <button type="button" class="btn-primary" onclick="saveVipEmotionalSession()" style="font-size:11.5px; padding:6px 14px; border-radius:6px; cursor:pointer; background:#facc15; color:#000; font-weight:800; border:none;">
+                <button type="button" class="vip-btn-gold" onclick="saveVipEmotionalSession()">
                   <span>💾</span> Guardar en Historial Psicológico
                 </button>
               </div>
@@ -4939,28 +5241,28 @@
           </div>
 
           <!-- Zona Confidencial de la Psicóloga -->
-          <div style="background:#121214; border:1px solid rgba(168,85,247,0.25); border-radius:14px; padding:20px; position:relative; display:flex; flex-direction:column; justify-content:space-between;">
+          <div class="vip-glass-card purple-accent" style="display:flex; flex-direction:column; justify-content:space-between;">
             <div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                <div style="font-size:14px; font-weight:800; color:#c084fc; display:flex; align-items:center; gap:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div style="font-size:15px; font-weight:900; color:#c084fc; display:flex; align-items:center; gap:8px;">
                   <span>🔒</span> Diagnóstico Confidencial de Psicología
                 </div>
-                <span style="font-size:10px; font-weight:700; background:rgba(168,85,247,0.15); color:#d8b4fe; padding:2px 8px; border-radius:4px; border:1px solid rgba(168,85,247,0.3);">Área Protegida</span>
+                <span class="vip-badge-pill purple"><span class="vip-pulse-dot vip-pulse-purple"></span> Área Protegida</span>
               </div>
               <div>
-                <textarea id="vip-field-notas-psicologa" rows="6" class="input-dark" placeholder="Observaciones y pautas redactadas por la profesional de psicología (patrones de autosabotaje, tolerancia a la pérdida, control de impulsos)..." style="width:100%; padding:10px 12px; background:#18181b; border:1px solid rgba(168,85,247,0.2); border-radius:8px; color:#fff; resize:vertical; font-family:inherit; font-size:12.5px; line-height:1.5;"></textarea>
+                <textarea id="vip-field-notas-psicologa" rows="6" class="vip-input-luxury" placeholder="Observaciones y pautas redactadas por la profesional de psicología (patrones de autosabotaje, tolerancia a la pérdida, control de impulsos)..." style="resize:vertical; line-height:1.5;"></textarea>
               </div>
             </div>
-            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
               <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <input type="file" id="vip-psico-file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none;" onchange="handleVipPsicoFileSelected(this)">
-                <button type="button" class="btn-grey" onclick="document.getElementById('vip-psico-file').click()" style="font-size:11.5px; padding:6px 12px; border-radius:6px; color:#c084fc; border-color:rgba(168,85,247,0.35); background:rgba(168,85,247,0.08); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Adjuntar archivo PDF o Word con pautas o ejercicios">
+                <button type="button" class="btn-grey" onclick="document.getElementById('vip-psico-file').click()" style="font-size:12px; font-weight:700; padding:7px 14px; border-radius:8px; color:#c084fc; border-color:rgba(168,85,247,0.4); background:rgba(168,85,247,0.1); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Adjuntar archivo PDF o Word con pautas o ejercicios">
                   <span>📎</span> Adjuntar Documento (PDF / Word)
                 </button>
-                <span id="vip-psico-file-name" style="font-size:11px; color:#c084fc; font-weight:600; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+                <span id="vip-psico-file-name" style="font-size:11.5px; color:#c084fc; font-weight:700; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
                 <button type="button" id="vip-psico-file-clear" onclick="clearVipPsicoFile()" style="display:none; background:none; border:none; color:#ef4444; font-size:14px; cursor:pointer; padding:0;" title="Quitar archivo">✖</button>
               </div>
-              <button type="button" class="btn-primary" onclick="saveVipPsychologyNotes()" style="font-size:11.5px; padding:6px 14px; border-radius:6px; cursor:pointer; background:#a855f7; color:#fff; font-weight:700; border:none;">
+              <button type="button" class="vip-btn-purple" onclick="saveVipPsychologyNotes()">
                 <span>💾</span> Guardar Nota Confidencial
               </button>
             </div>
@@ -4968,11 +5270,11 @@
         </div>
 
         <!-- HISTORIAL DE SESIONES EMOCIONALES & NOTAS PSICOLÓGICAS -->
-        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
-          <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+        <div class="vip-glass-card">
+          <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:18px;">
             <span>⏳</span> Historial de Evaluaciones de Psicotrading
           </div>
-          <div id="vip-psico-history-container" style="display:flex; flex-direction:column; gap:12px;">
+          <div id="vip-psico-history-container" style="display:flex; flex-direction:column; gap:14px;">
             <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px;">Cargando historial de psicotrading...</div>
           </div>
         </div>
@@ -4980,45 +5282,47 @@
 
       <!-- SECCIÓN 4: CALENDARIO & SESIONES -->
       <div id="vip-sec-calendario" class="vip-sec-content" style="display:none;">
-        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px; margin-bottom:20px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+        <div class="vip-glass-card" style="margin-bottom:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
             <div>
-              <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+              <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
                 <span>📅</span> Calendario de Sesiones Personalizadas
               </div>
-              <div style="font-size:12px; color:#94a3b8; margin-top:2px;">Sesiones 1 a 1 agendadas con Esteban Ochoa, Steven y Psicóloga</div>
+              <div style="font-size:12.5px; color:#94a3b8; margin-top:2px;">Sesiones 1 a 1 agendadas con Esteban Ochoa, Steven y Psicóloga</div>
             </div>
-            <button type="button" class="btn-primary" onclick="openNewSessionModal()" style="font-size:12px; padding:8px 16px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#facc15; color:#000; font-weight:800; border:none;">
+            <button type="button" class="vip-btn-gold" onclick="openNewSessionModal()">
               <span>➕</span> Agendar Nueva Sesión
             </button>
           </div>
 
           <!-- Mini Cuadrícula Visual de Calendario -->
-          <div style="background:#18181b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px; margin-bottom:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <span id="vip-calendar-month-name" style="font-size:13px; font-weight:800; color:#facc15; text-transform:uppercase;">Noviembre 2026</span>
-              <span style="font-size:11px; color:#94a3b8;">● Días con sesiones personalizadas programadas</span>
+          <div style="background:rgba(8,8,12,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:18px; margin-bottom:22px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+              <span id="vip-calendar-month-name" style="font-size:13px; font-weight:900; color:#facc15; text-transform:uppercase; letter-spacing:0.8px;">Noviembre 2026</span>
+              <span style="font-size:11px; color:#94a3b8; display:flex; align-items:center; gap:6px;">
+                <span class="vip-pulse-dot vip-pulse-gold"></span> Días con sesiones programadas
+              </span>
             </div>
             <div id="vip-calendar-mini-grid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; text-align:center; font-size:11.5px;">
               <!-- Generado dinámicamente -->
             </div>
           </div>
 
-          <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
+          <div class="vip-table-wrap" style="overflow-x:auto;">
+            <table class="vip-table">
               <thead>
-                <tr style="border-bottom:1px solid rgba(255,255,255,0.08); text-align:left; color:#94a3b8; font-size:11px; text-transform:uppercase;">
-                  <th style="padding:10px 14px;">Fecha & Hora</th>
-                  <th style="padding:10px 14px;">Tipo de Sesión</th>
-                  <th style="padding:10px 14px;">Mentor Responsable</th>
-                  <th style="padding:10px 14px;">Enlace (Zoom/Meet)</th>
-                  <th style="padding:10px 14px;">Estado</th>
-                  <th style="padding:10px 14px; text-align:right;">Acciones</th>
+                <tr>
+                  <th>Fecha & Hora</th>
+                  <th>Tipo de Sesión</th>
+                  <th>Mentor Responsable</th>
+                  <th>Enlace (Zoom/Meet)</th>
+                  <th>Estado</th>
+                  <th style="text-align:right;">Acciones</th>
                 </tr>
               </thead>
               <tbody id="vip-sessions-tbody">
                 <tr>
-                  <td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay sesiones agendadas para este estudiante.</td>
+                  <td colspan="6" style="padding:28px; text-align:center; color:#94a3b8;">No hay sesiones agendadas para este estudiante.</td>
                 </tr>
               </tbody>
             </table>
@@ -5028,33 +5332,33 @@
 
       <!-- SECCIÓN 5: HOMEWORKS & TAREAS -->
       <div id="vip-sec-tareas" class="vip-sec-content" style="display:none;">
-        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px; margin-bottom:20px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+        <div class="vip-glass-card" style="margin-bottom:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
             <div>
-              <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+              <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
                 <span>📝</span> Plan Individual de Tareas & Homeworks
               </div>
-              <div style="font-size:12px; color:#94a3b8; margin-top:2px;">Asignación de actividades, entrega de evidencias y correcciones del mentor</div>
+              <div style="font-size:12.5px; color:#94a3b8; margin-top:2px;">Asignación de actividades, entrega de evidencias y correcciones del mentor</div>
             </div>
-            <button type="button" class="btn-primary" onclick="openNewHomeworkModal()" style="font-size:12px; padding:8px 16px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#facc15; color:#000; font-weight:800; border:none;">
+            <button type="button" class="vip-btn-gold" onclick="openNewHomeworkModal()">
               <span>➕</span> Asignar Homework
             </button>
           </div>
-          <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
+          <div class="vip-table-wrap" style="overflow-x:auto;">
+            <table class="vip-table">
               <thead>
-                <tr style="border-bottom:1px solid rgba(255,255,255,0.08); text-align:left; color:#94a3b8; font-size:11px; text-transform:uppercase;">
-                  <th style="padding:10px 14px;">Tarea / Actividad</th>
-                  <th style="padding:10px 14px;">Objetivo de Mejora</th>
-                  <th style="padding:10px 14px;">Asignada Por</th>
-                  <th style="padding:10px 14px;">Fecha Límite</th>
-                  <th style="padding:10px 14px;">Estado</th>
-                  <th style="padding:10px 14px; text-align:right;">Resolución & Feedback</th>
+                <tr>
+                  <th>Tarea / Actividad</th>
+                  <th>Objetivo de Mejora</th>
+                  <th>Asignada Por</th>
+                  <th>Fecha Límite</th>
+                  <th>Estado</th>
+                  <th style="text-align:right;">Resolución & Feedback</th>
                 </tr>
               </thead>
               <tbody id="vip-homeworks-tbody">
                 <tr>
-                  <td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay tareas asignadas actualmente.</td>
+                  <td colspan="6" style="padding:28px; text-align:center; color:#94a3b8;">No hay tareas asignadas actualmente.</td>
                 </tr>
               </tbody>
             </table>
@@ -5064,32 +5368,32 @@
 
       <!-- SECCIÓN 6: EVALUACIÓN BIMESTRAL -->
       <div id="vip-sec-evaluaciones" class="vip-sec-content" style="display:none;">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px; margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px; margin-bottom:22px;">
           
           <!-- TARJETA 1: FORMULARIO Y CASILLA DE ESTADO DE PRESENTACIÓN -->
-          <div style="background:#121214; border:1px solid rgba(234,179,8,0.25); border-radius:14px; padding:22px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div class="vip-glass-card gold-accent" style="display:flex; flex-direction:column; justify-content:space-between;">
             <div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                <div style="font-size:15px; font-weight:800; color:#facc15; display:flex; align-items:center; gap:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                <div style="font-size:16px; font-weight:900; color:#facc15; display:flex; align-items:center; gap:8px;">
                   <span>📋</span> Evaluación Bimestral Oficial
                 </div>
-                <span id="vip-eval-status-badge" style="font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px; background:rgba(234,179,8,0.15); color:#facc15; border:1px solid rgba(234,179,8,0.35);">
-                  ⏳ Pendiente por presentar
+                <span id="vip-eval-status-badge" class="vip-badge-pill gold">
+                  <span class="vip-pulse-dot vip-pulse-gold"></span> Pendiente por presentar
                 </span>
               </div>
-              <p style="font-size:12.5px; color:#cbd5e1; line-height:1.5; margin:0 0 16px 0;">
+              <p style="font-size:13px; color:#cbd5e1; line-height:1.55; margin:0 0 18px 0;">
                 Completa tu formulario bimestral para que el equipo de mentores evalúe tu avance técnico, psicológico y disciplinario.
               </p>
 
               <!-- CASILLA DE SI YA LO PRESENTÉ O NO -->
-              <div style="background:#18181b; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px; margin-bottom:16px;">
+              <div style="background:rgba(8,8,12,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; margin-bottom:18px;">
                 <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer; user-select:none;">
-                  <input type="checkbox" id="vip-eval-submitted-checkbox" onchange="toggleVipEvaluationSubmitted(this.checked)" style="width:18px; height:18px; margin-top:2px; accent-color:#facc15; cursor:pointer;">
+                  <input type="checkbox" id="vip-eval-submitted-checkbox" onchange="toggleVipEvaluationSubmitted(this.checked)" style="width:19px; height:19px; margin-top:2px; accent-color:#facc15; cursor:pointer;">
                   <div>
-                    <div style="font-size:13px; font-weight:700; color:#fff;" id="vip-eval-submitted-label">
+                    <div style="font-size:13.5px; font-weight:800; color:#fff;" id="vip-eval-submitted-label">
                       ¿Ya presentaste tu evaluación bimestral?
                     </div>
-                    <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;" id="vip-eval-submitted-subtext">
+                    <div style="font-size:11.5px; color:#94a3b8; margin-top:3px;" id="vip-eval-submitted-subtext">
                       Marca esta casilla una vez hayas llenado y enviado el formulario.
                     </div>
                   </div>
@@ -5099,55 +5403,55 @@
 
             <!-- BOTÓN ABRIR FORMULARIO DE EVALUACIÓN -->
             <div style="margin-top:10px;">
-              <a id="vip-eval-external-btn" href="javascript:void(0)" onclick="openVipEvaluationForm(event)" class="btn-primary" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; width:100%; padding:12px; border-radius:8px; font-size:13px; font-weight:800; background:linear-gradient(135deg, #facc15, #ca8a04); color:#000; box-shadow:0 4px 14px rgba(234,179,8,0.25); cursor:pointer;">
+              <a id="vip-eval-external-btn" href="javascript:void(0)" onclick="openVipEvaluationForm(event)" class="vip-btn-gold" style="width:100%; justify-content:center; padding:13px; font-size:13.5px; text-decoration:none; box-sizing:border-box;">
                 <span>🚀</span> Abrir Formulario de Evaluación
               </a>
             </div>
           </div>
 
           <!-- TARJETA 2: RETROALIMENTACIÓN DEL ADMIN / MENTOR -->
-          <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:22px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div class="vip-glass-card" style="display:flex; flex-direction:column; justify-content:space-between;">
             <div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                <div style="font-size:15px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                <div style="font-size:16px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
                   <span>✍️</span> Retroalimentación del Mentor
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
-                  <button type="button" class="btn-primary" onclick="openNewEvaluationModal()" style="font-size:11px; padding:4px 10px; border-radius:6px; cursor:pointer; background:#a855f7; color:#fff; font-weight:700; border:none;" title="Registrar ciclo en el historial comparativo">
+                  <button type="button" class="vip-btn-purple" onclick="openNewEvaluationModal()" style="font-size:11.5px; padding:6px 12px;" title="Registrar ciclo en el historial comparativo">
                     <span>➕</span> Registrar Período
                   </button>
                 </div>
               </div>
-              <p style="font-size:12px; color:#94a3b8; line-height:1.4; margin:0 0 12px 0;">
+              <p style="font-size:12.5px; color:#94a3b8; line-height:1.45; margin:0 0 14px 0;">
                 Observaciones detalladas, correcciones técnicas y feedback proporcionado por el mentor tras revisar la evaluación:
               </p>
 
               <!-- CAMPO DE TEXTO PARA QUE EL ADMIN ESCRIBA RETROALIMENTACIÓN -->
               <div id="vip-eval-feedback-edit-container" style="display:block;">
-                <textarea id="vip-eval-feedback-input" class="input-dark" rows="4" placeholder="Escribe aquí la retroalimentación, observaciones y plan de mejora para el alumno..." style="width:100%; padding:10px 12px; background:#18181b; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:12.5px; line-height:1.45; resize:vertical; outline:none; box-sizing:border-box;"></textarea>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:8px;">
-                  <span id="vip-eval-feedback-date" style="font-size:11px; color:#64748b; font-family:var(--mono);"></span>
-                  <button type="button" class="btn-primary" onclick="saveVipEvalFeedback()" style="font-size:11.5px; padding:6px 14px; border-radius:6px; cursor:pointer; background:#facc15; color:#000; font-weight:800; border:none;">
+                <textarea id="vip-eval-feedback-input" class="vip-input-luxury" rows="4" placeholder="Escribe aquí la retroalimentación, observaciones y plan de mejora para el alumno..." style="resize:vertical;"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; flex-wrap:wrap; gap:8px;">
+                  <span id="vip-eval-feedback-date" style="font-size:11.5px; color:#64748b; font-family:var(--mono);"></span>
+                  <button type="button" class="vip-btn-gold" onclick="saveVipEvalFeedback()">
                     <span>💾</span> Guardar Retroalimentación
                   </button>
                 </div>
               </div>
 
               <!-- VISTA DE SOLO LECTURA (PARA EL ESTUDIANTE) -->
-              <div id="vip-eval-feedback-view-container" style="display:none; background:#18181b; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:14px; font-size:12.5px; color:#e2e8f0; line-height:1.5;">
+              <div id="vip-eval-feedback-view-container" style="display:none; background:rgba(8,8,12,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:16px; font-size:13px; color:#e2e8f0; line-height:1.55;">
                 <div id="vip-eval-feedback-view-text" style="white-space:pre-wrap;">Aún no hay retroalimentación registrada para este período.</div>
-                <div id="vip-eval-feedback-view-meta" style="margin-top:8px; font-size:11px; color:#94a3b8; font-family:var(--mono);"></div>
+                <div id="vip-eval-feedback-view-meta" style="margin-top:10px; font-size:11.5px; color:#94a3b8; font-family:var(--mono);"></div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- HISTORIAL DE EVALUACIONES BIMESTRALES -->
-        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px;">
-          <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+        <div class="vip-glass-card">
+          <div style="font-size:15px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:18px;">
             <span>⏳</span> Historial Comparativo de Evaluaciones Bimestrales
           </div>
-          <div id="vip-eval-history-container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:14px;">
+          <div id="vip-eval-history-container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
             <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px;">Cargando historial de evaluaciones bimestrales...</div>
           </div>
         </div>
@@ -5155,27 +5459,27 @@
 
       <!-- SECCIÓN 7: EVOLUCIÓN 360° -->
       <div id="vip-sec-evolucion" class="vip-sec-content" style="display:none;">
-        <div style="background:#121214; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:20px; margin-bottom:20px;">
-          <div style="font-size:14px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+        <div class="vip-glass-card" style="margin-bottom:22px;">
+          <div style="font-size:16px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
             <span>📈</span> Resumen de Progreso y Cumplimiento
           </div>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px;">
-            <div style="background:#18181b; border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:16px;">
-              <div style="font-size:12px; font-weight:700; color:#94a3b8; margin-bottom:8px;">Cumplimiento de Tareas:</div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <div style="flex:1; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden;">
-                  <div id="vip-evolucion-tasks-bar" style="width:85%; height:100%; background:#4ade80;"></div>
-                </div>
-                <span id="vip-evolucion-tasks-val" style="font-size:12px; font-weight:800; color:#4ade80; font-family:var(--mono);">85%</span>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+            <div style="background:rgba(8,8,12,0.7); border:1px solid rgba(255,255,255,0.06); border-radius:14px; padding:18px;">
+              <div style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.7px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Cumplimiento de Tareas:</span>
+                <span id="vip-evolucion-tasks-val" style="font-size:14px; font-weight:900; color:#4ade80; font-family:var(--mono);">85%</span>
+              </div>
+              <div style="width:100%; height:10px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden;">
+                <div id="vip-evolucion-tasks-bar" style="width:85%; height:100%; background:linear-gradient(90deg, #22c55e, #4ade80); box-shadow:0 0 10px rgba(74,222,128,0.5);"></div>
               </div>
             </div>
-            <div style="background:#18181b; border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:16px;">
-              <div style="font-size:12px; font-weight:700; color:#94a3b8; margin-bottom:8px;">Asistencia a Sesiones:</div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <div style="flex:1; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden;">
-                  <div id="vip-evolucion-sessions-bar" style="width:100%; height:100%; background:#60a5fa;"></div>
-                </div>
-                <span id="vip-evolucion-sessions-val" style="font-size:12px; font-weight:800; color:#60a5fa; font-family:var(--mono);">100%</span>
+            <div style="background:rgba(8,8,12,0.7); border:1px solid rgba(255,255,255,0.06); border-radius:14px; padding:18px;">
+              <div style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.7px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Asistencia a Sesiones:</span>
+                <span id="vip-evolucion-sessions-val" style="font-size:14px; font-weight:900; color:#60a5fa; font-family:var(--mono);">100%</span>
+              </div>
+              <div style="width:100%; height:10px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden;">
+                <div id="vip-evolucion-sessions-bar" style="width:100%; height:100%; background:linear-gradient(90deg, #3b82f6, #60a5fa); box-shadow:0 0 10px rgba(96,165,250,0.5);"></div>
               </div>
             </div>
           </div>
@@ -13455,8 +13759,8 @@ function _renderAnalisis_orig() {
       const history = Array.isArray(vipData.diagnosis_history) ? vipData.diagnosis_history : [];
       if (history.length === 0) {
         container.innerHTML = `
-          <div style="text-align:center; padding:20px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
-            Aún no hay diagnósticos previos registrados. Escribe uno arriba y haz clic en <strong>"Guardar en Historial"</strong>.
+          <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.1);">
+            Aún no hay diagnósticos previos registrados. Escribe uno arriba y haz clic en <strong style="color:#facc15;">"Guardar en Historial"</strong>.
           </div>
         `;
         return;
@@ -13465,20 +13769,23 @@ function _renderAnalisis_orig() {
       container.innerHTML = history.slice().reverse().map((item, idx) => {
         const dateStr = item.date ? new Date(item.date).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
         return `
-          <div style="background:#18181b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px; position:relative;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:11px; font-weight:800; background:rgba(234,179,8,0.15); color:#facc15; padding:2px 8px; border-radius:4px; font-family:var(--mono);">📅 ${dateStr}</span>
-                <span style="font-size:12px; font-weight:700; color:#fff;">✍️ Por: ${escapeHtml(item.author || 'Mentor')}</span>
+          <div class="vip-glass-card gold-accent" style="padding:18px 20px; position:relative; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="vip-badge-pill gold" style="font-size:10.5px; font-family:var(--mono); padding:3px 10px;">
+                  <span class="vip-pulse-dot vip-pulse-gold"></span> 📅 ${dateStr}
+                </span>
+                <span style="font-size:12.5px; font-weight:800; color:#fff;">✍️ Por: ${escapeHtml(item.author || 'Mentor Gold FX')}</span>
               </div>
-              <button type="button" class="btn-grey" onclick="deleteVipDiagnosisEntry('${item.id}')" style="font-size:10.5px; padding:2px 7px; border-radius:4px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); cursor:pointer;">
+              <button type="button" class="btn-grey" onclick="deleteVipDiagnosisEntry('${item.id}')" style="font-size:11px; padding:3px 9px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" title="Eliminar este diagnóstico">
                 🗑️ Borrar
               </button>
             </div>
-            ${item.objetivoCapital ? `<div style="font-size:11.5px; color:#94a3b8; margin-bottom:4px;"><strong>Meta de Capital:</strong> ${escapeHtml(item.objetivoCapital)}</div>` : ''}
-            ${item.difTecnica ? `<div style="font-size:11.5px; color:#fca5a5; margin-bottom:4px;"><strong>Dificultad Técnica:</strong> ${escapeHtml(item.difTecnica)}</div>` : ''}
-            ${item.difEmocional ? `<div style="font-size:11.5px; color:#fde047; margin-bottom:6px;"><strong>Bloqueo Emocional:</strong> ${escapeHtml(item.difEmocional)}</div>` : ''}
-            <div style="font-size:12.5px; color:#f8fafc; line-height:1.5; background:rgba(0,0,0,0.3); border-left:3px solid #facc15; padding:8px 12px; border-radius:4px;">
+            ${item.nivel ? `<div style="font-size:12px; color:#cbd5e1; margin-bottom:4px;"><strong>Nivel Registrado:</strong> <span style="color:#facc15;">${escapeHtml(item.nivel)}</span></div>` : ''}
+            ${item.objetivoCapital ? `<div style="font-size:12px; color:#94a3b8; margin-bottom:4px;"><strong>Meta de Capital:</strong> <span style="color:#60a5fa;">${escapeHtml(item.objetivoCapital)}</span></div>` : ''}
+            ${item.difTecnica ? `<div style="font-size:12px; color:#fca5a5; margin-bottom:4px;"><strong>Dificultad Técnica:</strong> ${escapeHtml(item.difTecnica)}</div>` : ''}
+            ${item.difEmocional ? `<div style="font-size:12px; color:#fde047; margin-bottom:8px;"><strong>Bloqueo Emocional:</strong> ${escapeHtml(item.difEmocional)}</div>` : ''}
+            <div style="font-size:13px; color:#f8fafc; line-height:1.6; background:rgba(0,0,0,0.4); border-left:3px solid #facc15; padding:12px 16px; border-radius:8px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);">
               ${escapeHtml(item.diagnosis || 'Sin notas adicionales')}
             </div>
           </div>
@@ -13691,7 +13998,7 @@ function _renderAnalisis_orig() {
       const history = Array.isArray(vipData.psychology_history) ? vipData.psychology_history : [];
       if (history.length === 0) {
         container.innerHTML = `
-          <div style="text-align:center; padding:20px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
+          <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.1);">
             No hay registros emocionales ni notas de psicología guardadas aún.
           </div>
         `;
@@ -13701,27 +14008,30 @@ function _renderAnalisis_orig() {
       container.innerHTML = history.slice().reverse().map(item => {
         const dateStr = item.date ? new Date(item.date).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
         return `
-          <div style="background:#18181b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-              <span style="font-size:11px; font-weight:800; background:rgba(168,85,247,0.15); color:#c084fc; padding:2px 8px; border-radius:4px; font-family:var(--mono);">📅 ${dateStr}</span>
-              <span style="font-size:12px; font-weight:700; color:#cbd5e1;">Por: ${escapeHtml(item.author || 'Psicología Gold FX')}</span>
+          <div class="vip-glass-card purple-accent" style="padding:18px 20px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+              <span class="vip-badge-pill purple" style="font-size:10.5px; font-family:var(--mono); padding:3px 10px;">
+                <span class="vip-pulse-dot vip-pulse-purple"></span> 📅 ${dateStr}
+              </span>
+              <span style="font-size:12px; font-weight:800; color:#e2e8f0;">Por: ${escapeHtml(item.author || 'Psicología Gold FX')}</span>
             </div>
             ${item.before ? `
-              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
-                <span style="font-size:11px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Antes: <strong>${escapeHtml(item.before)}</strong></span>
-                <span style="font-size:11px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Durante: <strong>${escapeHtml(item.during)}</strong></span>
-                <span style="font-size:11px; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Después: <strong>${escapeHtml(item.after)}</strong></span>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+                <span style="font-size:11.5px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:5px 12px; border-radius:8px; color:#cbd5e1;">Antes: <strong style="color:#4ade80;">${escapeHtml(item.before)}</strong></span>
+                <span style="font-size:11.5px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:5px 12px; border-radius:8px; color:#cbd5e1;">Durante: <strong style="color:#60a5fa;">${escapeHtml(item.during)}</strong></span>
+                <span style="font-size:11.5px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:5px 12px; border-radius:8px; color:#cbd5e1;">Después: <strong style="color:#facc15;">${escapeHtml(item.after)}</strong></span>
               </div>
             ` : ''}
             ${item.notes ? `
-              <div style="background:rgba(168,85,247,0.08); border-left:3px solid #a855f7; padding:8px 12px; border-radius:4px; font-size:12.5px; color:#f3e8ff; line-height:1.5;">
-                <strong>Nota Profesional:</strong> ${escapeHtml(item.notes)}
+              <div style="background:rgba(168,85,247,0.08); border-left:3px solid #c084fc; padding:12px 16px; border-radius:8px; font-size:13px; color:#f3e8ff; line-height:1.6; margin-bottom:8px;">
+                <div style="font-size:11px; font-weight:800; color:#c084fc; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px;">Nota Profesional Confidencial</div>
+                ${escapeHtml(item.notes)}
               </div>
             ` : ''}
             ${item.file?.url ? `
-              <div style="margin-top:10px;">
-                <a href="${escapeHtml(item.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:7px; background:rgba(168,85,247,0.15); color:#d8b4fe; border:1px solid rgba(168,85,247,0.35); padding:6px 14px; border-radius:6px; font-size:11.5px; font-weight:700; text-decoration:none;">
-                  <span>📄</span> Documento Adjunto: <u>${escapeHtml(item.file.name || 'Archivo')}</u>
+              <div style="margin-top:12px;">
+                <a href="${escapeHtml(item.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, rgba(168,85,247,0.2) 0%, rgba(126,34,206,0.2) 100%); color:#e9d5ff; border:1px solid rgba(168,85,247,0.45); padding:8px 16px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; box-shadow:0 4px 12px rgba(168,85,247,0.15); transition:all 0.15s ease;">
+                  <span style="font-size:14px;">📄</span> Documento Adjunto: <u style="text-underline-offset:2px;">${escapeHtml(item.file.name || 'Archivo')}</u>
                 </a>
               </div>
             ` : ''}
@@ -13804,44 +14114,46 @@ function _renderAnalisis_orig() {
       const miniGrid = document.getElementById('vip-calendar-mini-grid');
       if (miniGrid) {
         const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-        let gridHtml = days.map(d => `<div style="color:#64748b; font-weight:700; padding:4px;">${d}</div>`).join('');
+        let gridHtml = days.map(d => `<div style="color:#64748b; font-weight:800; padding:6px 4px; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">${d}</div>`).join('');
         for (let i = 1; i <= 30; i++) {
           const hasSession = sessions.some(s => s.datetime && new Date(s.datetime).getDate() === i);
-          const bg = hasSession ? 'background:rgba(234,179,8,0.2); border:1px solid rgba(234,179,8,0.5); color:#facc15; font-weight:800;' : 'background:rgba(255,255,255,0.02); color:#94a3b8;';
-          gridHtml += `<div style="${bg} border-radius:6px; padding:6px 2px; position:relative;">${i} ${hasSession ? '●' : ''}</div>`;
+          const bg = hasSession ? 'background:rgba(234,179,8,0.2); border:1px solid rgba(234,179,8,0.5); color:#facc15; font-weight:800; box-shadow:0 0 10px rgba(234,179,8,0.25);' : 'background:rgba(255,255,255,0.02); color:#94a3b8; border:1px solid rgba(255,255,255,0.04);';
+          gridHtml += `<div style="${bg} border-radius:8px; padding:8px 2px; position:relative; font-family:var(--mono);">${i} ${hasSession ? '<span style="color:#facc15;">●</span>' : ''}</div>`;
         }
         miniGrid.innerHTML = gridHtml;
       }
 
       if (!tbody) return;
       if (sessions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay sesiones agendadas para este estudiante. Haz clic en "Agendar Nueva Sesión".</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px; text-align:center; color:#94a3b8;">No hay sesiones agendadas para este estudiante. Haz clic en "Agendar Nueva Sesión".</td></tr>';
         return;
       }
 
       tbody.innerHTML = sessions.slice().reverse().map(s => {
         let dateFormatted = s.datetime ? new Date(s.datetime).toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Por definir';
         const statusMap = {
-          agendada: { text: '🟡 Agendada', color: '#facc15' },
-          completada: { text: '🟢 Completada', color: '#4ade80' },
-          reprogramada: { text: '🔵 Reprogramada', color: '#60a5fa' },
-          cancelada: { text: '🔴 Cancelada', color: '#ef4444' }
+          agendada: { text: 'Agendada', color: '#facc15', bg: 'rgba(234,179,8,0.15)', border: 'rgba(234,179,8,0.4)', dot: 'vip-pulse-gold' },
+          completada: { text: 'Completada', color: '#4ade80', bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.4)', dot: 'vip-pulse-green' },
+          reprogramada: { text: 'Reprogramada', color: '#60a5fa', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.4)', dot: 'vip-pulse-blue' },
+          cancelada: { text: 'Cancelada', color: '#f87171', bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.4)', dot: 'vip-pulse-red' }
         };
         const st = statusMap[s.status || 'agendada'] || statusMap.agendada;
 
         return `
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <td style="padding:10px 14px; font-weight:700; color:#fff; font-family:var(--mono);">${dateFormatted}</td>
-            <td style="padding:10px 14px; color:#facc15; font-weight:600;">${escapeHtml(s.type || '1 a 1')}</td>
-            <td style="padding:10px 14px; color:#cbd5e1;">${escapeHtml(s.mentor || 'Esteban Ochoa')}</td>
-            <td style="padding:10px 14px;">
-              ${s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; font-weight:600;">🔗 Unirse a Sesión</a>` : '<span style="color:#64748b;">Sin enlace</span>'}
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;">
+            <td style="padding:12px 16px; font-weight:800; color:#fff; font-family:var(--mono);">${dateFormatted}</td>
+            <td style="padding:12px 16px; color:#facc15; font-weight:700;">${escapeHtml(s.type || '1 a 1')}</td>
+            <td style="padding:12px 16px; color:#e2e8f0; font-weight:600;">${escapeHtml(s.mentor || 'Esteban Ochoa')}</td>
+            <td style="padding:12px 16px;">
+              ${s.link ? `<a href="${escapeHtml(s.link)}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; color:#60a5fa; text-decoration:none; font-weight:700; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); padding:4px 10px; border-radius:6px; font-size:11.5px;"><span style="font-size:12px;">🔗</span> Unirse a Sesión</a>` : '<span style="color:#64748b; font-size:11.5px;">Sin enlace</span>'}
             </td>
-            <td style="padding:10px 14px;">
-              <span style="font-size:11px; font-weight:700; color:${st.color}; cursor:pointer;" onclick="toggleVipSessionStatus('${s.id}')" title="Clic para cambiar estado">${st.text}</span>
+            <td style="padding:12px 16px;">
+              <span class="vip-badge-pill" style="color:${st.color}; background:${st.bg}; border:1px solid ${st.border}; cursor:pointer; font-size:10.5px; padding:3px 9px;" onclick="toggleVipSessionStatus('${s.id}')" title="Clic para alternar estado">
+                <span class="vip-pulse-dot ${st.dot}"></span> ${st.text}
+              </span>
             </td>
-            <td style="padding:10px 14px; text-align:right;">
-              <button class="btn-grey" style="font-size:10.5px; padding:3px 8px; border-radius:5px; color:#ef4444;" onclick="deleteVipSession('${s.id}')">🗑️</button>
+            <td style="padding:12px 16px; text-align:right;">
+              <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" onclick="deleteVipSession('${s.id}')" title="Eliminar sesión">🗑️</button>
             </td>
           </tr>
         `;
@@ -13928,38 +14240,38 @@ function _renderAnalisis_orig() {
       if (!tbody) return;
       const homeworks = Array.isArray(vipData.homeworks) ? vipData.homeworks : [];
       if (homeworks.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="padding:24px; text-align:center; color:#94a3b8;">No hay tareas asignadas actualmente. Haz clic en "Asignar Homework".</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:28px; text-align:center; color:#94a3b8;">No hay tareas asignadas actualmente. Haz clic en "Asignar Homework".</td></tr>';
         return;
       }
 
       tbody.innerHTML = homeworks.slice().reverse().map(hw => {
         const statusMap = {
-          pendiente: { text: '🟡 Pendiente', color: '#facc15' },
-          en_proceso: { text: '🔵 En Proceso', color: '#60a5fa' },
-          entregada: { text: '🟣 Entregada', color: '#c084fc' },
-          aprobada: { text: '🟢 Aprobada', color: '#4ade80' },
-          corregir: { text: '⚠️ Corregir', color: '#f87171' }
+          pendiente: { text: 'Pendiente', color: '#facc15', bg: 'rgba(234,179,8,0.15)', border: 'rgba(234,179,8,0.4)', dot: 'vip-pulse-gold' },
+          en_proceso: { text: 'En Proceso', color: '#60a5fa', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.4)', dot: 'vip-pulse-blue' },
+          entregada: { text: 'Entregada', color: '#c084fc', bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.4)', dot: 'vip-pulse-purple' },
+          aprobada: { text: 'Aprobada', color: '#4ade80', bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.4)', dot: 'vip-pulse-green' },
+          corregir: { text: 'Corregir', color: '#f87171', bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.4)', dot: 'vip-pulse-red' }
         };
         const st = statusMap[hw.status || 'pendiente'] || statusMap.pendiente;
 
         return `
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <td style="padding:10px 14px;">
-              <div style="font-weight:700; color:#fff;">${escapeHtml(hw.title)}</div>
-              ${hw.instructions ? `<div style="font-size:11px; color:#94a3b8; margin-top:2px;">${escapeHtml(hw.instructions)}</div>` : ''}
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;">
+            <td style="padding:12px 16px;">
+              <div style="font-weight:800; color:#fff; font-size:13px;">${escapeHtml(hw.title)}</div>
+              ${hw.instructions ? `<div style="font-size:11.5px; color:#94a3b8; margin-top:3px; line-height:1.4;">${escapeHtml(hw.instructions)}</div>` : ''}
               ${hw.file?.url ? `
-                <div style="margin-top:5px;">
-                  <a href="${escapeHtml(hw.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:5px; background:rgba(234,179,8,0.12); color:#facc15; border:1px solid rgba(234,179,8,0.3); padding:3px 8px; border-radius:5px; font-size:10.5px; font-weight:700; text-decoration:none;">
-                    <span>📄</span> Documento Tarea: <u>${escapeHtml(hw.file.name || 'Descargar')}</u>
+                <div style="margin-top:6px;">
+                  <a href="${escapeHtml(hw.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:5px; background:rgba(234,179,8,0.12); color:#facc15; border:1px solid rgba(234,179,8,0.35); padding:3px 9px; border-radius:6px; font-size:11px; font-weight:700; text-decoration:none;">
+                    <span>📄</span> Documento Tarea: <u style="text-underline-offset:2px;">${escapeHtml(hw.file.name || 'Descargar')}</u>
                   </a>
                 </div>
               ` : ''}
               ${hw.submission?.notes ? `
-                <div style="font-size:11px; color:#4ade80; margin-top:4px; background:rgba(74,222,128,0.08); padding:5px 8px; border-radius:4px; border:1px solid rgba(74,222,128,0.15);">
-                  <div><strong>Entrega:</strong> ${escapeHtml(hw.submission.notes)} ${hw.submission.link ? `<a href="${escapeHtml(hw.submission.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; margin-left:4px;">[Ver TradingView]</a>` : ''}</div>
+                <div style="font-size:11.5px; color:#4ade80; margin-top:6px; background:rgba(74,222,128,0.08); padding:6px 10px; border-radius:6px; border:1px solid rgba(74,222,128,0.18);">
+                  <div><strong>Entrega:</strong> ${escapeHtml(hw.submission.notes)} ${hw.submission.link ? `<a href="${escapeHtml(hw.submission.link)}" target="_blank" style="color:#60a5fa; text-decoration:underline; font-weight:700; margin-left:4px;">[Ver TradingView]</a>` : ''}</div>
                   ${hw.submission.file?.url ? `
-                    <div style="margin-top:3px;">
-                      <a href="${escapeHtml(hw.submission.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:4px; color:#86efac; text-decoration:none; font-weight:700; font-size:10.5px;">
+                    <div style="margin-top:4px;">
+                      <a href="${escapeHtml(hw.submission.file.url)}" target="_blank" download style="display:inline-flex; align-items:center; gap:5px; color:#86efac; text-decoration:none; font-weight:800; font-size:11px;">
                         <span>📎</span> Archivo de Resolución: <u>${escapeHtml(hw.submission.file.name || 'Descargar')}</u>
                       </a>
                     </div>
@@ -13967,17 +14279,19 @@ function _renderAnalisis_orig() {
                 </div>
               ` : ''}
             </td>
-            <td style="padding:10px 14px; color:#cbd5e1;">${escapeHtml(hw.objective || 'Mejora continua')}</td>
-            <td style="padding:10px 14px; color:#facc15; font-weight:600;">${escapeHtml(hw.assigned_by || 'Esteban Ochoa')}</td>
-            <td style="padding:10px 14px; color:#94a3b8; font-family:var(--mono);">${escapeHtml(hw.deadline || 'Sin fecha')}</td>
-            <td style="padding:10px 14px;">
-              <span style="font-size:11px; font-weight:700; color:${st.color};">${st.text}</span>
+            <td style="padding:12px 16px; color:#cbd5e1; font-weight:500;">${escapeHtml(hw.objective || 'Mejora continua')}</td>
+            <td style="padding:12px 16px; color:#facc15; font-weight:700;">${escapeHtml(hw.assigned_by || 'Esteban Ochoa')}</td>
+            <td style="padding:12px 16px; color:#94a3b8; font-family:var(--mono); font-size:11.5px;">${escapeHtml(hw.deadline || 'Sin fecha')}</td>
+            <td style="padding:12px 16px;">
+              <span class="vip-badge-pill" style="color:${st.color}; background:${st.bg}; border:1px solid ${st.border}; font-size:10.5px; padding:3px 9px;">
+                <span class="vip-pulse-dot ${st.dot}"></span> ${st.text}
+              </span>
             </td>
-            <td style="padding:10px 14px; text-align:right;">
+            <td style="padding:12px 16px; text-align:right;">
               <div style="display:inline-flex; gap:6px;">
-                <button class="btn-grey" style="font-size:11px; padding:3px 8px; border-radius:5px; color:#4ade80;" onclick="openHomeworkSubmissionModal('${hw.id}')" title="Resolver o subir evidencias">📤 Entregar</button>
-                <button class="btn-grey" style="font-size:11px; padding:3px 8px; border-radius:5px; color:#60a5fa;" onclick="openHomeworkFeedbackModal('${hw.id}')" title="Calificar y dar feedback como mentor">✍️ Feedback</button>
-                <button class="btn-grey" style="font-size:11px; padding:3px 6px; border-radius:5px; color:#ef4444;" onclick="deleteVipHomework('${hw.id}')">🗑️</button>
+                <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#4ade80; border-color:rgba(74,222,128,0.3); background:rgba(74,222,128,0.08); cursor:pointer;" onclick="openHomeworkSubmissionModal('${hw.id}')" title="Resolver o subir evidencias">📤 Entregar</button>
+                <button class="btn-grey" style="font-size:11px; padding:4px 9px; border-radius:6px; color:#60a5fa; border-color:rgba(96,165,250,0.3); background:rgba(96,165,250,0.08); cursor:pointer;" onclick="openHomeworkFeedbackModal('${hw.id}')" title="Calificar y dar feedback como mentor">✍️ Feedback</button>
+                <button class="btn-grey" style="font-size:11px; padding:4px 7px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); cursor:pointer;" onclick="deleteVipHomework('${hw.id}')">🗑️</button>
               </div>
             </td>
           </tr>
@@ -14241,8 +14555,8 @@ function _renderAnalisis_orig() {
 
       if (evaluations.length === 0) {
         container.innerHTML = `
-          <div style="grid-column:1/-1; text-align:center; padding:24px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px dashed rgba(255,255,255,0.08);">
-            Aún no hay evaluaciones previas registradas en el historial. Haz clic en <strong>"Registrar Período"</strong> para archivar un ciclo bimestral.
+          <div style="grid-column:1/-1; text-align:center; padding:28px; color:#94a3b8; font-size:12.5px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.1);">
+            Aún no hay evaluaciones previas registradas en el historial. Haz clic en <strong style="color:#facc15;">"Registrar Período"</strong> para archivar un ciclo bimestral.
           </div>
         `;
         return;
@@ -14250,20 +14564,20 @@ function _renderAnalisis_orig() {
 
       container.innerHTML = evaluations.slice().reverse().map(ev => {
         return `
-          <div style="background:#18181b; border:1px solid rgba(250,204,21,0.25); border-radius:12px; padding:18px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <span style="font-size:13px; font-weight:800; color:#facc15;">${escapeHtml(ev.period)}</span>
-              <span style="font-size:12px; font-weight:800; color:#4ade80; background:rgba(74,222,128,0.12); padding:2px 8px; border-radius:6px; font-family:var(--mono);">${escapeHtml(ev.score || 'Aprobado')}</span>
+          <div class="vip-glass-card gold-accent" style="padding:20px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="font-size:14px; font-weight:900; color:#facc15; letter-spacing:0.3px;">${escapeHtml(ev.period)}</span>
+              <span class="vip-badge-pill green" style="font-size:11px; font-family:var(--mono); padding:3px 9px;">${escapeHtml(ev.score || 'Aprobado')}</span>
             </div>
-            <div style="font-size:11px; color:#94a3b8; margin-bottom:8px;">Fecha: <strong>${escapeHtml(ev.date || 'Reciente')}</strong></div>
-            <div style="font-size:12px; color:#cbd5e1; line-height:1.4; margin-bottom:8px;">
-              <strong>Diagnóstico:</strong> ${escapeHtml(ev.diagnosis || 'Sin diagnóstico')}
+            <div style="font-size:11.5px; color:#94a3b8; margin-bottom:10px; font-family:var(--mono);">📅 Fecha: <strong style="color:#fff;">${escapeHtml(ev.date || 'Reciente')}</strong></div>
+            <div style="font-size:12.5px; color:#cbd5e1; line-height:1.5; margin-bottom:10px;">
+              <strong style="color:#fff;">Diagnóstico:</strong> ${escapeHtml(ev.diagnosis || 'Sin diagnóstico')}
             </div>
-            ${ev.strengths ? `<div style="font-size:11.5px; color:#86efac; margin-bottom:4px;"><strong>Fortalezas:</strong> ${escapeHtml(ev.strengths)}</div>` : ''}
-            ${ev.weaknesses ? `<div style="font-size:11.5px; color:#fca5a5; margin-bottom:6px;"><strong>Por Mejorar:</strong> ${escapeHtml(ev.weaknesses)}</div>` : ''}
+            ${ev.strengths ? `<div style="font-size:12px; color:#86efac; margin-bottom:6px; background:rgba(34,197,94,0.06); padding:4px 8px; border-radius:6px; border:1px solid rgba(34,197,94,0.15);"><strong>✓ Fortalezas:</strong> ${escapeHtml(ev.strengths)}</div>` : ''}
+            ${ev.weaknesses ? `<div style="font-size:12px; color:#fca5a5; margin-bottom:8px; background:rgba(239,68,68,0.06); padding:4px 8px; border-radius:6px; border:1px solid rgba(239,68,68,0.15);"><strong>⚠️ Por Mejorar:</strong> ${escapeHtml(ev.weaknesses)}</div>` : ''}
             ${ev.action ? `
-              <div style="background:rgba(0,0,0,0.3); border-left:3px solid #60a5fa; padding:6px 10px; font-size:11.5px; color:#bfdbfe; border-radius:4px; margin-top:8px;">
-                <strong>Plan de Acción:</strong> ${escapeHtml(ev.action)}
+              <div style="background:rgba(0,0,0,0.4); border-left:3px solid #60a5fa; padding:8px 12px; font-size:12px; color:#bfdbfe; border-radius:6px; margin-top:10px; line-height:1.45;">
+                <strong style="color:#60a5fa;">Plan de Acción:</strong> ${escapeHtml(ev.action)}
               </div>
             ` : ''}
           </div>
