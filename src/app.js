@@ -5169,14 +5169,19 @@ function _renderAnalisis_orig() {
       const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
       const userId = (u.id || '').trim();
       return email === 'parkjiminfromsara@gmail.com' ||
-             email === 'sarajulianaposadamendieta@gmail.com' ||
              userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' ||
-             userId === 'd8878aa5-611d-4500-9d20-b644525409ce' ||
              (u.user_metadata && u.user_metadata.role === 'superadmin');
     }
     window.isSaraUser = isSaraUser;
 
+    let vipSimulateLockedView = false;
+    window.toggleVipPreviewLock = function() {
+      vipSimulateLockedView = !vipSimulateLockedView;
+      renderVipModule();
+    };
+
     function hasVipAccess() {
+      if (vipSimulateLockedView) return false;
       const u = sb.getUser();
       if (!u) return false;
       if (isSaraUser() || isAdminUser()) return true;
@@ -7659,21 +7664,33 @@ function _renderAnalisis_orig() {
     }
 
     window.renderVipModule = async function() {
+      try {
+        await sb.verifySession();
+      } catch (e) {}
+
+      const isAdmin = isAdminUser();
       const isAllowed = hasVipAccess();
       const authView = document.getElementById('vip-authorized-view');
       const lockedView = document.getElementById('vip-locked-view');
+      const previewBanner = document.getElementById('vip-admin-preview-banner');
+      const previewBtn = document.getElementById('vip-btn-preview-toggle');
 
       if (!isAllowed) {
         if (authView) authView.style.display = 'none';
         if (lockedView) lockedView.style.display = 'block';
+        if (previewBanner) {
+          previewBanner.style.display = (isAdmin && vipSimulateLockedView) ? 'flex' : 'none';
+        }
         return;
       }
 
       if (authView) authView.style.display = 'block';
       if (lockedView) lockedView.style.display = 'none';
+      if (previewBtn) {
+        previewBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+      }
 
       const u = sb.getUser();
-      const isAdmin = isAdminUser();
 
       const adminSelectorBar = document.getElementById('vip-admin-selector-bar');
       const studentWelcomeBar = document.getElementById('vip-student-welcome-bar');

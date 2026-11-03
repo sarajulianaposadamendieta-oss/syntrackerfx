@@ -4686,6 +4686,9 @@
             <span style="width:8px; height:8px; border-radius:50%; background:#a855f7; display:inline-block; box-shadow:0 0 10px #a855f7;"></span>
             <span style="font-size:11px; font-weight:700; color:#c084fc;">Modo Desarrollo Privado (Solo Sara)</span>
           </div>
+          <button type="button" class="btn-grey" onclick="toggleVipPreviewLock()" id="vip-btn-preview-toggle" style="font-size:11.5px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#facc15; border-color:rgba(250,204,21,0.35); background:rgba(250,204,21,0.06);" title="Ver cómo ve la pantalla un usuario no-VIP">
+            <span>🔒</span> Probar Pantalla de Bloqueo
+          </button>
           <button type="button" class="btn-grey" onclick="refreshVipData()" style="font-size:11.5px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Actualizar datos de la bitácora">
             <span>🔄</span> Actualizar
           </button>
@@ -5181,6 +5184,15 @@
 
       <!-- VISTA BLOQUEADA: PANTALLA UPSELL GOLD FX VIP -->
       <div id="vip-locked-view" style="display:none; max-width:880px; margin:20px auto; padding:10px;">
+        <div id="vip-admin-preview-banner" style="display:none; background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.4); border-radius:12px; padding:10px 16px; margin-bottom:16px; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">👁️</span>
+            <span style="font-size:12.5px; color:#facc15; font-weight:700;">Modo Simulación: Estás viendo la Pantalla de Bloqueo tal como la ve un usuario No VIP</span>
+          </div>
+          <button type="button" onclick="toggleVipPreviewLock()" style="background:#facc15; color:#000; border:none; padding:5px 12px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">
+            ✕ Salir de Simulación
+          </button>
+        </div>
         <div style="background:linear-gradient(180deg, #18181b 0%, #121214 100%); border:1px solid rgba(234,179,8,0.35); border-radius:24px; padding:38px 28px; position:relative; overflow:hidden; box-shadow:0 20px 60px -15px rgba(234,179,8,0.18);">
           
           <!-- Elementos decorativos de resplandor -->
@@ -11836,14 +11848,19 @@ function _renderAnalisis_orig() {
       const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
       const userId = (u.id || '').trim();
       return email === 'parkjiminfromsara@gmail.com' ||
-             email === 'sarajulianaposadamendieta@gmail.com' ||
              userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' ||
-             userId === 'd8878aa5-611d-4500-9d20-b644525409ce' ||
              (u.user_metadata && u.user_metadata.role === 'superadmin');
     }
     window.isSaraUser = isSaraUser;
 
+    let vipSimulateLockedView = false;
+    window.toggleVipPreviewLock = function() {
+      vipSimulateLockedView = !vipSimulateLockedView;
+      renderVipModule();
+    };
+
     function hasVipAccess() {
+      if (vipSimulateLockedView) return false;
       const u = sb.getUser();
       if (!u) return false;
       if (isSaraUser() || isAdminUser()) return true;
@@ -14332,21 +14349,33 @@ function _renderAnalisis_orig() {
     }
 
     window.renderVipModule = async function() {
+      try {
+        await sb.verifySession();
+      } catch (e) {}
+
+      const isAdmin = isAdminUser();
       const isAllowed = hasVipAccess();
       const authView = document.getElementById('vip-authorized-view');
       const lockedView = document.getElementById('vip-locked-view');
+      const previewBanner = document.getElementById('vip-admin-preview-banner');
+      const previewBtn = document.getElementById('vip-btn-preview-toggle');
 
       if (!isAllowed) {
         if (authView) authView.style.display = 'none';
         if (lockedView) lockedView.style.display = 'block';
+        if (previewBanner) {
+          previewBanner.style.display = (isAdmin && vipSimulateLockedView) ? 'flex' : 'none';
+        }
         return;
       }
 
       if (authView) authView.style.display = 'block';
       if (lockedView) lockedView.style.display = 'none';
+      if (previewBtn) {
+        previewBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+      }
 
       const u = sb.getUser();
-      const isAdmin = isAdminUser();
 
       const adminSelectorBar = document.getElementById('vip-admin-selector-bar');
       const studentWelcomeBar = document.getElementById('vip-student-welcome-bar');
