@@ -7812,6 +7812,13 @@
         renderAdminDashboard();
       }
       if (id === 'vip') {
+        const u = sb.getUser();
+        const userEmail = (u && (u.email || (u.user_metadata && u.user_metadata.email)) || '').toLowerCase().trim();
+        const isSaraDevAllowed = isSaraUser() || userEmail === 'sarajulianaposadamendieta@gmail.com';
+        if (!isSaraDevAllowed) {
+          goTo('dashboard');
+          return;
+        }
         renderVipModule();
       }
       if (id === 'torneo') {
@@ -11894,14 +11901,26 @@ function _renderAnalisis_orig() {
         }
       }
 
-      // BITÁCORA VIP: botón visible para todos los usuarios (los VIP acceden a su panel, y los no-VIP a la pantalla de bloqueo con upsell)
+      // BITÁCORA VIP: En modo desarrollo privado, visible ÚNICAMENTE para Sara (y su cuenta de prueba)
+      const u = sb.getUser();
+      const userEmail = (u && (u.email || (u.user_metadata && u.user_metadata.email)) || '').toLowerCase().trim();
+      const isSaraDevAllowed = isSaraUser() || userEmail === 'sarajulianaposadamendieta@gmail.com';
+
       const vipNav = document.getElementById('nav-item-vip');
       if (vipNav) {
-        vipNav.style.setProperty('display', 'flex', 'important');
+        if (isSaraDevAllowed) {
+          vipNav.style.setProperty('display', 'flex', 'important');
+        } else {
+          vipNav.style.setProperty('display', 'none', 'important');
+        }
       }
       const mobVipNav = document.getElementById('mob-nav-item-vip');
       if (mobVipNav) {
-        mobVipNav.style.setProperty('display', 'flex', 'important');
+        if (isSaraDevAllowed) {
+          mobVipNav.style.setProperty('display', 'flex', 'important');
+        } else {
+          mobVipNav.style.setProperty('display', 'none', 'important');
+        }
       }
 
       const botTabBtn = document.getElementById('atab-btn-bot');
