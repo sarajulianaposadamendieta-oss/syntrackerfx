@@ -4973,9 +4973,6 @@
             <button type="button" class="btn-grey" onclick="toggleVipPreviewLock()" id="vip-btn-preview-toggle" style="font-size:12px; font-weight:800; padding:8px 16px; border-radius:10px; display:inline-flex; align-items:center; gap:7px; cursor:pointer; color:#facc15; border-color:rgba(250,204,21,0.4); background:rgba(250,204,21,0.08); box-shadow:0 2px 10px rgba(250,204,21,0.12);" title="Ver cómo ve la pantalla un usuario no-VIP">
               <span>🔒</span> Probar Pantalla de Bloqueo
             </button>
-            <button type="button" class="btn-grey" onclick="refreshVipData()" style="font-size:12px; font-weight:700; padding:8px 16px; border-radius:10px; display:inline-flex; align-items:center; gap:7px; cursor:pointer;" title="Actualizar datos de la bitácora">
-              <span>🔄</span> Actualizar
-            </button>
           </div>
         </div>
       </div>
@@ -5825,6 +5822,53 @@
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button type="button" class="btn-grey" onclick="closeModal('vip-modal-hw-submission')">Cancelar</button>
         <button type="button" class="btn-primary" onclick="confirmSubmitVipHomework()" style="background:#4ade80; color:#000; font-weight:800; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Enviar Resolución</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Retroalimentación de Operación Auditada (Staff / Mentor) -->
+  <div class="overlay" id="vip-modal-trade-feedback" onclick="closeOnBg(event,'vip-modal-trade-feedback')">
+    <div class="modal" style="max-width:500px;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:8px; color:#facc15;">
+        <span>🔍</span> Retroalimentación de Operación Auditada
+      </div>
+      <input type="hidden" id="vip-trade-fb-id">
+      
+      <div id="vip-trade-fb-summary" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px 14px; margin-bottom:14px; font-size:12.5px;">
+      </div>
+
+      <div class="form-row2" style="margin-bottom:12px;">
+        <div class="form-g">
+          <label class="form-l">Checklist / Estado Técnico</label>
+          <select class="form-i" id="vip-trade-fb-status" style="background:#18181b; color:#fff;">
+            <option value="valida">🟢 Válida / Cumple Plan</option>
+            <option value="excelente">⭐ Excelente Entrada</option>
+            <option value="reglas">⚠️ Violación de Reglas</option>
+            <option value="riesgo">🔴 Alto Riesgo</option>
+            <option value="emocional">🧠 Operación Emocional</option>
+          </select>
+        </div>
+        <div class="form-g">
+          <label class="form-l">Evaluador / Mentor</label>
+          <input type="text" class="form-i" id="vip-trade-fb-mentor" style="background:#18181b; color:#fff;" placeholder="Nombre del mentor">
+        </div>
+      </div>
+
+      <div class="form-g" style="margin-bottom:18px;">
+        <label class="form-l">Comentarios y Retroalimentación</label>
+        <textarea class="form-i" id="vip-trade-fb-comments" rows="3" placeholder="Puntos positivos, correcciones de entrada/salida, gestión de riesgo..." style="background:#18181b; color:#fff; resize:vertical;"></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <button type="button" id="vip-trade-fb-btn-delete" class="btn-grey" onclick="deleteTradeFeedback()" style="color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); display:none; cursor:pointer;">
+          🗑️ Eliminar
+        </button>
+        <div style="display:flex; gap:8px; margin-left:auto;">
+          <button type="button" class="btn-grey" onclick="closeModal('vip-modal-trade-feedback')">Cancelar</button>
+          <button type="button" class="vip-btn-gold" onclick="confirmSaveTradeFeedback()" style="padding:8px 18px; font-size:12.5px;">
+            💾 Guardar Retroalimentación
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -13750,6 +13794,8 @@ function _renderAnalisis_orig() {
     let activeVipSubtab = 'perfil';
     let currentVipStudentId = 'me';
     let vipStudentProfiles = {};
+    let currentVipData = {};
+    let currentVipTrades = [];
 
     window.switchVipSubtab = function(tabName) {
       activeVipSubtab = tabName;
@@ -13764,7 +13810,7 @@ function _renderAnalisis_orig() {
           sec.style.display = (t === tabName) ? 'block' : 'none';
         }
       });
-      if (tabName === 'operativa') renderVipOperativa();
+      if (tabName === 'operativa') renderVipOperativa(currentVipData, currentVipTrades);
     };
 
     window.onVipStudentChange = function(studentId) {
@@ -13915,6 +13961,7 @@ function _renderAnalisis_orig() {
       const emailTag = document.getElementById('vip-selected-email-tag');
 
       const vipData = await getStudentVipData(targetId);
+      currentVipData = vipData;
 
       if (isMe) {
         if (emailTag && u) emailTag.textContent = u.email || 'parkjiminfromsara@gmail.com';
@@ -13922,6 +13969,23 @@ function _renderAnalisis_orig() {
         const student = (adminStudentsData || []).find(s => s.id === studentId);
         if (student && emailTag) emailTag.textContent = student.email || 'Sin correo';
       }
+
+      // Cargar trades para la pestaña de operativa del perfil
+      let studentTrades = Array.isArray(trades) ? [...trades] : [];
+      if (!isMe && studentId && studentId !== 'me') {
+        try {
+          const res = await fetch(SUPABASE_URL + '/rest/v1/trades?select=*&user_id=eq.' + studentId + '&order=date.asc,created_at.asc', {
+            headers: { 'apikey': ADMIN_SERVICE_KEY, 'Authorization': 'Bearer ' + ADMIN_SERVICE_KEY }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            studentTrades = (Array.isArray(data) ? data : []).map(tradeFromRow);
+          }
+        } catch (err) {
+          console.warn('Error cargando trades de estudiante para VIP:', err);
+        }
+      }
+      currentVipTrades = studentTrades;
 
       // 1. Cargar campos actuales
       const nivelEl = document.getElementById('vip-field-nivel');
@@ -13944,7 +14008,7 @@ function _renderAnalisis_orig() {
       renderVipHomeworks(vipData);
       renderVipEvaluations(vipData);
       renderVipEvolution(vipData);
-      renderVipOperativa();
+      renderVipOperativa(currentVipData, currentVipTrades);
     }
 
     // ── SUBPESTAÑA 1: PERFIL & DIAGNÓSTICO (HISTORIAL CRONOLÓGICO) ──
@@ -14047,13 +14111,15 @@ function _renderAnalisis_orig() {
       }
     };
 
-    // ── SUBPESTAÑA 2: OPERATIVA ──
-    function renderVipOperativa() {
-      const tradesList = Array.isArray(trades) ? trades : [];
-      let totalTrades = tradesList.length;
-      let wins = tradesList.filter(t => (t.pnl || 0) > 0).length;
+    // ── SUBPESTAÑA 2: OPERATIVA & FEEDBACK AUDITADO ──
+    function renderVipOperativa(vipData, tradesList) {
+      if (!vipData) vipData = currentVipData || {};
+      if (!tradesList) tradesList = currentVipTrades || trades || [];
+      const list = Array.isArray(tradesList) ? tradesList : [];
+      let totalTrades = list.length;
+      let wins = list.filter(t => (t.pnl || 0) > 0).length;
       let winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : '70.0';
-      let totalPnl = tradesList.reduce((acc, t) => acc + (t.pnl || 0), 0);
+      let totalPnl = list.reduce((acc, t) => acc + (t.pnl || 0), 0);
 
       const wrEl = document.getElementById('vip-metric-winrate');
       if (wrEl) wrEl.textContent = winRate + '%';
@@ -14064,40 +14130,193 @@ function _renderAnalisis_orig() {
 </html> + totalPnl.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
       const tbody = document.getElementById('vip-audit-trades-tbody');
-      if (tbody) {
-        if (tradesList.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="padding:24px; text-align:center; color:#94a3b8;">No hay operaciones registradas aún para este perfil.</td></tr>';
-        } else {
-          tbody.innerHTML = tradesList.slice(-10).reverse().map(t => {
-            const pnlVal = t.pnl || 0;
-            const pnlColor = pnlVal >= 0 ? '#4ade80' : '#ef4444';
-            const pnlText = (pnlVal >= 0 ? '+' : '') + '
+      if (!tbody) return;
+
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding:28px; text-align:center; color:#94a3b8;">No hay operaciones registradas aún para este perfil.</td></tr>';
+        return;
+      }
+
+      const isAdmin = isAdminUser();
+      const feedbacks = (vipData && vipData.trade_feedbacks) ? vipData.trade_feedbacks : {};
+
+      const statusMap = {
+        'valida': { label: '✓ Válida', bg: 'rgba(74,222,128,0.12)', color: '#4ade80', border: 'rgba(74,222,128,0.3)' },
+        'excelente': { label: '⭐ Excelente', bg: 'rgba(234,179,8,0.15)', color: '#facc15', border: 'rgba(234,179,8,0.4)' },
+        'reglas': { label: '⚠️ Reglas', bg: 'rgba(239,68,68,0.12)', color: '#ef4444', border: 'rgba(239,68,68,0.3)' },
+        'riesgo': { label: '🔴 Alto Riesgo', bg: 'rgba(239,68,68,0.15)', color: '#f87171', border: 'rgba(239,68,68,0.4)' },
+        'emocional': { label: '🧠 Emocional', bg: 'rgba(168,85,247,0.15)', color: '#c084fc', border: 'rgba(168,85,247,0.4)' }
+      };
+
+      tbody.innerHTML = list.slice(-15).reverse().map(t => {
+        const pnlVal = t.pnl || 0;
+        const pnlColor = pnlVal >= 0 ? '#4ade80' : '#ef4444';
+        const pnlText = (pnlVal >= 0 ? '+' : '') + '
 </body>
 
 </html> + pnlVal.toFixed(2);
-            const dateStr = t.date || (t.created_at ? new Date(t.created_at).toLocaleDateString('es-CO') : 'Hoy');
-            const asset = t.symbol || t.asset || 'Vol 75';
-            const dir = (t.direction || t.type || 'BUY').toUpperCase();
-            const dirColor = dir.includes('BUY') ? '#4ade80' : '#ef4444';
-            return `
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding:10px 14px; color:#94a3b8; font-family:var(--mono);">${escapeHtml(dateStr)}</td>
-                <td style="padding:10px 14px; font-weight:700; color:#fff;">${escapeHtml(asset)}</td>
-                <td style="padding:10px 14px; font-weight:800; color:${dirColor};">${escapeHtml(dir)}</td>
-                <td style="padding:10px 14px; font-weight:700; color:${pnlColor}; font-family:var(--mono);">${pnlText}</td>
-                <td style="padding:10px 14px; color:#cbd5e1; font-family:var(--mono);">${t.rr ? '1 : ' + t.rr : '1 : 2.5'}</td>
-                <td style="padding:10px 14px;">
-                  <span style="background:rgba(74,222,128,0.12); color:#4ade80; border:1px solid rgba(74,222,128,0.3); font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">✓ Válida</span>
-                </td>
-                <td style="padding:10px 14px; color:#94a3b8; font-size:11.5px;">
-                  <span style="color:#facc15; font-weight:600;">Esteban:</span> Buena confirmación.
-                </td>
-              </tr>
-            `;
-          }).join('');
+        const dateStr = t.date || (t.created_at ? new Date(t.created_at).toLocaleDateString('es-CO') : 'Hoy');
+        const asset = t.symbol || t.asset || 'Vol 75';
+        const dir = (t.direction || t.type || 'BUY').toUpperCase();
+        const dirColor = dir.includes('BUY') ? '#4ade80' : '#ef4444';
+        const tradeId = t.id || (t.ticket ? 'ticket_' + t.ticket : ('t_' + dateStr.replace(/[^a-zA-Z0-9]/g, '_') + '_' + asset));
+
+        const fb = feedbacks[tradeId] || null;
+        const stKey = (fb && fb.status) ? fb.status : 'valida';
+        const stBadge = statusMap[stKey] || statusMap['valida'];
+
+        let fbContentHtml = '';
+        if (fb && fb.comments) {
+          fbContentHtml = `
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <div style="font-size:11.5px; line-height:1.4;">
+                <strong style="color:#facc15;">${escapeHtml(fb.mentor || 'Mentor')}:</strong>
+                <span style="color:#e2e8f0; margin-left:4px;">${escapeHtml(fb.comments)}</span>
+              </div>
+              ${isAdmin ? `
+                <button type="button" class="btn-grey" onclick="openTradeFeedbackModal('${tradeId}')" title="Editar retroalimentación" style="padding:2px 7px; font-size:10px; border-radius:5px; flex-shrink:0; color:#facc15; border-color:rgba(250,204,21,0.3); background:rgba(250,204,21,0.06); cursor:pointer;">
+                  ✏️
+                </button>
+              ` : ''}
+            </div>
+          `;
+        } else {
+          fbContentHtml = isAdmin ? `
+            <button type="button" class="btn-grey" onclick="openTradeFeedbackModal('${tradeId}')" style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:6px; color:#facc15; border-color:rgba(250,204,21,0.3); background:rgba(250,204,21,0.06); cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+              <span>✍️</span> Dar feedback
+            </button>
+          ` : `
+            <span style="color:#64748b; font-style:italic; font-size:11px;">Pendiente por revisión</span>
+          `;
+        }
+
+        return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+            <td style="padding:10px 14px; color:#94a3b8; font-family:var(--mono);">${escapeHtml(dateStr)}</td>
+            <td style="padding:10px 14px; font-weight:700; color:#fff;">${escapeHtml(asset)}</td>
+            <td style="padding:10px 14px; font-weight:800; color:${dirColor};">${escapeHtml(dir)}</td>
+            <td style="padding:10px 14px; font-weight:700; color:${pnlColor}; font-family:var(--mono);">${pnlText}</td>
+            <td style="padding:10px 14px; color:#cbd5e1; font-family:var(--mono);">${t.rr ? '1 : ' + t.rr : '1 : 2.5'}</td>
+            <td style="padding:10px 14px;">
+              <span style="background:${stBadge.bg}; color:${stBadge.color}; border:1px solid ${stBadge.border}; font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px;">
+                ${stBadge.label}
+              </span>
+            </td>
+            <td style="padding:10px 14px; max-width:280px;">
+              ${fbContentHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.openTradeFeedbackModal = function(tradeId) {
+      const tradesList = currentVipTrades || trades || [];
+      const t = tradesList.find(x => {
+        const id = x.id || (x.ticket ? 'ticket_' + x.ticket : ('t_' + (x.date || '').replace(/[^a-zA-Z0-9]/g, '_') + '_' + (x.symbol || x.asset || '')));
+        return id === tradeId || x.id === tradeId || (x.ticket && ('ticket_' + x.ticket) === tradeId);
+      });
+
+      const idInp = document.getElementById('vip-trade-fb-id');
+      const sumEl = document.getElementById('vip-trade-fb-summary');
+      const stEl = document.getElementById('vip-trade-fb-status');
+      const mentorEl = document.getElementById('vip-trade-fb-mentor');
+      const commEl = document.getElementById('vip-trade-fb-comments');
+      const delBtn = document.getElementById('vip-trade-fb-btn-delete');
+
+      if (idInp) idInp.value = tradeId;
+
+      if (sumEl) {
+        if (t) {
+          const pnlVal = t.pnl || 0;
+          const pnlColor = pnlVal >= 0 ? '#4ade80' : '#ef4444';
+          const pnlText = (pnlVal >= 0 ? '+' : '') + '
+</body>
+
+</html> + pnlVal.toFixed(2);
+          const dateStr = t.date || (t.created_at ? new Date(t.created_at).toLocaleDateString('es-CO') : 'Hoy');
+          const asset = t.symbol || t.asset || 'Vol 75';
+          const dir = (t.direction || t.type || 'BUY').toUpperCase();
+          sumEl.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-weight:800; color:#fff;">${escapeHtml(asset)} • ${escapeHtml(dir)}</span>
+              <span style="font-weight:800; color:${pnlColor}; font-family:var(--mono);">${pnlText}</span>
+            </div>
+            <div style="color:#94a3b8; font-size:11px;">Fecha: ${escapeHtml(dateStr)} • R:R: ${t.rr ? '1:' + t.rr : '1:2.5'}</div>
+          `;
+        } else {
+          sumEl.innerHTML = `<span style="color:#94a3b8;">Operación #${escapeHtml(tradeId)}</span>`;
         }
       }
-    }
+
+      const u = sb.getUser();
+      const staff = getStaffInfo(u);
+      const defaultMentor = (u && u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || (staff ? staff.adminTitle.replace(/^[^\s]+\s*/, '') : 'Esteban Ochoa (Mentor)');
+
+      const feedbacks = (currentVipData && currentVipData.trade_feedbacks) ? currentVipData.trade_feedbacks : {};
+      const fb = feedbacks[tradeId];
+
+      if (fb) {
+        if (stEl) stEl.value = fb.status || 'valida';
+        if (mentorEl) mentorEl.value = fb.mentor || defaultMentor;
+        if (commEl) commEl.value = fb.comments || '';
+        if (delBtn) delBtn.style.display = 'inline-block';
+      } else {
+        if (stEl) stEl.value = 'valida';
+        if (mentorEl) mentorEl.value = defaultMentor;
+        if (commEl) commEl.value = '';
+        if (delBtn) delBtn.style.display = 'none';
+      }
+
+      openModal('vip-modal-trade-feedback');
+    };
+
+    window.confirmSaveTradeFeedback = async function() {
+      const tradeId = document.getElementById('vip-trade-fb-id')?.value;
+      if (!tradeId) return;
+      const status = document.getElementById('vip-trade-fb-status')?.value || 'valida';
+      const mentor = document.getElementById('vip-trade-fb-mentor')?.value.trim() || 'Mentor Gold FX';
+      const comments = document.getElementById('vip-trade-fb-comments')?.value.trim() || '';
+
+      if (!comments) {
+        if (typeof toast === 'function') toast('Escribe un comentario de retroalimentación antes de guardar.', 'warning');
+        return;
+      }
+
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (!vipData.trade_feedbacks) vipData.trade_feedbacks = {};
+
+      vipData.trade_feedbacks[tradeId] = {
+        status: status,
+        mentor: mentor,
+        comments: comments,
+        updated_at: new Date().toISOString()
+      };
+
+      currentVipData = vipData;
+      await saveStudentVipData(targetId, vipData);
+      closeModal('vip-modal-trade-feedback');
+      renderVipOperativa(currentVipData, currentVipTrades);
+      if (typeof toast === 'function') toast('Retroalimentación de la operación guardada con éxito.', 'success');
+    };
+
+    window.deleteTradeFeedback = async function() {
+      const tradeId = document.getElementById('vip-trade-fb-id')?.value;
+      if (!tradeId) return;
+      if (!confirm('¿Deseas eliminar la retroalimentación de esta operación?')) return;
+
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (vipData.trade_feedbacks && vipData.trade_feedbacks[tradeId]) {
+        delete vipData.trade_feedbacks[tradeId];
+        currentVipData = vipData;
+        await saveStudentVipData(targetId, vipData);
+      }
+      closeModal('vip-modal-trade-feedback');
+      renderVipOperativa(currentVipData, currentVipTrades);
+      if (typeof toast === 'function') toast('Retroalimentación eliminada.', 'info');
+    };
 
     // ── SUBPESTAÑA 3: PSICOTRADING ──
     async function uploadVipDocument(file) {
@@ -14202,7 +14421,9 @@ function _renderAnalisis_orig() {
         return;
       }
 
-      container.innerHTML = history.slice().reverse().map(item => {
+      const isAdmin = isAdminUser();
+      container.innerHTML = history.slice().reverse().map((item, idx) => {
+        const itemId = item.id || ('psico_' + (item.date ? new Date(item.date).getTime() : idx));
         const dateStr = item.date ? new Date(item.date).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
         return `
           <div class="vip-glass-card purple-accent" style="padding:18px 20px; margin-bottom:12px;">
@@ -14210,7 +14431,14 @@ function _renderAnalisis_orig() {
               <span class="vip-badge-pill purple" style="font-size:10.5px; font-family:var(--mono); padding:3px 10px;">
                 <span class="vip-pulse-dot vip-pulse-purple"></span> 📅 ${dateStr}
               </span>
-              <span style="font-size:12px; font-weight:800; color:#e2e8f0;">Por: ${escapeHtml(item.author || 'Psicología Gold FX')}</span>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:12px; font-weight:800; color:#e2e8f0;">Por: ${escapeHtml(item.author || 'Psicología Gold FX')}</span>
+                ${isAdmin ? `
+                  <button type="button" class="btn-grey" onclick="deleteVipPsicoEntry('${itemId}')" style="font-size:11px; padding:3px 8px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Eliminar este registro del historial">
+                    <span>🗑️</span> Borrar
+                  </button>
+                ` : ''}
+              </div>
             </div>
             ${item.before ? `
               <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
@@ -14236,6 +14464,22 @@ function _renderAnalisis_orig() {
         `;
       }).join('');
     }
+
+    window.deleteVipPsicoEntry = async function(entryId) {
+      if (!confirm('¿Deseas eliminar este registro de psicotrading del historial?')) return;
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (Array.isArray(vipData.psychology_history)) {
+        vipData.psychology_history = vipData.psychology_history.filter((item, idx) => {
+          const id = item.id || ('psico_' + (item.date ? new Date(item.date).getTime() : idx));
+          return id !== entryId && item.id !== entryId;
+        });
+        currentVipData = vipData;
+        await saveStudentVipData(targetId, vipData);
+        renderVipPsicoHistory(vipData);
+        if (typeof toast === 'function') toast('Registro de psicotrading eliminado.', 'info');
+      }
+    };
 
     window.saveVipEmotionalSession = async function() {
       const targetId = getTargetUserId();
@@ -14839,12 +15083,20 @@ function _renderAnalisis_orig() {
         return;
       }
 
-      container.innerHTML = evaluations.slice().reverse().map(ev => {
+      container.innerHTML = evaluations.slice().reverse().map((ev, idx) => {
+        const evId = ev.id || ('eval_' + idx);
         return `
           <div class="vip-glass-card gold-accent" style="padding:20px; position:relative;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
               <span style="font-size:14px; font-weight:900; color:#facc15; letter-spacing:0.3px;">${escapeHtml(ev.period)}</span>
-              <span class="vip-badge-pill green" style="font-size:11px; font-family:var(--mono); padding:3px 9px;">${escapeHtml(ev.score || 'Aprobado')}</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="vip-badge-pill green" style="font-size:11px; font-family:var(--mono); padding:3px 9px;">${escapeHtml(ev.score || 'Aprobado')}</span>
+                ${isAdmin ? `
+                  <button type="button" class="btn-grey" onclick="deleteVipEvaluationEntry('${evId}')" style="font-size:11px; padding:3px 8px; border-radius:6px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Eliminar este período de evaluación">
+                    <span>🗑️</span> Borrar
+                  </button>
+                ` : ''}
+              </div>
             </div>
             <div style="font-size:11.5px; color:#94a3b8; margin-bottom:10px; font-family:var(--mono);">📅 Fecha: <strong style="color:#fff;">${escapeHtml(ev.date || 'Reciente')}</strong></div>
             <div style="font-size:12.5px; color:#cbd5e1; line-height:1.5; margin-bottom:10px;">
@@ -14861,6 +15113,22 @@ function _renderAnalisis_orig() {
         `;
       }).join('');
     }
+
+    window.deleteVipEvaluationEntry = async function(entryId) {
+      if (!confirm('¿Deseas eliminar este período de evaluación del historial?')) return;
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (Array.isArray(vipData.evaluations_history)) {
+        vipData.evaluations_history = vipData.evaluations_history.filter((ev, idx) => {
+          const id = ev.id || ('eval_' + idx);
+          return id !== entryId && ev.id !== entryId;
+        });
+        currentVipData = vipData;
+        await saveStudentVipData(targetId, vipData);
+        renderVipEvaluations(vipData);
+        if (typeof toast === 'function') toast('Período de evaluación eliminado.', 'info');
+      }
+    };
 
     window.toggleVipEvaluationSubmitted = async function(isChecked) {
       const targetId = getTargetUserId();
