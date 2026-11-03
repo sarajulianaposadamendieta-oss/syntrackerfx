@@ -101,6 +101,15 @@
               saveSession(rd.access_token, rd.user, rd.refresh_token);
               return rd.user;
             }
+            // Si el refresh_token es explícitamente inválido o expirado (400 o 401), cerrar sesión
+            if (rf.status === 400 || rf.status === 401) {
+              saveSession(null, null, null);
+              return null;
+            }
+          }
+          // Si es un error temporal del servidor (5xx) o fallo transitorio, mantener sesión con usuario en caché
+          if (r.status >= 500 && user) {
+            return user;
           }
         } catch (e) {
           // Si hubo error de red, mantener sesión con el usuario en caché para no forzar logout
@@ -117,18 +126,48 @@
         let url = SUPABASE_URL + '/rest/v1/' + table + '?select=' + (opts.select || '*');
         if (opts.filter) url += '&' + opts.filter;
         if (opts.order) url += '&order=' + opts.order;
-        const r = await fetch(url, { headers: h() }); if (!r.ok) return []; return r.json();
+        let r = await fetch(url, { headers: h() });
+        // Si el token expiró durante la sesión, renovarlo automáticamente y reintentar
+        if (r.status === 401 && refreshToken) {
+          const renewed = await verifySession();
+          if (renewed) {
+            r = await fetch(url, { headers: h() });
+          }
+        }
+        if (!r.ok) return [];
+        return r.json();
       }
       async function insert(table, data) {
-        const r = await fetch(SUPABASE_URL + '/rest/v1/' + table, { method: 'POST', headers: h(), body: JSON.stringify(data) });
-        if (!r.ok) { const e = await r.json(); throw new Error(JSON.stringify(e)); } return r.json();
+        let r = await fetch(SUPABASE_URL + '/rest/v1/' + table, { method: 'POST', headers: h(), body: JSON.stringify(data) });
+        if (r.status === 401 && refreshToken) {
+          const renewed = await verifySession();
+          if (renewed) {
+            r = await fetch(SUPABASE_URL + '/rest/v1/' + table, { method: 'POST', headers: h(), body: JSON.stringify(data) });
+          }
+        }
+        if (!r.ok) { const e = await r.json(); throw new Error(JSON.stringify(e)); }
+        return r.json();
       }
       async function update(table, id, data) {
-        const r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, { method: 'PATCH', headers: h(), body: JSON.stringify(data) });
-        if (!r.ok) { const e = await r.json(); throw new Error(JSON.stringify(e)); } return r.json();
+        let r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, { method: 'PATCH', headers: h(), body: JSON.stringify(data) });
+        if (r.status === 401 && refreshToken) {
+          const renewed = await verifySession();
+          if (renewed) {
+            r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, { method: 'PATCH', headers: h(), body: JSON.stringify(data) });
+          }
+        }
+        if (!r.ok) { const e = await r.json(); throw new Error(JSON.stringify(e)); }
+        return r.json();
       }
       async function remove(table, id) {
-        const r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, { method: 'DELETE', headers: h() }); return r.ok;
+        let r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, { method: 'DELETE', headers: h() });
+        if (r.status === 401 && refreshToken) {
+          const renewed = await verifySession();
+          if (renewed) {
+            r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, { method: 'DELETE', headers: h() });
+          }
+        }
+        return r.ok;
       }
       async function uploadFile(bucket, path, file) {
         const headers = {
