@@ -4665,6 +4665,8 @@
     <!--            PÁGINA: BITÁCORA VIP                -->
     <!-- ============================================== -->
     <div class="page" id="page-vip">
+      <!-- VISTA AUTORIZADA: BITÁCORA VIP -->
+      <div id="vip-authorized-view">
       <!-- CABECERA VIP -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:18px;">
         <div>
@@ -5175,8 +5177,110 @@
             </div>
           </div>
         </div>
-      </div>
-    </div><!-- /page-vip -->
+      </div><!-- /vip-authorized-view -->
+
+      <!-- VISTA BLOQUEADA: PANTALLA UPSELL GOLD FX VIP -->
+      <div id="vip-locked-view" style="display:none; max-width:880px; margin:20px auto; padding:10px;">
+        <div style="background:linear-gradient(180deg, #18181b 0%, #121214 100%); border:1px solid rgba(234,179,8,0.35); border-radius:24px; padding:38px 28px; position:relative; overflow:hidden; box-shadow:0 20px 60px -15px rgba(234,179,8,0.18);">
+          
+          <!-- Elementos decorativos de resplandor -->
+          <div style="position:absolute; top:-70px; right:-70px; width:220px; height:220px; border-radius:50%; background:radial-gradient(circle, rgba(234,179,8,0.2) 0%, transparent 70%); pointer-events:none;"></div>
+          <div style="position:absolute; bottom:-60px; left:-60px; width:180px; height:180px; border-radius:50%; background:radial-gradient(circle, rgba(234,179,8,0.12) 0%, transparent 70%); pointer-events:none;"></div>
+
+          <!-- Encabezado y Oferta -->
+          <div style="text-align:center; margin-bottom:30px; position:relative; z-index:1;">
+            <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(234,179,8,0.12); color:#facc15; border:1px solid rgba(234,179,8,0.35); padding:6px 14px; border-radius:999px; font-size:11.5px; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin-bottom:14px;">
+              <span>🔒</span> Contenido Exclusivo para Miembros VIP
+            </div>
+            
+            <h1 style="font-size:32px; font-weight:900; margin:0; letter-spacing:0.5px; line-height:1.2;">
+              <span style="background:linear-gradient(135deg, #fef08a 0%, #facc15 50%, #ca8a04 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">ÚNETE GOLD FX VIP</span>
+              <span style="display:inline-block; color:#fff; font-size:26px; font-weight:800; margin-left:8px;">– $99 USD/mes</span>
+            </h1>
+
+            <p style="font-size:14.5px; color:#cbd5e1; margin-top:12px; font-weight:600;">
+              Incluye todos los beneficios Standard, más:
+            </p>
+          </div>
+
+          <!-- Grid de los 6 Beneficios VIP -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:32px; position:relative; z-index:1;">
+            
+            <!-- Beneficio 1 -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px;">
+              <div style="width:42px; height:42px; border-radius:10px; background:rgba(234,179,8,0.15); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">👨‍🏫</div>
+              <div>
+                <div style="font-size:13.5px; font-weight:800; color:#fff;">Seguimiento mensual 1-1 con Esteban</div>
+                <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Mentoría personalizada y revisión directa de tu operativa.</div>
+              </div>
+            </div>
+
+            <!-- Beneficio 2 -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px;">
+              <div style="width:42px; height:42px; border-radius:10px; background:rgba(168,85,247,0.15); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">🧠</div>
+              <div>
+                <div style="font-size:13.5px; font-weight:800; color:#fff;">Psicotrading personalizado 1-1</div>
+                <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Acompañamiento profesional con la psicóloga de Gold FX.</div>
+              </div>
+            </div>
+
+            <!-- Beneficio 3 -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px;">
+              <div style="width:42px; height:42px; border-radius:10px; background:rgba(59,130,246,0.15); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">🎥</div>
+              <div>
+                <div style="font-size:13.5px; font-weight:800; color:#fff;">Indicaciones en vivo vía Zoom</div>
+                <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Sesiones operativas y análisis guiado en tiempo real.</div>
+              </div>
+            </div>
+
+            <!-- Beneficio 4 -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px;">
+              <div style="width:42px; height:42px; border-radius:10px; background:rgba(34,197,94,0.15); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">👥</div>
+              <div>
+                <div style="font-size:13.5px; font-weight:800; color:#fff;">Grupo privado exclusivo</div>
+                <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Comunidad de élite para traders VIP enfocados en resultados.</div>
+              </div>
+            </div>
+
+            <!-- Beneficio 5 -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px;">
+              <div style="width:42px; height:42px; border-radius:10px; background:rgba(249,115,22,0.15); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">💻</div>
+              <div>
+                <div style="font-size:13.5px; font-weight:800; color:#fff;">Todo Skool desbloqueado</div>
+                <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Acceso sin restricciones a cursos, masterclasses y biblioteca.</div>
+              </div>
+            </div>
+
+            <!-- Beneficio 6 -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px;">
+              <div style="width:42px; height:42px; border-radius:10px; background:rgba(234,179,8,0.15); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">📊</div>
+              <div>
+                <div style="font-size:13.5px; font-weight:800; color:#fff;">Bitácora personalizada de seguimiento</div>
+                <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Auditoría 360°, diagnóstico, plan de tareas y psicotrading.</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- BOTÓN DIRECTO DE WHATSAPP -->
+          <div style="text-align:center; position:relative; z-index:1;">
+            <a href="https://n9.cl/coze9u" target="_blank" rel="noopener noreferrer" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:#ffffff; font-size:15px; font-weight:900; padding:16px 36px; border-radius:14px; display:inline-flex; align-items:center; justify-content:center; gap:12px; text-decoration:none; box-shadow:0 8px 30px -4px rgba(34,197,94,0.45); cursor:pointer; letter-spacing:0.3px; transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+              <span style="font-size:20px;">💬</span>
+              <span>¡QUIERO UNIRME A GOLD FX VIP!</span>
+              <span style="font-size:18px;">→</span>
+            </a>
+            <div style="margin-top:12px; font-size:11.5px; color:#94a3b8; display:flex; align-items:center; justify-content:center; gap:6px;">
+              <span>⚡</span> Activación inmediata de tu membresía con el equipo de Gold FX
+            </div>
+            <div style="margin-top:16px;">
+              <button type="button" class="btn-grey" onclick="goTo('dashboard')" style="font-size:12px; padding:6px 14px; border-radius:8px; cursor:pointer;">
+                ← Volver al Dashboard
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /vip-locked-view -->
 
 
     <!-- ============================================== -->

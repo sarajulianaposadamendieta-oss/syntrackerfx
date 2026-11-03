@@ -1246,13 +1246,7 @@
       document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
       document.querySelectorAll('.mob-nav-item').forEach(function (m) { m.classList.remove('active'); });
 
-      // Verificación de Stealth Mode para Bitácora VIP
-      if (id === 'vip') {
-        if (!isSaraUser()) {
-          goTo('dashboard');
-          return;
-        }
-      }
+      // Página BITÁCORA VIP: Cualquier usuario puede ingresar; renderVipModule mostrará la vista autorizada o la pantalla de bloqueo/upsell según su membresía
 
       const targetPage = document.getElementById('page-' + id);
       if (targetPage) targetPage.classList.add('active');
@@ -5182,6 +5176,16 @@ function _renderAnalisis_orig() {
     }
     window.isSaraUser = isSaraUser;
 
+    function hasVipAccess() {
+      const u = sb.getUser();
+      if (!u) return false;
+      if (isSaraUser() || isAdminUser()) return true;
+      const meta = u.user_metadata || {};
+      const membership = ((meta.membership || '') + '').toUpperCase().trim();
+      return membership === 'VIP' || membership === 'LIFETIME';
+    }
+    window.hasVipAccess = hasVipAccess;
+
     function checkAdminNavVisibility() {
       const role = getAdminRole();
       const adminNav = document.getElementById('nav-item-admin');
@@ -5201,15 +5205,14 @@ function _renderAnalisis_orig() {
         }
       }
 
-      // Stealth Mode: Bitácora VIP visible única y exclusivamente para Sara
-      const isSara = isSaraUser();
+      // BITÁCORA VIP: botón visible para todos los usuarios (los VIP acceden a su panel, y los no-VIP a la pantalla de bloqueo con upsell)
       const vipNav = document.getElementById('nav-item-vip');
       if (vipNav) {
-        vipNav.style.setProperty('display', isSara ? 'flex' : 'none', 'important');
+        vipNav.style.setProperty('display', 'flex', 'important');
       }
       const mobVipNav = document.getElementById('mob-nav-item-vip');
       if (mobVipNav) {
-        mobVipNav.style.setProperty('display', isSara ? 'flex' : 'none', 'important');
+        mobVipNav.style.setProperty('display', 'flex', 'important');
       }
 
       const botTabBtn = document.getElementById('atab-btn-bot');
@@ -7656,7 +7659,19 @@ function _renderAnalisis_orig() {
     }
 
     window.renderVipModule = async function() {
-      if (!isSaraUser()) return;
+      const isAllowed = hasVipAccess();
+      const authView = document.getElementById('vip-authorized-view');
+      const lockedView = document.getElementById('vip-locked-view');
+
+      if (!isAllowed) {
+        if (authView) authView.style.display = 'none';
+        if (lockedView) lockedView.style.display = 'block';
+        return;
+      }
+
+      if (authView) authView.style.display = 'block';
+      if (lockedView) lockedView.style.display = 'none';
+
       const u = sb.getUser();
       const isAdmin = isAdminUser();
 
