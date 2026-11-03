@@ -1240,7 +1240,7 @@
     }
 
     // ── Navigation ──
-    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading', admin: 'Panel de Administración', vip: 'Bitácora VIP' };
+    const pageNames = { dashboard: 'Dashboard', tradelog: 'Trade Log', calendario: 'Calendario', estadisticas: 'Estadísticas', analisis: 'Análisis', comparar: 'Comparar Meses', cuentas: 'Mis Cuentas', torneo: 'Torneo de Trading', admin: 'Panel de Administración', vip: 'BITÁCORA VIP' };
     function goTo(id, el) {
       document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
@@ -6566,7 +6566,7 @@ function _renderAnalisis_orig() {
       showLoading(true);
       try {
         await renderVipModule();
-        if (typeof toast === 'function') toast('Datos de la Bitácora VIP actualizados.', 'success');
+        if (typeof toast === 'function') toast('Datos de la BITÁCORA VIP actualizados.', 'success');
       } catch (e) {
         console.error('Error refrescando VIP:', e);
       } finally {
