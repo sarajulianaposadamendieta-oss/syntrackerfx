@@ -5532,6 +5532,27 @@
             </div>
           </div>
         </div>
+
+        <!-- MEDALLERO DE HONOR: INSIGNIAS DE RECONOCIMIENTO VIP -->
+        <div class="vip-glass-card" style="margin-top:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div style="font-size:16px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                <span>🏅</span> Medallero de Honor: Insignias de Reconocimiento VIP
+              </div>
+              <div style="font-size:12.5px; color:#94a3b8; margin-top:2px;">
+                Reconocimientos oficiales otorgados por los mentores según la disciplina, regularidad y maestría técnica del trader
+              </div>
+            </div>
+            <div id="vip-badges-count-badge" class="vip-badge-pill gold" style="font-size:11.5px; padding:5px 14px;">
+              <span>🏆</span> <span id="vip-badges-count-text">1 de 5 Insignias Desbloqueadas</span>
+            </div>
+          </div>
+
+          <div id="vip-badges-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+            <div style="text-align:center; padding:24px; color:#94a3b8; font-size:12.5px;">Cargando insignias de honor...</div>
+          </div>
+        </div>
       </div><!-- /vip-sec-evolucion -->
     </div><!-- /vip-authorized-view -->
 
@@ -15472,8 +15493,52 @@ function _renderAnalisis_orig() {
       if (typeof toast === 'function') toast('Evaluación bimestral guardada en el historial comparativo.', 'success');
     };
 
-    // ── SUBPESTAÑA 7: EVOLUCIÓN 360° ──
+    // ── SUBPESTAÑA 7: EVOLUCIÓN 360° (MÉTRICAS & MEDALLERO DE HONOR VIP) ──
+    const VIP_BADGES = [
+      {
+        id: 'consistencia',
+        emoji: '🏆',
+        name: 'Consistencia',
+        desc: 'Reconoce al trader que mantiene regularidad y compromiso en su proceso operativo.',
+        accent: '#facc15',
+        isDefaultVip: false
+      },
+      {
+        id: 'disciplina',
+        emoji: '🛡️',
+        name: 'Disciplina',
+        desc: 'Premia el cumplimiento de las reglas, el plan de trading y la gestión del riesgo.',
+        accent: '#60a5fa',
+        isDefaultVip: false
+      },
+      {
+        id: 'mente_fria',
+        emoji: '❄️',
+        name: 'Mente Fría',
+        desc: 'Reconoce el control emocional y la capacidad de tomar decisiones sin dejarse dominar por el miedo o la avaricia.',
+        accent: '#38bdf8',
+        isDefaultVip: false
+      },
+      {
+        id: 'analista_elite',
+        emoji: '👑',
+        name: 'Analista Élite',
+        desc: 'Distingue al trader que demuestra excelencia en el análisis técnico, lectura del mercado y validación de escenarios.',
+        accent: '#c084fc',
+        isDefaultVip: false
+      },
+      {
+        id: 'mision_trader',
+        emoji: '🎯',
+        name: 'Misión Trader',
+        desc: 'Reconoce al trader comprometido con sus objetivos, su evolución y el inicio de su proceso de formación VIP.',
+        accent: '#f43f5e',
+        isDefaultVip: true
+      }
+    ];
+
     function renderVipEvolution(vipData) {
+      if (!vipData) vipData = currentVipData || {};
       const homeworks = Array.isArray(vipData.homeworks) ? vipData.homeworks : [];
       const sessions = Array.isArray(vipData.sessions) ? vipData.sessions : [];
 
@@ -15498,7 +15563,132 @@ function _renderAnalisis_orig() {
       const sessVal = document.getElementById('vip-evolucion-sessions-val');
       if (sessBar) sessBar.style.width = sessPct + '%';
       if (sessVal) sessVal.textContent = sessPct + '%';
+
+      // ── RENDERIZAR MEDALLERO DE HONOR VIP ──
+      const grid = document.getElementById('vip-badges-grid');
+      if (grid) {
+        const isAdmin = isAdminUser();
+        const userBadges = Array.isArray(vipData.badges) ? [...vipData.badges] : [];
+        if (!userBadges.includes('mision_trader')) {
+          userBadges.push('mision_trader');
+        }
+
+        const countText = document.getElementById('vip-badges-count-text');
+        if (countText) {
+          const unlockedCount = VIP_BADGES.filter(b => b.isDefaultVip || userBadges.includes(b.id)).length;
+          countText.textContent = `${unlockedCount} de ${VIP_BADGES.length} Insignias Desbloqueadas`;
+        }
+
+        grid.innerHTML = VIP_BADGES.map(badge => {
+          const isUnlocked = badge.isDefaultVip || userBadges.includes(badge.id);
+
+          if (isUnlocked) {
+            return `
+              <div class="vip-glass-card" style="background:linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.015) 100%); border:1px solid ${badge.accent}55; border-radius:16px; padding:20px; position:relative; overflow:hidden; box-shadow:0 8px 24px -6px ${badge.accent}25; display:flex; flex-direction:column; justify-content:space-between; transition:all 0.2s ease;">
+                <div style="position:absolute; top:-30px; right:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, ${badge.accent}30 0%, transparent 70%); pointer-events:none;"></div>
+                
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; gap:10px;">
+                    <div style="width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg, ${badge.accent}25, ${badge.accent}08); border:1px solid ${badge.accent}50; display:flex; align-items:center; justify-content:center; font-size:26px; box-shadow:0 4px 16px ${badge.accent}20; flex-shrink:0;">
+                      ${badge.emoji}
+                    </div>
+                    ${badge.isDefaultVip ? `
+                      <span class="vip-badge-pill gold" style="font-size:10.5px; padding:3px 10px;">
+                        <span>🌟</span> Membresía VIP Oficial
+                      </span>
+                    ` : `
+                      <span class="vip-badge-pill green" style="font-size:10.5px; padding:3px 10px;">
+                        <span class="vip-pulse-dot vip-pulse-green"></span> Desbloqueada
+                      </span>
+                    `}
+                  </div>
+
+                  <div style="font-size:16px; font-weight:900; color:#fff; display:flex; align-items:center; gap:8px;">
+                    ${badge.emoji} ${escapeHtml(badge.name)}
+                  </div>
+                  <div style="font-size:12px; color:#cbd5e1; margin-top:6px; line-height:1.5;">
+                    ${escapeHtml(badge.desc)}
+                  </div>
+                </div>
+
+                <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:11px; color:#86efac; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                    <span>✓</span> Insignia Activa
+                  </span>
+                  ${isAdmin && !badge.isDefaultVip ? `
+                    <button type="button" class="vip-btn-cancel" onclick="toggleVipBadge('${badge.id}')" style="font-size:10.5px; padding:3px 10px; color:#f87171; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.06); cursor:pointer;" title="Quitar esta insignia a este alumno">
+                      ✖ Retirar
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          } else {
+            return `
+              <div class="vip-glass-card" style="background:rgba(255,255,255,0.015); border:1px dashed rgba(255,255,255,0.1); border-radius:16px; padding:20px; opacity:0.65; display:flex; flex-direction:column; justify-content:space-between; transition:all 0.2s ease;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; gap:10px;">
+                    <div style="width:52px; height:52px; border-radius:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; font-size:24px; filter:grayscale(90%); flex-shrink:0; position:relative;">
+                      ${badge.emoji}
+                      <span style="position:absolute; bottom:-4px; right:-4px; font-size:12px; background:#18181b; border:1px solid rgba(255,255,255,0.15); border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">🔒</span>
+                    </div>
+                    <span class="vip-badge-pill" style="color:#94a3b8; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); font-size:10.5px; padding:3px 10px;">
+                      🔒 Por Desbloquear
+                    </span>
+                  </div>
+
+                  <div style="font-size:15px; font-weight:800; color:#94a3b8;">
+                    ${badge.emoji} ${escapeHtml(badge.name)}
+                  </div>
+                  <div style="font-size:12px; color:#64748b; margin-top:6px; line-height:1.5;">
+                    ${escapeHtml(badge.desc)}
+                  </div>
+                </div>
+
+                <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.04); display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:11px; color:#64748b; font-weight:600;">
+                    Pendiente por mérito
+                  </span>
+                  ${isAdmin ? `
+                    <button type="button" class="vip-btn-gold" onclick="toggleVipBadge('${badge.id}')" style="font-size:11px; padding:4px 12px; font-weight:800; cursor:pointer;" title="Otorgar esta insignia al alumno">
+                      ➕ Conceder
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          }
+        }).join('');
+      }
     }
+
+    window.toggleVipBadge = async function(badgeId) {
+      if (badgeId === 'mision_trader') return;
+      const targetId = getTargetUserId();
+      const vipData = await getStudentVipData(targetId);
+      if (!Array.isArray(vipData.badges)) vipData.badges = ['mision_trader'];
+      if (!vipData.badges.includes('mision_trader')) vipData.badges.push('mision_trader');
+
+      const idx = vipData.badges.indexOf(badgeId);
+      let granted = false;
+      if (idx >= 0) {
+        vipData.badges.splice(idx, 1);
+        granted = false;
+      } else {
+        vipData.badges.push(badgeId);
+        granted = true;
+      }
+
+      currentVipData = vipData;
+      await saveStudentVipData(targetId, vipData);
+      renderVipEvolution(vipData);
+
+      const bObj = VIP_BADGES.find(b => b.id === badgeId);
+      const bTitle = bObj ? `${bObj.emoji} ${bObj.name}` : badgeId;
+      if (typeof toast === 'function') {
+        toast(granted ? `¡Insignia "${bTitle}" otorgada al alumno!` : `Insignia "${bTitle}" retirada.`, granted ? 'success' : 'info');
+      }
+    };
 
     window.renderVipModule = async function() {
       const isAdmin = isAdminUser();
