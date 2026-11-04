@@ -569,13 +569,6 @@
         badgeStyle: 'background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.4);',
         adminTitle: '👩‍💻 Desarrolladora (Sara)'
       },
-      'sarajulianaposadamendieta@gmail.com': {
-        role: 'superadmin',
-        label: 'Desarrolladora',
-        display: '👩‍💻 Desarrolladora',
-        badgeStyle: 'background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.4);',
-        adminTitle: '👩‍💻 Desarrolladora (Sara)'
-      },
       'estebangoldfx@gmail.com': {
         role: 'mentor',
         label: 'Mentor',
@@ -601,7 +594,6 @@
 
     const STAFF_IDS = {
       '8ffa85d8-cf48-4b2b-a720-98ff14e99553': 'parkjiminfromsara@gmail.com',
-      'd8878aa5-611d-4500-9d20-b644525409ce': 'sarajulianaposadamendieta@gmail.com',
       '26b36306-b12c-481c-b43e-fe4f1452a210': 'estebangoldfx@gmail.com',
       '84061dcc-f1dd-4a1f-8e2a-bbbe63045787': 'infogoldfx@gmail.com',
       '2d09f625-f966-47f6-9b14-392e743d1a38': 'psico.goldfx@gmail.com'
@@ -675,9 +667,7 @@
       const email = (u.email || (u.user_metadata && u.user_metadata.email) || '').toLowerCase().trim();
       const userId = (u.id || '').trim();
       return email === 'parkjiminfromsara@gmail.com' ||
-             email === 'sarajulianaposadamendieta@gmail.com' ||
              userId === '8ffa85d8-cf48-4b2b-a720-98ff14e99553' ||
-             userId === 'd8878aa5-611d-4500-9d20-b644525409ce' ||
              (u.user_metadata && u.user_metadata.role === 'superadmin');
     }
 
