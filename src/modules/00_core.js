@@ -270,6 +270,29 @@
     function showAuthSuccess(m) { const e = document.getElementById('auth-success'); e.textContent = m; e.classList.add('show'); document.getElementById('auth-error').classList.remove('show'); }
     function showLoading(v) { document.getElementById('loading-overlay').classList.toggle('show', v); }
 
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'flex';
+        el.classList.add('open');
+      }
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'none';
+        el.classList.remove('open');
+      }
+    }
+    function closeOnBg(e, id) {
+      if (e.target === document.getElementById(id)) {
+        closeModal(id);
+      }
+    }
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.closeOnBg = closeOnBg;
+
     window.toast = function(msg, type = 'info', duration = 3800) {
       try {
         let container = document.getElementById('syntracker-toast-container');
@@ -799,7 +822,7 @@
       if (emailInput) emailInput.value = data.email;
 
       renderUserAvatar(user, data.name);
-      document.getElementById('profile-modal').classList.add('open');
+      openModal('profile-modal');
     }
 
     async function saveUserProfile() {
@@ -921,3 +944,26 @@
         input.value = "";
       }
     }
+
+    // ── Global window exposures for 00_core ──
+    window.sb = sb;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.closeOnBg = closeOnBg;
+    window.openProfileModal = openProfileModal;
+    window.saveUserProfile = saveUserProfile;
+    window.handleAvatarChange = handleAvatarChange;
+    window.renderUserProfile = renderUserProfile;
+    window.renderUserAvatar = renderUserAvatar;
+    window.getUserProfileData = getUserProfileData;
+    window.getUserCountryInfo = getUserCountryInfo;
+    window.doLogin = doLogin;
+    window.doRegister = doRegister;
+    window.doLogout = doLogout;
+    window.doSendRecovery = doSendRecovery;
+    window.doResetPassword = doResetPassword;
+    window.switchAuthTab = switchAuthTab;
+    window.showLoading = showLoading;
+    window.showAuthError = showAuthError;
+    window.showAuthSuccess = showAuthSuccess;
+    window.togglePassword = togglePassword;

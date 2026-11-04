@@ -270,6 +270,29 @@
     function showAuthSuccess(m) { const e = document.getElementById('auth-success'); e.textContent = m; e.classList.add('show'); document.getElementById('auth-error').classList.remove('show'); }
     function showLoading(v) { document.getElementById('loading-overlay').classList.toggle('show', v); }
 
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'flex';
+        el.classList.add('open');
+      }
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'none';
+        el.classList.remove('open');
+      }
+    }
+    function closeOnBg(e, id) {
+      if (e.target === document.getElementById(id)) {
+        closeModal(id);
+      }
+    }
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.closeOnBg = closeOnBg;
+
     window.toast = function(msg, type = 'info', duration = 3800) {
       try {
         let container = document.getElementById('syntracker-toast-container');
@@ -799,7 +822,7 @@
       if (emailInput) emailInput.value = data.email;
 
       renderUserAvatar(user, data.name);
-      document.getElementById('profile-modal').classList.add('open');
+      openModal('profile-modal');
     }
 
     async function saveUserProfile() {
@@ -922,6 +945,29 @@
       }
     }
 
+    // ── Global window exposures for 00_core ──
+    window.sb = sb;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.closeOnBg = closeOnBg;
+    window.openProfileModal = openProfileModal;
+    window.saveUserProfile = saveUserProfile;
+    window.handleAvatarChange = handleAvatarChange;
+    window.renderUserProfile = renderUserProfile;
+    window.renderUserAvatar = renderUserAvatar;
+    window.getUserProfileData = getUserProfileData;
+    window.getUserCountryInfo = getUserCountryInfo;
+    window.doLogin = doLogin;
+    window.doRegister = doRegister;
+    window.doLogout = doLogout;
+    window.doSendRecovery = doSendRecovery;
+    window.doResetPassword = doResetPassword;
+    window.switchAuthTab = switchAuthTab;
+    window.showLoading = showLoading;
+    window.showAuthError = showAuthError;
+    window.showAuthSuccess = showAuthSuccess;
+    window.togglePassword = togglePassword;
+
     async function initApp() {
       const user = sb.getUser(); if (!user) return;
       const authScreen = document.getElementById('auth-screen');
@@ -968,6 +1014,12 @@
 
     let auditedStudent = null;
     window.auditedStudent = auditedStudent;
+
+    // ── Multi-Photo Management State ──
+    let currentPhotosData = [];
+    let editPhotosData = [];
+    window.currentPhotosData = currentPhotosData;
+    window.editPhotosData = editPhotosData;
 
     async function loadTrades() {
       const u = sb.getUser();
@@ -1086,8 +1138,7 @@
       activeBePrefix = prefix;
       const bePnl = document.getElementById('be-calc-pnl');
       if (bePnl) bePnl.value = '';
-      const modal = document.getElementById('be-calc-modal');
-      if (modal) modal.classList.add('open');
+      openModal('be-calc-modal');
     }
     function applyBe() {
       const pnlVal = parseFloat(document.getElementById('be-calc-pnl').value) || 0;
@@ -1179,8 +1230,28 @@
 
     // ── Add Trade ──
     async function addTrade() {
-      const user = sb.getUser(); if (!user) return;
-      const finalNotes = document.getElementById('tm-notes').value.trim();
+      const user = sb.getUser();
+      if (!user) {
+        alert('Debes iniciar sesión para registrar trades.');
+        return;
+      }
+
+      // ── Validar cuenta seleccionada ──
+      let acctVal = (document.getElementById('tm-account') && document.getElementById('tm-account').value) || '';
+      if (!acctVal || acctVal === 'Sin cuentas') {
+        if (accounts && accounts.length > 0) {
+          refreshAccountSelects();
+          acctVal = (document.getElementById('tm-account') && document.getElementById('tm-account').value) || accounts[0].name;
+        } else {
+          alert('Por favor crea una cuenta de trading en la pestaña "Mis Cuentas" antes de registrar tu primer trade.');
+          closeModal('trade-modal');
+          goTo('cuentas');
+          openAcctModal();
+          return;
+        }
+      }
+
+      const finalNotes = (document.getElementById('tm-notes') && document.getElementById('tm-notes').value.trim()) || '';
 
       // ── Recoger datos de Auditoría ──
       var auditFields = [
@@ -1216,16 +1287,16 @@
 
       const tradeData = {
         user_id: user.id,
-        account: document.getElementById('tm-account').value,
-        asset: document.getElementById('tm-asset').value || 'EURUSD',
-        side: document.getElementById('tm-side').value,
-        entry_time: document.getElementById('tm-entry').value || null,
-        exit_time: document.getElementById('tm-exit').value || null,
-        pnl: parseFloat(document.getElementById('tm-pnl').value) || 0,
-        rr: parseFloat(document.getElementById('tm-rr').value) || 0,
-        session: document.getElementById('tm-session').value,
+        account: acctVal,
+        asset: (document.getElementById('tm-asset') && document.getElementById('tm-asset').value.trim()) || 'EURUSD',
+        side: (document.getElementById('tm-side') && document.getElementById('tm-side').value) || 'Long',
+        entry_time: (document.getElementById('tm-entry') && document.getElementById('tm-entry').value) || null,
+        exit_time: (document.getElementById('tm-exit') && document.getElementById('tm-exit').value) || null,
+        pnl: parseFloat(document.getElementById('tm-pnl') ? document.getElementById('tm-pnl').value : 0) || 0,
+        rr: parseFloat(document.getElementById('tm-rr') ? document.getElementById('tm-rr').value : 0) || 0,
+        session: (document.getElementById('tm-session') && document.getElementById('tm-session').value) || 'Londres',
         setup: buildSetupValue('tm-bias', 'tm-tipo'),
-        date: document.getElementById('tm-date').value || new Date().toISOString().slice(0, 10),
+        date: (document.getElementById('tm-date') && document.getElementById('tm-date').value) || new Date().toISOString().slice(0, 10),
         photo: photoPayload,
         notes: notesWithMeta
       };
@@ -1234,11 +1305,20 @@
       try {
         const result = await sb.insert('trades', tradeData);
         const saved = Array.isArray(result) ? result[0] : result;
-        if (saved && saved.id) trades.push(tradeFromRow(saved));
-      } catch (e) { console.error('Error guardando trade:', e); alert('Error al guardar. Revisa la consola.'); }
-      finally { showLoading(false); }
+        if (saved && saved.id) {
+          trades.push(tradeFromRow(saved));
+        } else {
+          await loadTrades();
+        }
+      } catch (e) {
+        console.error('Error guardando trade:', e);
+        alert('Error al guardar operación: ' + (e.message || e));
+        return; // No resetear ni cerrar modal si falló la petición para no perder datos
+      } finally {
+        showLoading(false);
+      }
 
-      // ── Reset del formulario ──
+      // ── Reset del formulario sólo tras guardado exitoso ──
       removePhoto();
       resetSetupSelectors('tm-bias-sel', 'tm-bias', 'tm-tipo-sel', 'tm-tipo');
       // Limpiar resultado seleccionado
@@ -1251,7 +1331,11 @@
       ['tm-asset','tm-entry','tm-exit','tm-pnl','tm-rr','tm-notes','tm-entry-type','tm-market-cond','tm-emotion'].forEach(function(id) {
         var el = document.getElementById(id); if (el) el.value = '';
       });
-      closeModal('trade-modal'); renderAll();
+      closeModal('trade-modal');
+      renderAll();
+      if (typeof toast === 'function') {
+        toast('Operación añadida al Journal con éxito', 'success');
+      }
     }
 
     // ── Edit Trade ──
@@ -1289,7 +1373,7 @@
       // Fotos
       editPhotosData = (t.photos && t.photos.length) ? [...t.photos] : (t.photo ? [t.photo] : []);
       renderEditPhotoPreviews();
-      document.getElementById('edit-modal').classList.add('open');
+      openModal('edit-modal');
     }
 
     async function saveEditTrade() {
@@ -1348,9 +1432,18 @@
             photo: data.photo
           }));
         }
-      } catch (e) { console.error(e); alert('Error al guardar cambios'); }
-      finally { showLoading(false); }
-      closeModal('edit-modal'); renderAll();
+      } catch (e) {
+        console.error('Error al guardar cambios del trade:', e);
+        alert('Error al guardar cambios: ' + (e.message || e));
+        return;
+      } finally {
+        showLoading(false);
+      }
+      closeModal('edit-modal');
+      renderAll();
+      if (typeof toast === 'function') {
+        toast('Cambios guardados con éxito', 'success');
+      }
     }
 
     // ── Setup Selector Helpers ──
@@ -1384,7 +1477,7 @@
     // ── Delete Trade ──
     function openDeleteModal(tradeId) {
       document.getElementById('del-id').value = tradeId;
-      document.getElementById('del-modal').classList.add('open');
+      openModal('del-modal');
     }
     async function confirmDelete() {
       const id = document.getElementById('del-id').value;
@@ -1400,7 +1493,7 @@
     // ── View Notes ──
     function openNotesModal(notes) {
       document.getElementById('notes-content').textContent = notes || 'Sin notas.';
-      document.getElementById('notes-modal').classList.add('open');
+      openModal('notes-modal');
     }
 
     // ── Create Account ──
@@ -1757,7 +1850,7 @@
       document.getElementById('eam-type').value = a.type;
       document.getElementById('eam-broker').value = a.broker || '';
       document.getElementById('eam-balance').value = a.initialBalance;
-      document.getElementById('edit-acct-modal').classList.add('open');
+      openModal('edit-acct-modal');
     }
 
     async function saveEditAccount() {
@@ -1799,7 +1892,7 @@
       document.getElementById('del-acct-warning').textContent = tradeCount > 0
         ? '⚠️ Esta cuenta tiene ' + tradeCount + ' trade(s). Solo se elimina la cuenta, los trades se mantienen.'
         : 'Esta acción no se puede deshacer.';
-      document.getElementById('del-acct-modal').classList.add('open');
+      openModal('del-acct-modal');
     }
 
     async function confirmDeleteAccount() {
@@ -1830,7 +1923,7 @@
       document.getElementById('dep-note').value = '';
       document.getElementById('dep-type').value = 'deposit';
       updateDepositModalLabels();
-      document.getElementById('deposit-modal').classList.add('open');
+      openModal('deposit-modal');
       setTimeout(function() {
         var el = document.getElementById('dep-amount');
         if (el) el.focus();
@@ -1904,8 +1997,18 @@
       }
     }
 
-    function openTradeModal() { renderConfGrid('tm-confirmations', []); document.getElementById('trade-modal').classList.add('open'); }
-    function openAcctModal() { document.getElementById('acct-modal').classList.add('open'); }
+    function openTradeModal() {
+      refreshAccountSelects();
+      const dateInput = document.getElementById('tm-date');
+      if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toISOString().slice(0, 10);
+      }
+      renderConfGrid('tm-confirmations', []);
+      openModal('trade-modal');
+    }
+    function openAcctModal() {
+      openModal('acct-modal');
+    }
     function openModal(id) {
       const el = document.getElementById(id);
       if (el) {
@@ -1925,10 +2028,7 @@
     function closeOnBg(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
     function selectNews(btn) { document.querySelectorAll('.news-btn').forEach(function (b) { b.classList.remove('active'); }); btn.classList.add('active'); document.getElementById('news-val').value = btn.dataset.val; }
 
-
     // ── Multi-Photo Management ──
-    let currentPhotosData = [];
-    let editPhotosData = [];
 
     function compressImage(dataUrl, callback) {
       var img = new Image();
@@ -2312,7 +2412,7 @@
       else { notesWrap.style.display = 'none'; }
       var editBtn = document.getElementById('td-edit-btn');
       if (editBtn) editBtn.onclick = function () { closeModal('trade-detail-modal'); openEditModal(t.id); };
-      document.getElementById('trade-detail-modal').classList.add('open');
+      openModal('trade-detail-modal');
     }
 
     // ── Trade Side Panel ──
@@ -3478,10 +3578,8 @@
 
       // ── CALENDAR EXPORT (Tarjeta Mensual) ──
       function openCalendarExportModal() {
-        const modal = document.getElementById('cal-export-modal');
-        if (!modal) return;
         renderCalendarExportCard();
-        modal.classList.add('open');
+        openModal('cal-export-modal');
       }
 
       function renderCalendarExportCard() {
@@ -3805,7 +3903,7 @@
         // Reset reason buttons
         document.querySelectorAll('#inaction-reason-sel .setup-btn').forEach(function(b){ b.classList.remove('active'); });
         document.getElementById('inaction-reason').value = '';
-        document.getElementById('inaction-modal').classList.add('open');
+        openModal('inaction-modal');
       }
 
       async function saveInactionDay() {
@@ -4385,6 +4483,95 @@ function _renderAnalisis_orig() {
           '</div>';
       }
       function getBestAsset(tlist) { if (!tlist.length) return '—'; var m = {}; tlist.forEach(function (t) { if (t.asset === 'INACCIÓN') return; if (!m[t.asset]) m[t.asset] = 0; m[t.asset] += t.pnl; }); var best = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; })[0]; return best ? best[0] + ' ($' + best[1].toFixed(0) + ')' : '—'; }
+
+      function getBestSession(tlist) {
+        if (!tlist || !tlist.length) return '—';
+        var m = {};
+        tlist.forEach(function (t) {
+          if (t.asset === 'INACCIÓN' || !t.session || t.session === '—') return;
+          if (!m[t.session]) m[t.session] = 0;
+          m[t.session] += t.pnl;
+        });
+        var entries = Object.entries(m).sort(function (a, b) { return b[1] - a[1]; });
+        return entries.length ? entries[0][0] + ' ($' + entries[0][1].toFixed(0) + ')' : '—';
+      }
+
+      // ── Global window exposures for 01_journal ──
+      window.openTradeModal = openTradeModal;
+      window.addTrade = addTrade;
+      window.openEditModal = openEditModal;
+      window.saveEditTrade = saveEditTrade;
+      window.openDeleteModal = openDeleteModal;
+      window.confirmDelete = confirmDelete;
+      window.openNotesModal = openNotesModal;
+      window.openAcctModal = openAcctModal;
+      window.createAccount = createAccount;
+      window.openEditAccount = openEditAccount;
+      window.saveEditAccount = saveEditAccount;
+      window.openDeleteAccount = openDeleteAccount;
+      window.confirmDeleteAccount = confirmDeleteAccount;
+      window.openDepositModal = openDepositModal;
+      window.submitDeposit = submitDeposit;
+      window.updateDepositModalLabels = updateDepositModalLabels;
+      window.toggleAcctDropdown = toggleAcctDropdown;
+      window.setAccountFilter = setAccountFilter;
+      window.setAccountFilterDropdown = setAccountFilterDropdown;
+      window.toggleDetailPanel = toggleDetailPanel;
+      window.showTradePanel = showTradePanel;
+      window.openTradeDetail = openTradeDetail;
+      window.openDayDetail = openDayDetail;
+      window.changeMonth = changeMonth;
+      window.goToday = goToday;
+      window.changeTlMonth = changeTlMonth;
+      window.goTlToday = goTlToday;
+      window.changeStMonth = changeStMonth;
+      window.goStToday = goStToday;
+      window.changeAnMonth = changeAnMonth;
+      window.goAnToday = goAnToday;
+      window.setTlMode = setTlMode;
+      window.setStMode = setStMode;
+      window.setAnMode = setAnMode;
+      window.renderComparar = renderComparar;
+      window.openJumpPicker = openJumpPicker;
+      window.applyJumpPicker = applyJumpPicker;
+      window.openCalendarExportModal = openCalendarExportModal;
+      window.copyCalendarExportImage = copyCalendarExportImage;
+      window.downloadCalendarExportImage = downloadCalendarExportImage;
+      window.openInactionModal = openInactionModal;
+      window.saveInactionDay = saveInactionDay;
+      window.selectSetupBtn = selectSetupBtn;
+      window.selectSetupBtnByVal = selectSetupBtnByVal;
+      window.resetSetupSelectors = resetSetupSelectors;
+      window.selectNews = selectNews;
+      window.setBE = setBE;
+      window.applyBe = applyBe;
+      window.togglePlanWhy = togglePlanWhy;
+      window.switchEqTab = switchEqTab;
+      window.handlePhoto = handlePhoto;
+      window.removePhoto = removePhoto;
+      window.removePhotoIndex = removePhotoIndex;
+      window.dragOver = dragOver;
+      window.dropPhoto = dropPhoto;
+      window.handleEditPhoto = handleEditPhoto;
+      window.removeEditPhoto = removeEditPhoto;
+      window.removeEditPhotoIndex = removeEditPhotoIndex;
+      window.editDragOver = editDragOver;
+      window.editDropPhoto = editDropPhoto;
+      window.openLightbox = openLightbox;
+      window.openLightboxFromImg = openLightboxFromImg;
+      window.openLightboxFromSrc = openLightboxFromSrc;
+      window.openLightboxGallery = openLightboxGallery;
+      window.closeLightbox = closeLightbox;
+      window.closeLightboxOnBg = closeLightboxOnBg;
+      window.prevLightboxImage = prevLightboxImage;
+      window.nextLightboxImage = nextLightboxImage;
+      window.renderAll = renderAll;
+      window.initApp = initApp;
+      window.loadTrades = loadTrades;
+      window.loadAccounts = loadAccounts;
+      window.refreshAccountSelects = refreshAccountSelects;
+      window.getBestAsset = getBestAsset;
+      window.getBestSession = getBestSession;
       // ── TORNEO DE TRADING (STARKLAB LUXURY GAMING EDITION) ──
       let activeTournament = null;
       let tournamentParticipants = [];
