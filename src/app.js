@@ -706,10 +706,10 @@
 
     function getUserProfileData(user) {
       if (!user) user = sb.getUser();
-      if (!user) return { name: 'Sarah Posada', username: '', country: 'CO', email: '', avatarUrl: null };
+      if (!user) return { name: 'Estudiante', username: '', country: 'CO', email: '', avatarUrl: null };
       
       const meta = user.user_metadata || {};
-      let name = meta.full_name || meta.name || user.email || 'Sarah Posada';
+      let name = meta.full_name || meta.name || (user.email ? user.email.split('@')[0] : 'Estudiante');
       let username = meta.username || '';
       let country = meta.country || 'CO';
       let avatarUrl = meta.avatar_url || null;
@@ -736,7 +736,7 @@
           av.style.background = 'none';
           av.style.borderRadius = '50%';
         } else {
-          const letter = (name && name.trim()) ? name.trim()[0].toUpperCase() : 'S';
+          const letter = (name && name.trim()) ? name.trim()[0].toUpperCase() : 'E';
           av.textContent = letter;
           av.style.border = 'none';
           av.style.background = 'linear-gradient(135deg, #ffcd1b, #a67726)';
@@ -775,6 +775,10 @@
           roleBadgeEl.style.display = 'none';
         }
       }
+
+      // Banner de bienvenida VIP si está visible
+      const studentWelcomeName = document.getElementById('vip-student-welcome-name');
+      if (studentWelcomeName) studentWelcomeName.textContent = 'Hola, ' + data.name;
 
       renderUserAvatar(user, data.name);
     }
@@ -827,21 +831,14 @@
         user.user_metadata.username = username;
         user.user_metadata.country = country;
 
-        // 2. Update profiles table
+        // 2. Update profiles table (only existing table columns: full_name, country)
         try {
           await sb.update('profiles', user.id, {
             full_name: name,
-            username: username,
             country: country
           });
         } catch (pe) {
-          try {
-            await sb.update('users', user.id, {
-              full_name: name,
-              username: username,
-              country: country
-            });
-          } catch (pe2) {}
+          console.warn('Error sincronizando tabla profiles:', pe);
         }
 
         // 3. Update tournament participants table if registered
@@ -931,29 +928,17 @@
       if (authScreen) authScreen.style.display = 'none';
       document.documentElement.classList.add('has-session');
 
-      // Load profile info from Supabase profiles table if available
+      // Sincronizar info de perfil desde profiles si user_metadata no lo tiene
       try {
         const profileData = await sb.query('profiles', { filter: 'id=eq.' + user.id });
         if (profileData && profileData.length > 0) {
           const pr = profileData[0];
           if (!user.user_metadata) user.user_metadata = {};
-          if (pr.full_name) user.user_metadata.full_name = pr.full_name;
-          if (pr.username) user.user_metadata.username = pr.username;
-          if (pr.country) user.user_metadata.country = pr.country;
-          if (pr.avatar_url) user.user_metadata.avatar_url = pr.avatar_url;
+          if (pr.full_name && !user.user_metadata.full_name) user.user_metadata.full_name = pr.full_name;
+          if (pr.country && !user.user_metadata.country) user.user_metadata.country = pr.country;
         }
       } catch (e) {
-        try {
-          const userData = await sb.query('users', { filter: 'id=eq.' + user.id });
-          if (userData && userData.length > 0) {
-            const ur = userData[0];
-            if (!user.user_metadata) user.user_metadata = {};
-            if (ur.full_name) user.user_metadata.full_name = ur.full_name;
-            if (ur.username) user.user_metadata.username = ur.username;
-            if (ur.country) user.user_metadata.country = ur.country;
-            if (ur.avatar_url) user.user_metadata.avatar_url = ur.avatar_url;
-          }
-        } catch (e2) {}
+        console.warn('Error leyendo tabla profiles:', e);
       }
 
       try {
@@ -3554,7 +3539,7 @@
         // User Profile Data
         const u = sb.getUser();
         const pData = getUserProfileData(u);
-        let userName = pData.name || 'Sarah Posada';
+        let userName = pData.name || 'Estudiante';
         const userAvEl = document.querySelector('.user-av');
         let avatarImgSrc = null;
         if (userAvEl) {
@@ -6914,7 +6899,7 @@ function _renderAnalisis_orig() {
       currentVipData = vipData;
 
       if (isMe) {
-        if (emailTag && u) emailTag.textContent = u.email || 'parkjiminfromsara@gmail.com';
+        if (emailTag && u) emailTag.textContent = u.email || '';
       } else {
         const student = (adminStudentsData || []).find(s => s.id === studentId);
         if (student && emailTag) emailTag.textContent = student.email || 'Sin correo';
@@ -8625,7 +8610,7 @@ function _renderAnalisis_orig() {
         if (adminSelectorBar) adminSelectorBar.style.display = 'none';
         if (studentWelcomeBar) {
           studentWelcomeBar.style.display = 'flex';
-          const name = (u && u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || 'Sarah FX';
+          const name = (u && u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || (u && u.email ? u.email.split('@')[0] : 'Trader VIP');
           if (studentWelcomeName) studentWelcomeName.textContent = 'Hola, ' + name;
         }
         currentVipStudentId = (u && u.id) ? u.id : 'me';
@@ -8654,7 +8639,7 @@ function _renderAnalisis_orig() {
       // Poblar selector con alumnos VIP (solo en modo admin/mentor)
       const selector = document.getElementById('vip-student-selector');
       if (selector && isAdmin) {
-        let opts = `<option value="me">👤 Mi Bitácora (${(u && u.user_metadata && u.user_metadata.full_name) || 'Sara Posada'})</option>`;
+        let opts = `<option value="me">👤 Mi Bitácora (${(u && u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || 'Mi Cuenta'})</option>`;
         const vipStudents = (adminStudentsData || []).filter(s => (s.membership === 'VIP' || s.membership === 'Lifetime'));
         vipStudents.forEach(s => {
           opts += `<option value="${s.id}">★ ${escapeHtml(s.name)} (${escapeHtml(s.email)})</option>`;
