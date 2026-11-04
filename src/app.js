@@ -857,8 +857,12 @@
           }
         } catch (tpErr) {}
 
+        try {
         renderUserProfile(user);
-      checkAdminNavVisibility();
+        checkAdminNavVisibility();
+      } catch (uiNavErr) {
+        console.error('Error inicializando perfil/navegación admin:', uiNavErr);
+      }
         closeModal('profile-modal');
         alert('¡Perfil actualizado con éxito!');
       } catch (err) {
@@ -952,8 +956,12 @@
         } catch (e2) {}
       }
 
-      renderUserProfile(user);
-      checkAdminNavVisibility();
+      try {
+        renderUserProfile(user);
+        checkAdminNavVisibility();
+      } catch (uiNavErr) {
+        console.error('Error inicializando perfil/navegación admin:', uiNavErr);
+      }
 
       const datePill = document.getElementById('date-pill');
       if (datePill) datePill.textContent = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -5353,7 +5361,8 @@ function _renderAnalisis_orig() {
     window.hasVipAccess = hasVipAccess;
 
     function checkAdminNavVisibility() {
-      const role = getAdminRole();
+      const u = (typeof sb !== 'undefined') ? sb.getUser() : null;
+      const role = getAdminRole(u);
       const adminNav = document.getElementById('nav-item-admin');
       if (adminNav) {
         if (role) {
