@@ -58,6 +58,32 @@ async function run() {
   fs.writeFileSync(path.join(__dirname, 'index.html'), cacheBustIndex, 'utf8');
   console.log('Saved: dist/index.html & root index.html');
 
+  // 3.5. Bundle modular source files from src/modules/ if present
+  const modulesDir = path.join(SRC_DIR, 'modules');
+  if (fs.existsSync(modulesDir)) {
+    console.log('Bundling modular files from src/modules/ ...');
+    const moduleFiles = [
+      '00_core.js',
+      '01_journal.js',
+      '02_torneo.js',
+      '03_admin.js',
+      '04_vip.js'
+    ];
+    let bundledCode = '';
+    for (const modFile of moduleFiles) {
+      const modPath = path.join(modulesDir, modFile);
+      if (fs.existsSync(modPath)) {
+        const modCode = fs.readFileSync(modPath, 'utf8');
+        bundledCode += (bundledCode ? '\n' : '') + modCode;
+        console.log(`  ✓ Bundled: ${modFile} (${modCode.split(/\r?\n/).length} lines)`);
+      } else {
+        console.warn(`  ⚠ Warning: Module file ${modFile} not found!`);
+      }
+    }
+    fs.writeFileSync(path.join(SRC_DIR, 'app.js'), bundledCode, 'utf8');
+    console.log(`Successfully compiled src/app.js from ${moduleFiles.length} modules!`);
+  }
+
   // 4. Obfuscate app.js
   console.log('Obfuscating app.js...');
   const appJsSrcPath = path.join(SRC_DIR, 'app.js');
